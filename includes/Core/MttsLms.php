@@ -1,0 +1,110 @@
+<?php
+namespace MttsLms\Core;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+class MttsLms {
+
+	/**
+	 * Single instance of the class
+	 *
+	 * @var MttsLms
+	 */
+	protected static $instance = null;
+
+	/**
+	 * Returns the single instance of the class.
+	 *
+	 * @return MttsLms
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
+
+	/**
+	 * Constructor
+	 */
+	private function __construct() {
+		$this->includes();
+		$this->init_hooks();
+	}
+
+	/**
+	 * Include required core files used in admin and on the frontend.
+	 */
+	private function includes() {
+        // Include other core files if not autoloaded or specific functional files
+        // e.g., require_once MTTS_LMS_PATH . 'includes/functions.php';
+	}
+
+	/**
+	 * Hook into actions and filters.
+	 */
+	private function init_hooks() {
+		add_action( 'init', array( $this, 'init' ), 0 );
+        add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
+        add_action( 'wp_enqueue_scripts', array( $this, 'frontend_scripts' ) );
+        
+        \MttsLms\Core\Roles::init();
+        \MttsLms\Core\NotificationManager::init();
+        \MttsLms\Controllers\AuthController::init();
+        \MttsLms\Core\JwtAuth::init();
+        \MttsLms\Core\Api\RestController::init();
+        \MttsLms\Controllers\Admin\AcademicController::init();
+        \MttsLms\Controllers\AdmissionController::init();
+        \MttsLms\Controllers\Admin\AdmissionAdminController::init();
+        \MttsLms\Controllers\Student\StudentDashboardController::init();
+        \MttsLms\Controllers\Lecturer\LecturerDashboardController::init();
+        \MttsLms\Controllers\Student\WalletController::init();
+        \MttsLms\Controllers\Admin\PeopleController::init();
+        \MttsLms\Controllers\Admin\BulkAdmissionController::init();
+        \MttsLms\Controllers\Admin\ReportsController::init();
+        \MttsLms\Controllers\Admin\SettingsController::init();
+        \MttsLms\Controllers\Admin\SettingsController::init();
+        \MttsLms\Controllers\ReceiptController::init();
+        \MttsLms\Controllers\PdfController::init();
+        \MttsLms\Controllers\FrontendController::init();
+        \MttsLms\Controllers\AlumniController::init();
+        \MttsLms\Controllers\ZoomController::init();
+        \MttsLms\Controllers\WebhookController::init();
+        \MttsLms\Core\Cron::init();
+        \MttsLms\Core\FormShortcode::init();
+        \MttsLms\Core\ShortcodeBank::init();
+        \MttsLms\Controllers\PortfolioController::init();
+        \MttsLms\Core\Translator::init();
+    }
+
+	/**
+	 * Init WordPress when loaded.
+	 */
+	public function init() {
+		// Register custom post types, taxonomies, endpoints here
+        // Route::init(); // Initialize routing if needed here
+        $this->load_textdomain();
+	}
+
+    /**
+	 * Load Localisation files.
+	 */
+	public function load_textdomain() {
+		load_plugin_textdomain( 'mtts-lms', false, dirname( plugin_basename( MTTS_LMS_FILE ) ) . '/languages/' );
+	}
+
+    public function admin_scripts() {
+        // wp_enqueue_style( 'mtts-lms-admin', MTTS_LMS_URL . 'assets/css/admin.css', array(), MTTS_LMS_VERSION );
+        // wp_enqueue_script( 'mtts-lms-admin', MTTS_LMS_URL . 'assets/js/admin.js', array( 'jquery' ), MTTS_LMS_VERSION, true );
+    }
+
+    public function frontend_scripts() {
+        wp_enqueue_style( 'mtts-font', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap', array(), null );
+        wp_enqueue_style( 'mtts-lms-css', MTTS_LMS_URL . 'assets/css/mtts-lms.css', array(), MTTS_LMS_VERSION );
+        wp_enqueue_script( 'mtts-lms-js', MTTS_LMS_URL . 'assets/js/mtts-lms.js', array(), MTTS_LMS_VERSION, true );
+    }
+
+
+}

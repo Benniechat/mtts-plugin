@@ -1,0 +1,20 @@
+{
+  "name": "mtts/lms-plugin",
+  "description": "MTTS Learning Management System Plugin",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "MTTS Dev Team",
+      "email": "dev@mtts.edu.ng"
+    }
+  ],
+  "require": {
+    "php": ">=7.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "MttsLms\\": "includes/"
+    }
+  }
+}

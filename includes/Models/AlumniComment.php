@@ -21,4 +21,13 @@ class AlumniComment extends Model {
             $post_id
         ) );
     }
+
+    public static function like_comment( $comment_id ) {
+        global $wpdb;
+        $table = self::get_table_name();
+        return $wpdb->query( $wpdb->prepare(
+            "UPDATE {$table} SET likes_count = COALESCE(likes_count,0) + 1 WHERE id = %d",
+            $comment_id
+        ) );
+    }
 }

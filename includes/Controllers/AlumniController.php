@@ -9,11 +9,14 @@ class AlumniController {
 
     public static function init() {
         add_shortcode( 'mtts_alumni_dashboard', array( __CLASS__, 'render_dashboard' ) );
+
+        // Register AJAX handlers for logged-in users
+        add_action( 'wp_ajax_mtts_alumni_action', array( __CLASS__, 'handle_ajax' ) );
     }
 
     public static function render_dashboard() {
         if ( ! is_user_logged_in() ) {
-            return '<div class="mtts-alert mtts-alert-info">Please <a href="' . wp_login_url( get_permalink() ) . '">log in</a> to access the Alumni & Community Network.</div>';
+            return '<div class="mtts-alert mtts-alert-info">Please <a href="' . wp_login_url( get_permalink() ) . '">log in</a> to access the Alumni &amp; Community Network.</div>';
         }
 
         $user = wp_get_current_user();
@@ -38,20 +41,23 @@ class AlumniController {
         $page_title    = $current_title['title'];
         $page_subtitle = $current_title['subtitle'];
 
-        // Prepare Sidebar
         $sidebar_path = MTTS_LMS_PATH . 'includes/Views/Alumni/sidebar.php';
 
-        // Capture Internal View Content
         ob_start();
-        
-        // Handle Social & Professional Actions
-        if ( isset( $_POST['mtts_alumni_action'] ) && \MttsLms\Core\Security::check_request( 'mtts_alumni_social' ) ) {
+
+        // ---------------------------------------------------------------------------
+        // Handle form POST actions (page-reload path) — fully secured
+        // ---------------------------------------------------------------------------
+        if (
+            isset( $_POST['mtts_alumni_action'] ) &&
+            is_user_logged_in() &&
+            \MttsLms\Core\Security::check_request( 'mtts_alumni_social' )
+        ) {
             self::handle_social_actions( $user );
         }
 
         echo '<div class="mtts-dashboard-inner-container">';
 
-        // Router
         switch ( $view ) {
             case 'feed':
                 self::render_feed();
@@ -91,207 +97,369 @@ class AlumniController {
         echo '</div>'; // .mtts-dashboard-inner-container
         $lms_content = ob_get_clean();
 
-        // Render Scoped Layout
         $wrapper_class = 'lms-facebook-theme';
         ob_start();
         include MTTS_LMS_PATH . 'includes/Views/Shared/lms-layout.php';
         return ob_get_clean();
     }
 
+    // ---------------------------------------------------------------------------
+    // AJAX endpoint (wp_ajax_mtts_alumni_action)
+    // ---------------------------------------------------------------------------
+    public static function handle_ajax() {
+        // 1. Must be logged in
+        if ( ! is_user_logged_in() ) {
+            wp_send_json_error( array( 'message' => 'Unauthenticated.' ), 401 );
+        }
+
+        // 2. Verify nonce (sent as _wpnonce in every JS call)
+        if (
+            empty( $_POST['_wpnonce'] ) ||
+            ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'mtts_alumni_social' )
+        ) {
+            wp_send_json_error( array( 'message' => 'Security check failed.' ), 403 );
+        }
+
+        // 3. User must have the alumni or student capability (or be admin)
+        if (
+            ! current_user_can( 'read' ) // every registered user
+        ) {
+            wp_send_json_error( array( 'message' => 'Permission denied.' ), 403 );
+        }
+
+        $user = wp_get_current_user();
+        self::handle_social_actions( $user );
+        wp_die(); // handle_social_actions exits via wp_send_json_* in AJAX mode
+    }
+
+    // ---------------------------------------------------------------------------
+    // Central social-action dispatcher (POST & AJAX)
+    // ---------------------------------------------------------------------------
+    private static function handle_social_actions( $user ) {
+        // Deep-sanitize all $_POST data for NoSQL / operator injection protection
+        $post_data = \MttsLms\Core\Security::sanitize_deep( $_POST );
+        $action    = sanitize_key( $post_data['mtts_alumni_action'] ?? '' );
+
+        switch ( $action ) {
+
+            // ── Create Post ────────────────────────────────────────────────────
+            case 'create_post': {
+                // Must be own action — already covered by nonce
+                $content    = wp_kses_post( $_POST['content'] ?? '' );
+                $type       = sanitize_key( $_POST['type'] ?? 'social' );
+                $media_url  = '';
+                $media_type = 'text';
+
+                if ( ! empty( $_FILES['media_file']['name'] ) ) {
+                    require_once( ABSPATH . 'wp-admin/includes/file.php' );
+                    $uploaded   = $_FILES['media_file'];
+                    $is_video   = strpos( $uploaded['type'], 'video' ) !== false;
+                    $max_size   = $is_video ? 10 * 1024 * 1024 : 2 * 1024 * 1024;
+
+                    if ( $uploaded['size'] > $max_size ) {
+                        if ( wp_doing_ajax() ) { wp_send_json_error( 'File too large.' ); }
+                        wp_die( 'File too large.' );
+                    }
+
+                    // Whitelist allowed MIME types
+                    $allowed_types = array(
+                        'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+                        'video/mp4', 'video/quicktime', 'video/webm',
+                    );
+                    if ( ! in_array( $uploaded['type'], $allowed_types, true ) ) {
+                        if ( wp_doing_ajax() ) { wp_send_json_error( 'File type not allowed.' ); }
+                        wp_die( 'File type not allowed.' );
+                    }
+
+                    $movefile = wp_handle_upload( $uploaded, array( 'test_form' => false ) );
+                    if ( $movefile && ! isset( $movefile['error'] ) ) {
+                        $media_url  = $movefile['url'];
+                        $media_type = $is_video ? 'video' : 'image';
+                    }
+                }
+
+                if ( ! empty( $content ) || ! empty( $media_url ) ) {
+                    \MttsLms\Models\AlumniPost::create( array(
+                        'author_id'  => $user->ID,
+                        'content'    => $content,
+                        'type'       => $type,
+                        'media_url'  => $media_url,
+                        'media_type' => $media_type,
+                    ) );
+                }
+                if ( wp_doing_ajax() ) {
+                    wp_send_json_success( array( 'message' => 'Post created!' ) );
+                }
+                break;
+            }
+
+            // ── Update Profile ─────────────────────────────────────────────────
+            case 'update_profile': {
+                $update_data = array(
+                    'headline'            => sanitize_text_field( $_POST['headline']            ?? '' ),
+                    'current_ministry'    => sanitize_text_field( $_POST['current_ministry']    ?? '' ),
+                    'location'            => sanitize_text_field( $_POST['location']            ?? '' ),
+                    'interests'           => sanitize_text_field( $_POST['interests']           ?? '' ),
+                    'gifts_graces'        => sanitize_text_field( $_POST['gifts_graces']        ?? '' ),
+                    'ministry_milestones' => sanitize_textarea_field( $_POST['ministry_milestones'] ?? '' ),
+                    'bio'                 => wp_kses_post( $_POST['bio'] ?? '' ),
+                    'skills'              => sanitize_text_field( $_POST['skills']              ?? '' ),
+                    'experience'          => sanitize_textarea_field( $_POST['experience']      ?? '' ),
+                );
+
+                require_once( ABSPATH . 'wp-admin/includes/file.php' );
+                foreach ( array( 'profile_pic', 'banner_pic' ) as $field ) {
+                    if ( ! empty( $_FILES[ $field ]['name'] ) ) {
+                        // Whitelist image types only for profile pictures
+                        $allowed_img = array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' );
+                        if ( ! in_array( $_FILES[ $field ]['type'], $allowed_img, true ) ) {
+                            continue;
+                        }
+                        $movefile = wp_handle_upload( $_FILES[ $field ], array( 'test_form' => false ) );
+                        if ( $movefile && ! isset( $movefile['error'] ) ) {
+                            $db_field = ( $field === 'profile_pic' ) ? 'profile_picture_url' : 'banner_url';
+                            $update_data[ $db_field ] = esc_url_raw( $movefile['url'] );
+                        }
+                    }
+                }
+
+                \MttsLms\Models\AlumniProfile::update_profile( $user->ID, $update_data );
+                if ( wp_doing_ajax() ) {
+                    wp_send_json_success( array( 'message' => 'Profile updated!' ) );
+                }
+                break;
+            }
+
+            // ── Amen / Like Post ───────────────────────────────────────────────
+            case 'amen_post': {
+                $post_id = absint( $_POST['post_id'] ?? 0 );
+                if ( ! $post_id ) { wp_send_json_error( 'Invalid post.' ); }
+
+                // Prevent double-amen in session via transient
+                $transient_key = 'mtts_amen_' . $user->ID . '_' . $post_id;
+                if ( get_transient( $transient_key ) ) {
+                    if ( wp_doing_ajax() ) { wp_send_json_error( 'Already amened.' ); }
+                    break;
+                }
+                set_transient( $transient_key, 1, HOUR_IN_SECONDS );
+
+                \MttsLms\Models\AlumniPost::like_post( $post_id );
+                if ( wp_doing_ajax() ) { wp_send_json_success( array( 'label' => 'Amened' ) ); }
+                break;
+            }
+
+            // ── Amen Comment ───────────────────────────────────────────────────
+            case 'amen_comment': {
+                $comment_id = absint( $_POST['comment_id'] ?? 0 );
+                if ( ! $comment_id ) { wp_send_json_error( 'Invalid comment.' ); }
+                \MttsLms\Models\AlumniComment::like_comment( $comment_id );
+                if ( wp_doing_ajax() ) { wp_send_json_success(); }
+                break;
+            }
+
+            // ── Propagate / Share Post ─────────────────────────────────────────
+            case 'propagate_post': {
+                $post_id = absint( $_POST['post_id'] ?? 0 );
+                if ( ! $post_id ) { wp_send_json_error( 'Invalid post.' ); }
+                \MttsLms\Models\AlumniPost::propagate( $post_id, $user->ID );
+                if ( wp_doing_ajax() ) { wp_send_json_success( array( 'message' => 'Post Propagated!' ) ); }
+                break;
+            }
+
+            // ── Private Message ────────────────────────────────────────────────
+            case 'send_private_message': {
+                $receiver_id = absint( $_POST['receiver_id'] ?? 0 );
+                $body        = sanitize_textarea_field( $_POST['body'] ?? '' );
+
+                if ( ! $receiver_id || empty( $body ) ) {
+                    if ( wp_doing_ajax() ) { wp_send_json_error( 'Missing fields.' ); }
+                    break;
+                }
+                // Prevent sending to self
+                if ( $receiver_id === $user->ID ) {
+                    if ( wp_doing_ajax() ) { wp_send_json_error( 'Cannot message yourself.' ); }
+                    break;
+                }
+                // Verify receiver is a real user
+                if ( ! get_userdata( $receiver_id ) ) {
+                    if ( wp_doing_ajax() ) { wp_send_json_error( 'Unknown user.' ); }
+                    break;
+                }
+                \MttsLms\Models\Message::send( $user->ID, $receiver_id, 'Private Message', $body );
+                if ( wp_doing_ajax() ) { wp_send_json_success( array( 'message' => 'Encrypted message sent!' ) ); }
+                break;
+            }
+
+            // ── Create Group ───────────────────────────────────────────────────
+            case 'create_group': {
+                $name        = sanitize_text_field( $_POST['name']        ?? '' );
+                $description = sanitize_textarea_field( $_POST['description'] ?? '' );
+                $privacy     = in_array( $_POST['privacy'] ?? '', array( 'public', 'private' ), true )
+                               ? $_POST['privacy'] : 'public';
+
+                if ( empty( $name ) ) {
+                    if ( wp_doing_ajax() ) { wp_send_json_error( 'Group name required.' ); }
+                    break;
+                }
+                \MttsLms\Models\Group::create_group( array(
+                    'name'        => $name,
+                    'description' => $description,
+                    'privacy'     => $privacy,
+                    'creator_id'  => $user->ID,
+                ) );
+                if ( wp_doing_ajax() ) { wp_send_json_success( array( 'message' => 'Circle created!' ) ); }
+                break;
+            }
+
+            // ── Join Group ─────────────────────────────────────────────────────
+            case 'join_group': {
+                $group_id = absint( $_POST['group_id'] ?? 0 );
+                if ( ! $group_id ) { if ( wp_doing_ajax() ) { wp_send_json_error( 'Invalid group.' ); } break; }
+                \MttsLms\Models\GroupMember::add_member( $group_id, $user->ID );
+                if ( wp_doing_ajax() ) { wp_send_json_success( array( 'message' => 'Joined Group!' ) ); }
+                break;
+            }
+
+            // ── Send Connection Request ────────────────────────────────────────
+            case 'send_friend_request': {
+                $receiver_id = absint( $_POST['receiver_id'] ?? 0 );
+
+                if ( ! $receiver_id || $receiver_id === $user->ID ) {
+                    if ( wp_doing_ajax() ) { wp_send_json_error( 'Invalid request.' ); }
+                    break;
+                }
+                if ( ! get_userdata( $receiver_id ) ) {
+                    if ( wp_doing_ajax() ) { wp_send_json_error( 'Unknown user.' ); }
+                    break;
+                }
+                // Rate-limit: 20 requests per hour per sender
+                $rate_key = 'mtts_conn_rate_' . $user->ID;
+                $rate_val = (int) get_transient( $rate_key );
+                if ( $rate_val >= 20 ) {
+                    if ( wp_doing_ajax() ) { wp_send_json_error( 'Rate limit reached. Try again later.' ); }
+                    break;
+                }
+                set_transient( $rate_key, $rate_val + 1, HOUR_IN_SECONDS );
+
+                $result = \MttsLms\Models\FriendRequest::send_request( $user->ID, $receiver_id );
+                if ( wp_doing_ajax() ) {
+                    if ( $result ) {
+                        wp_send_json_success( array( 'message' => 'Request Sent!' ) );
+                    } else {
+                        wp_send_json_error( array( 'message' => 'Request already exists.' ) );
+                    }
+                }
+                break;
+            }
+
+            // ── Accept Connection Request ──────────────────────────────────────
+            case 'accept_friend_request': {
+                $request_id = absint( $_POST['request_id'] ?? 0 );
+                if ( ! $request_id ) { if ( wp_doing_ajax() ) { wp_send_json_error( 'Invalid.' ); } break; }
+
+                // Verify this request was sent TO the current user
+                global $wpdb;
+                $table = $wpdb->prefix . 'mtts_friend_requests';
+                $req   = $wpdb->get_row( $wpdb->prepare(
+                    "SELECT * FROM {$table} WHERE id = %d AND receiver_id = %d AND status = 'pending'",
+                    $request_id, $user->ID
+                ) );
+
+                if ( ! $req ) {
+                    if ( wp_doing_ajax() ) { wp_send_json_error( 'Request not found or already processed.' ); }
+                    break;
+                }
+
+                \MttsLms\Models\FriendRequest::accept_request( $request_id );
+                if ( wp_doing_ajax() ) { wp_send_json_success( array( 'message' => 'Request Accepted!' ) ); }
+                break;
+            }
+
+            // ── Reject / Decline Connection Request ───────────────────────────
+            case 'reject_friend_request': {
+                $request_id = absint( $_POST['request_id'] ?? 0 );
+                if ( ! $request_id ) { if ( wp_doing_ajax() ) { wp_send_json_error( 'Invalid.' ); } break; }
+
+                // Verify ownership — only receiver OR sender can reject
+                global $wpdb;
+                $table = $wpdb->prefix . 'mtts_friend_requests';
+                $req   = $wpdb->get_row( $wpdb->prepare(
+                    "SELECT * FROM {$table} WHERE id = %d AND (receiver_id = %d OR sender_id = %d) AND status = 'pending'",
+                    $request_id, $user->ID, $user->ID
+                ) );
+
+                if ( ! $req ) {
+                    if ( wp_doing_ajax() ) { wp_send_json_error( 'Request not found or already processed.' ); }
+                    break;
+                }
+
+                \MttsLms\Models\FriendRequest::reject_request( $request_id );
+                if ( wp_doing_ajax() ) { wp_send_json_success( array( 'message' => 'Request Declined.' ) ); }
+                break;
+            }
+
+            // ── Add Comment ────────────────────────────────────────────────────
+            case 'add_comment': {
+                $post_id = absint( $_POST['post_id'] ?? 0 );
+                $content = sanitize_textarea_field( $_POST['content'] ?? '' );
+
+                if ( ! $post_id || empty( $content ) ) {
+                    if ( wp_doing_ajax() ) { wp_send_json_error( 'Missing fields.' ); }
+                    break;
+                }
+                // Limit comment length
+                if ( mb_strlen( $content ) > 1000 ) {
+                    if ( wp_doing_ajax() ) { wp_send_json_error( 'Comment too long (max 1000 chars).' ); }
+                    break;
+                }
+
+                \MttsLms\Models\AlumniComment::create( array(
+                    'post_id'   => $post_id,
+                    'author_id' => $user->ID,
+                    'content'   => $content,
+                ) );
+                if ( wp_doing_ajax() ) { wp_send_json_success(); }
+                break;
+            }
+
+            default:
+                if ( wp_doing_ajax() ) { wp_send_json_error( 'Unknown action.' ); }
+                break;
+        }
+    }
+
+    // ---------------------------------------------------------------------------
+    // View renderers
+    // ---------------------------------------------------------------------------
     private static function render_overview( $user ) {
         include MTTS_LMS_PATH . 'includes/Views/Alumni/overview.php';
     }
 
     private static function render_directory() {
-        // Fetch all alumni
         $args = array(
             'role'    => 'mtts_alumni',
             'orderby' => 'user_registered',
-            'order'   => 'DESC'
+            'order'   => 'DESC',
         );
         $alumni_query = new \WP_User_Query( $args );
-        $alumni = $alumni_query->get_results();
-
+        $alumni       = $alumni_query->get_results();
         include MTTS_LMS_PATH . 'includes/Views/Alumni/directory.php';
     }
 
     private static function render_events() {
-        // Placeholder for events data
-        $events = [
-            (object)['title' => 'Annual Alumni Homecoming', 'date' => '2026-11-15', 'location' => 'Main Auditorium', 'description' => 'Join us for a time of reunion and fellowship.'],
-            (object)['title' => 'Leadership Seminar', 'date' => '2026-06-20', 'location' => 'Virtual (Zoom)', 'description' => 'Upskilling for ministry leadership in the digital age.']
-        ];
+        $events = array(
+            (object)array( 'title' => 'Annual Alumni Homecoming',  'date' => '2026-11-15', 'location' => 'Main Auditorium',  'description' => 'Join us for a time of reunion and fellowship.' ),
+            (object)array( 'title' => 'Leadership Seminar',        'date' => '2026-06-20', 'location' => 'Virtual (Zoom)',    'description' => 'Upskilling for ministry leadership in the digital age.' ),
+        );
         include MTTS_LMS_PATH . 'includes/Views/Alumni/events.php';
     }
 
     private static function render_jobs() {
-        // Placeholder for jobs data
-        $jobs = [
-            (object)['title' => 'Youth Pastor', 'org' => 'Grace Chapel, Lagos', 'type' => 'Full-time', 'posted' => '2 days ago'],
-            (object)['title' => 'Music Director', 'org' => 'City Faith Church', 'type' => 'Part-time', 'posted' => '1 week ago']
-        ];
+        $jobs = array(
+            (object)array( 'title' => 'Youth Pastor',    'org' => 'Grace Chapel, Lagos', 'type' => 'Full-time',  'posted' => '2 days ago' ),
+            (object)array( 'title' => 'Music Director',  'org' => 'City Faith Church',   'type' => 'Part-time',  'posted' => '1 week ago' ),
+        );
         include MTTS_LMS_PATH . 'includes/Views/Alumni/jobs.php';
-    }
-
-    private static function handle_social_actions( $user ) {
-        $action = sanitize_key( $_POST['mtts_alumni_action'] );
-
-        if ( $action === 'create_post' ) {
-            $content    = wp_kses_post( $_POST['content'] );
-            $type       = isset( $_POST['type'] ) ? sanitize_key( $_POST['type'] ) : 'social';
-            $media_url  = '';
-            $media_type = 'text';
-
-            // Handle Media Upload
-            if ( ! empty( $_FILES['media_file']['name'] ) ) {
-                require_once( ABSPATH . 'wp-admin/includes/file.php' );
-                $uploadedfile = $_FILES['media_file'];
-                $upload_overrides = array( 'test_form' => false );
-                
-                // Constraints
-                $max_size = strpos( $uploadedfile['type'], 'video' ) !== false ? 10 * 1024 * 1024 : 2 * 1024 * 1024;
-                if ( $uploadedfile['size'] > $max_size ) {
-                     if ( wp_doing_ajax() ) { wp_send_json_error( 'File too large' ); exit; }
-                     wp_die( 'File too large.' );
-                }
-
-                $movefile = wp_handle_upload( $uploadedfile, $upload_overrides );
-                if ( $movefile && ! isset( $movefile['error'] ) ) {
-                    $media_url  = $movefile['url'];
-                    $media_type = strpos( $uploadedfile['type'], 'video' ) !== false ? 'video' : 'image';
-                }
-            }
-            
-            if ( ! empty( $content ) || ! empty( $media_url ) ) {
-                \MttsLms\Models\AlumniPost::create( [
-                    'author_id'  => $user->ID,
-                    'content'    => $content,
-                    'type'       => $type,
-                    'media_url'  => $media_url,
-                    'media_type' => $media_type
-                ] );
-            }
-        } elseif ( $action === 'update_profile' ) {
-            $post_data = \MttsLms\Core\Security::sanitize_deep( $_POST );
-            $update_data = [
-                'headline'             => $post_data['headline'] ?? '',
-                'current_ministry'     => $post_data['current_ministry'] ?? '',
-                'location'             => $post_data['location'] ?? '',
-                'interests'            => $post_data['interests'] ?? '',
-                'gifts_graces'         => $post_data['gifts_graces'] ?? '',
-                'ministry_milestones'  => $post_data['ministry_milestones'] ?? '',
-                'bio'                  => wp_kses_post( $_POST['bio'] ?? '' ),
-                'skills'               => $post_data['skills'] ?? '',
-                'experience'           => $post_data['experience'] ?? '' 
-            ];
-
-            // Handle Multi-Media Profile Updates (Profile Pic & Banner)
-            require_once( ABSPATH . 'wp-admin/includes/file.php' );
-            foreach ( ['profile_pic', 'banner_pic'] as $field ) {
-                if ( ! empty( $_FILES[$field]['name'] ) ) {
-                    $movefile = wp_handle_upload( $_FILES[$field], array( 'test_form' => false ) );
-                    if ( $movefile && ! isset( $movefile['error'] ) ) {
-                        $db_field = ( $field === 'profile_pic' ) ? 'profile_picture_url' : 'banner_url';
-                        $update_data[$db_field] = $movefile['url'];
-                    }
-                }
-            }
-
-            \MttsLms\Models\AlumniProfile::update_profile( $user->ID, $update_data );
-        } elseif ( $action === 'amen_post' ) {
-            \MttsLms\Core\Security::verify_nonce( 'mtts_alumni_social' );
-            $post_id = intval( $_POST['post_id'] );
-            \MttsLms\Models\AlumniPost::like_post( $post_id );
-            if ( wp_doing_ajax() ) {
-                wp_send_json_success( array( 'label' => 'Amened' ) );
-                exit;
-            }
-        } elseif ( $action === 'amen_comment' ) {
-            \MttsLms\Core\Security::verify_nonce( 'mtts_alumni_social' );
-            $comment_id = intval( $_POST['comment_id'] );
-            \MttsLms\Models\AlumniComment::like_comment( $comment_id );
-            if ( wp_doing_ajax() ) {
-                wp_send_json_success();
-                exit;
-            }
-        }
- elseif ( $action === 'propagate_post' ) {
-            \MttsLms\Core\Security::verify_nonce( 'mtts_alumni_social' );
-            $post_id = intval( $_POST['post_id'] );
-            // Logic to share/propagate post (usually creates a new post with reference)
-            \MttsLms\Models\AlumniPost::propagate( $post_id, $user->ID );
-            if ( wp_doing_ajax() ) {
-                wp_send_json_success( array( 'message' => 'Post Propagated!' ) );
-                exit;
-            }
-        } elseif ( $action === 'send_private_message' ) {
-            \MttsLms\Core\Security::verify_nonce( 'mtts_alumni_social' );
-            $receiver_id = intval( $_POST['receiver_id'] );
-            $body        = sanitize_textarea_field( $_POST['body'] );
-            
-            if ( $receiver_id && ! empty( $body ) ) {
-                \MttsLms\Models\Message::send( $user->ID, $receiver_id, 'Private Message', $body );
-                if ( wp_doing_ajax() ) {
-                    wp_send_json_success( array( 'message' => 'Encrypted message sent!' ) );
-                    exit;
-                }
-            }
-        } elseif ( $action === 'create_group' ) {
-            \MttsLms\Core\Security::verify_nonce( 'mtts_alumni_social' );
-            \MttsLms\Models\Group::create_group( array(
-                'name'        => $_POST['name'],
-                'description' => $_POST['description'],
-                'privacy'     => $_POST['privacy'],
-                'creator_id'  => $user->ID
-            ) );
-        } elseif ( $action === 'join_group' ) {
-            \MttsLms\Core\Security::verify_nonce( 'mtts_alumni_social' );
-            $group_id = intval( $_POST['group_id'] );
-            \MttsLms\Models\GroupMember::add_member( $group_id, $user->ID );
-            if ( wp_doing_ajax() ) {
-                wp_send_json_success( array( 'message' => 'Joined Group!' ) );
-                exit;
-            }
-        } elseif ( $action === 'send_friend_request' ) {
-            \MttsLms\Core\Security::verify_nonce( 'mtts_alumni_social' );
-            $receiver_id = intval( $_POST['receiver_id'] );
-            \MttsLms\Models\FriendRequest::send_request( $user->ID, $receiver_id );
-            if ( wp_doing_ajax() ) {
-                wp_send_json_success( array( 'message' => 'Request Sent!' ) );
-                exit;
-            }
-        } elseif ( $action === 'accept_friend_request' ) {
-            \MttsLms\Core\Security::verify_nonce( 'mtts_alumni_social' );
-            $request_id = intval( $_POST['request_id'] );
-            \MttsLms\Models\FriendRequest::accept_request( $request_id );
-            if ( wp_doing_ajax() ) {
-                wp_send_json_success( array( 'message' => 'Request Accepted!' ) );
-                exit;
-            }
-        } elseif ( $action === 'reject_friend_request' ) {
-            \MttsLms\Core\Security::verify_nonce( 'mtts_alumni_social' );
-            $request_id = intval( $_POST['request_id'] );
-            \MttsLms\Models\FriendRequest::reject_request( $request_id );
-            if ( wp_doing_ajax() ) {
-                wp_send_json_success( array( 'message' => 'Request Rejected!' ) );
-                exit;
-            }
-        } elseif ( $action === 'add_comment' ) {
-            $post_id = intval( $_POST['post_id'] );
-            $content = sanitize_textarea_field( $_POST['content'] );
-            
-            if ( ! empty( $content ) && $post_id ) {
-                \MttsLms\Models\AlumniComment::create( [
-                    'post_id'   => $post_id,
-                    'author_id' => $user->ID,
-                    'content'   => $content
-                ] );
-            }
-            if ( wp_doing_ajax() ) {
-                wp_send_json_success();
-                exit;
-            }
-        }
     }
 
     private static function render_feed() {
@@ -310,12 +478,8 @@ class AlumniController {
     }
 
     private static function render_friends( $user ) {
-        // Get pending requests
         $pending_requests = \MttsLms\Models\FriendRequest::get_pending_requests( $user->ID );
-        
-        // Get friends list
-        $friends_data = \MttsLms\Models\FriendRequest::get_friends( $user->ID );
-        
+        $friends_data     = \MttsLms\Models\FriendRequest::get_friends( $user->ID );
         include MTTS_LMS_PATH . 'includes/Views/Alumni/friends.php';
     }
 }

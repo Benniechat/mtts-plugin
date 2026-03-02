@@ -425,3 +425,125 @@
 .mtts-audit-item:last-child {
     border-bottom: none;
 }
+
+/* ==========================================================================
+   Stitch UI Design System – Alumni Portal
+   Indigo Blue #0d27a5 brand palette
+   ========================================================================== */
+
+:root {
+    --stitch-blue:        #7c3aed;
+    --stitch-blue-mid:    #6d28d9;
+    --stitch-blue-light:  #f5f3ff;
+    --stitch-text:        #1e1b2e;
+    --stitch-muted:       #6b7280;
+    --stitch-border:      #e5e7eb;
+    --stitch-bg:          #f8f7fb;
+    --stitch-white:       #ffffff;
+    --stitch-card-radius: 12px;
+    --stitch-shadow:      0 1px 4px rgba(124,58,237,.09);
+}
+
+/* Shared Stitch Buttons */
+.stitch-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--stitch-blue);
+    color: #fff !important;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none !important;
+    transition: background .2s;
+    font-family: inherit;
+    line-height: 1.4;
+}
+.stitch-btn-primary:hover {
+    background: var(--stitch-blue-mid);
+    color: #fff !important;
+    text-decoration: none !important;
+    box-shadow: 0 4px 14px rgba(124,58,237,.35);
+}
+
+.stitch-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    color: var(--stitch-blue);
+    border: 1.5px solid var(--stitch-blue);
+    border-radius: 8px;
+    padding: 7px 16px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none !important;
+    transition: all .2s;
+    font-family: inherit;
+    line-height: 1.4;
+}
+.stitch-btn-outline:hover {
+    background: var(--stitch-blue-light);
+    color: var(--stitch-blue-mid);
+    text-decoration: none !important;
+}
+
+/* Stitch Card base */
+.stitch-card {
+    background: var(--stitch-white);
+    border-radius: var(--stitch-card-radius);
+    box-shadow: var(--stitch-shadow);
+    border: 1px solid var(--stitch-border);
+    overflow: hidden;
+}
+
+/* Stitch shared nav item */
+.stitch-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    text-decoration: none !important;
+    color: var(--stitch-text);
+    font-weight: 500;
+    font-size: 14px;
+    transition: background .15s;
+}
+.stitch-nav-item:hover,
+.stitch-nav-item.active {
+    background: var(--stitch-blue-light);
+    color: var(--stitch-blue);
+    text-decoration: none !important;
+}
+
+/* Stitch badge / tag */
+.stitch-badge,
+.stitch-tag {
+    display: inline-block;
+    background: var(--stitch-blue-light);
+    color: var(--stitch-blue);
+    border-radius: 100px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 2px;
+}
+
+/* Responsive utilities for stitch panels */
+@media (max-width: 1100px) {
+    .stitch-right-panel { display: none !important; }
+}
+@media (max-width: 768px) {
+    .stitch-left-panel,
+    .stitch-feed-layout  { display: block !important; }
+    .stitch-left-panel   { display: none !important; }
+    .stitch-feed-layout  {
+        grid-template-columns: 1fr !important;
+    }
+    .stitch-right-panel { display: none !important; }
+}

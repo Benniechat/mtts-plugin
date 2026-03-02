@@ -42,6 +42,15 @@ class AlumniPost extends Model {
         ) );
     }
 
+    public static function get_posts_by_user( $user_id, $limit = 10 ) {
+        global $wpdb;
+        $table = self::get_table_name();
+        return $wpdb->get_results( $wpdb->prepare(
+            "SELECT * FROM {$table} WHERE author_id = %d ORDER BY created_at DESC LIMIT %d",
+            $user_id, $limit
+        ) );
+    }
+
     public static function propagate( $post_id, $user_id ) {
         global $wpdb;
         $table = self::get_table_name();

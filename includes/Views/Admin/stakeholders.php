@@ -75,7 +75,9 @@
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>
-                <tr><td colspan="4">No stakeholders found.</td></tr>
+                <tr><td colspan="5">No stakeholders found.</td></tr>
+            <?php endif; ?>
+        </tbody>
     </table>
 </div>
 

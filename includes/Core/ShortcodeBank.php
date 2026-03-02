@@ -54,7 +54,7 @@ class ShortcodeBank {
      */
     public static function get_dynamic_forms() {
         global $wpdb;
-        $table = $wpdb->prefix . 'mtts_forms';
+        $table = \MttsLms\Models\Form::get_table_name();
         // Check if table exists
         if($wpdb->get_var("SHOW TABLES LIKE '$table'") != $table) return array();
         

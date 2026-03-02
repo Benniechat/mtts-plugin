@@ -10,20 +10,22 @@ class FormTemplates {
     public static function get_templates() {
         return array(
             'admission-form' => array(
-                'title' => 'Mountain Top Theological Seminary – Online Admission Application',
+                'title' => 'Mountain Top Theological Seminary – Online Application Form',
+                'type' => 'multistep',
+                'save_continue' => 1,
+                'requires_payment' => 1,
                 'fields' => array(
                     // STEP 1: Personal Information
-                    array( 'type' => 'section', 'label' => 'INSTRUCTIONS: Please complete all sections of this form accurately. Your Matric Number will be generated upon approval.', 'required' => false ),
                     array( 'type' => 'section', 'label' => 'STEP 1: Personal Information', 'required' => false ),
-                    array( 'type' => 'select', 'label' => 'Preferred Campus', 'options' => 'Lagos, Abuja, PHC, Ibadan, Kano, Enugu, Online', 'required' => true, 'id' => 'preferred_campus' ),
+                    array( 'type' => 'select', 'label' => 'Select Campus', 'options' => 'Lagos Campus, Ogun Campus, Abuja Campus, Port Harcourt Campus, Online/Distance Learning', 'required' => true, 'id' => 'selected_campus' ),
                     array( 'type' => 'select', 'label' => 'Title', 'options' => 'Dr., Mr., Mrs., Miss, Bro., Sis.', 'required' => true ),
-                    array( 'type' => 'text', 'label' => 'Surname', 'placeholder' => 'Enter surname', 'required' => true ),
-                    array( 'type' => 'text', 'label' => 'Forenames', 'placeholder' => 'Enter forenames', 'required' => true ),
+                    array( 'type' => 'text', 'label' => 'Surname', 'placeholder' => '', 'required' => true ),
+                    array( 'type' => 'text', 'label' => 'Forenames', 'placeholder' => '', 'required' => true ),
                     array( 'type' => 'date', 'label' => 'Date of Birth', 'placeholder' => '', 'required' => true, 'id' => 'dob' ),
                     array( 'type' => 'number', 'label' => 'Age', 'placeholder' => 'Auto-calculated', 'required' => false, 'readonly' => true, 'id' => 'age_field' ),
                     array( 'type' => 'select', 'label' => 'Sex', 'options' => 'Male, Female', 'required' => true ),
-                    array( 'type' => 'text', 'label' => 'Religion', 'placeholder' => 'e.g. Christian', 'required' => true ),
-                    array( 'type' => 'text', 'label' => 'Nationality', 'placeholder' => 'e.g. Nigerian', 'required' => true ),
+                    array( 'type' => 'text', 'label' => 'Religion', 'placeholder' => '', 'required' => true ),
+                    array( 'type' => 'text', 'label' => 'Nationality', 'placeholder' => '', 'required' => true ),
                     array( 'type' => 'text', 'label' => 'State of Origin', 'placeholder' => '', 'required' => true ),
                     array( 'type' => 'text', 'label' => 'Local Government Area', 'placeholder' => '', 'required' => false ),
                     array( 'type' => 'textarea', 'label' => 'Present Home Address', 'placeholder' => '', 'required' => true ),
@@ -34,7 +36,7 @@ class FormTemplates {
                     array( 'type' => 'text', 'label' => 'Full Name of Spouse', 'placeholder' => '', 'required' => false, 'condition' => 'marital_status==Married' ),
                     array( 'type' => 'tel', 'label' => 'Spouse Phone Number', 'placeholder' => '', 'required' => false, 'condition' => 'marital_status==Married' ),
                     array( 'type' => 'text', 'label' => 'Profession/Occupation', 'placeholder' => '', 'required' => false ),
-                    array( 'type' => 'file', 'label' => 'Passport Photograph Upload', 'placeholder' => '', 'required' => true ),
+                    array( 'type' => 'file', 'label' => 'Passport Photograph', 'placeholder' => '', 'required' => true ),
 
                     // STEP 2: Church & Spiritual Background
                     array( 'type' => 'section', 'label' => 'STEP 2: Church & Spiritual Background', 'required' => false ),
@@ -48,21 +50,21 @@ class FormTemplates {
 
                     // STEP 3: Program & Motivation
                     array( 'type' => 'section', 'label' => 'STEP 3: Program & Motivation', 'required' => false ),
-                    array( 'type' => 'radio', 'label' => 'Program of Choice', 'options' => 'Certificate, Diploma, Bachelor, Masters of Divinity, PhD', 'required' => true ),
+                    array( 'type' => 'radio', 'label' => 'Program of Choice', 'options' => 'Certificate, Diploma, Bachelor', 'required' => true ),
                     array( 'type' => 'textarea', 'label' => 'State Your Reasons for Applying', 'placeholder' => '', 'required' => true ),
                     array( 'type' => 'textarea', 'label' => 'State Your Spiritual Gifts and Spiritual Inspiration', 'placeholder' => '', 'required' => true ),
 
                     // STEP 4: Academic Qualifications
                     array( 'type' => 'section', 'label' => 'STEP 4: Academic Qualifications', 'required' => false ),
-                    array( 'type' => 'repeater', 'label' => 'Academic History', 'required' => true, 'fields' => 'School Attended (text), Qualification Obtained (text), Date (text), Upload Credential (file)' ),
+                    array( 'type' => 'repeater', 'label' => 'Academic History', 'required' => true, 'fields' => 'School Attended(text), Qualification Obtained(text), Date(text), Upload Credential(file)' ),
 
                     // STEP 5: Professional Qualifications / Employment Background
                     array( 'type' => 'section', 'label' => 'STEP 5: Professional Qualifications', 'required' => false ),
-                    array( 'type' => 'repeater', 'label' => 'Employment History', 'required' => false, 'fields' => 'Employment Organization (text), Position Held (text), Date From (date), Date To (date)' ),
+                    array( 'type' => 'repeater', 'label' => 'Employment History', 'required' => false, 'fields' => 'Employment Organization(text), Position Held(text), Date From(date), Date To(date)' ),
 
                     // STEP 6: Referees
                     array( 'type' => 'section', 'label' => 'STEP 6: Referees', 'required' => false ),
-                    array( 'type' => 'section', 'label' => 'Referee 1', 'required' => false ),
+                    array( 'type' => 'html', 'label' => '', 'required' => false, 'content' => '<strong>Referee 1</strong>' ),
                     array( 'type' => 'text', 'label' => 'Referee 1 Name', 'placeholder' => '', 'required' => true ),
                     array( 'type' => 'textarea', 'label' => 'Referee 1 Address', 'placeholder' => '', 'required' => true ),
                     array( 'type' => 'tel', 'label' => 'Referee 1 Phone', 'placeholder' => '', 'required' => true ),
@@ -70,7 +72,7 @@ class FormTemplates {
                     array( 'type' => 'text', 'label' => 'Referee 1 Status/Position', 'placeholder' => '', 'required' => true ),
                     array( 'type' => 'textarea', 'label' => 'Referee 1 Recommendation', 'placeholder' => '', 'required' => true ),
                     
-                    array( 'type' => 'section', 'label' => 'Referee 2', 'required' => false ),
+                    array( 'type' => 'html', 'label' => '', 'required' => false, 'content' => '<br><strong>Referee 2</strong>' ),
                     array( 'type' => 'text', 'label' => 'Referee 2 Name', 'placeholder' => '', 'required' => true ),
                     array( 'type' => 'textarea', 'label' => 'Referee 2 Address', 'placeholder' => '', 'required' => true ),
                     array( 'type' => 'tel', 'label' => 'Referee 2 Phone', 'placeholder' => '', 'required' => true ),
@@ -87,7 +89,7 @@ class FormTemplates {
 
                     // STEP 8: Declaration & Submission
                     array( 'type' => 'section', 'label' => 'STEP 8: Declaration & Submission', 'required' => false ),
-                    array( 'type' => 'checkbox', 'label' => 'I hereby declare that all information provided is true and correct and I agree to abide by the rules and regulations of Mountain Top Theological Seminary.', 'options' => 'I Agree', 'required' => true ),
+                    array( 'type' => 'checkbox', 'label' => 'Declaration', 'options' => 'I hereby declare that all information provided is true and correct and I agree to abide by the rules and regulations of Mountain Top Theological Seminary.', 'required' => true ),
                     array( 'type' => 'text', 'label' => 'Full Name (Declaration)', 'placeholder' => '', 'required' => true ),
                     array( 'type' => 'signature', 'label' => 'Digital Signature', 'placeholder' => '', 'required' => true ),
                     array( 'type' => 'hidden', 'label' => 'Submission Date', 'required' => false, 'id' => 'current_date' ),

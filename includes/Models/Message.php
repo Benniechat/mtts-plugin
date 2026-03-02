@@ -34,17 +34,6 @@ class Message extends Model {
         ) );
     }
 
-    /**
-     * Get a thread: original message + all replies
-     */
-    public static function get_thread( $message_id ) {
-        global $wpdb;
-        $table = self::get_table_name();
-        return $wpdb->get_results( $wpdb->prepare(
-            "SELECT * FROM {$table} WHERE id = %d OR parent_id = %d ORDER BY created_at ASC",
-            $message_id, $message_id
-        ) );
-    }
 
     /**
      * Count unread messages for a user

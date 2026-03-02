@@ -618,4 +618,37 @@ class Migration {
             $wpdb->query( "ALTER TABLE `$table_apps` ADD COLUMN `gateway` varchar(50) DEFAULT 'none' AFTER `payment_status`" );
         }
     }
+    
+    public static function seed_default_forms() {
+        global $wpdb;
+        $table_forms = $wpdb->prefix . 'mtts_forms';
+        
+        $admission_form = $wpdb->get_row( "SELECT id FROM {$table_forms} WHERE form_slug = 'admission-form'" );
+        if ( ! $admission_form ) {
+            $form_data = [
+                'type' => 'standard',
+                'save_continue' => 0,
+                'requires_payment' => 1,
+                'payment_amount' => 5000,
+                'fields' => [
+                    ['type' => 'name', 'label' => 'Full Name', 'required' => true],
+                    ['type' => 'email', 'label' => 'Email Address', 'required' => true],
+                    ['type' => 'tel', 'label' => 'Phone Number', 'required' => true],
+                    ['type' => 'datetime', 'label' => 'Date of Birth', 'required' => true],
+                    ['type' => 'select', 'label' => 'Gender', 'required' => true, 'options' => 'Male,Female'],
+                    ['type' => 'address', 'label' => 'Address', 'required' => false],
+                    ['type' => 'text', 'label' => 'Denomination', 'required' => false],
+                    ['type' => 'file', 'label' => 'Passport Photograph', 'required' => true],
+                    ['type' => 'file', 'label' => 'Credentials (PDF)', 'required' => false]
+                ]
+            ];
+            
+            $wpdb->insert( $table_forms, [
+                'title' => 'Student Admission Form',
+                'form_slug' => 'admission-form',
+                'form_data' => wp_json_encode( $form_data ),
+                'is_active' => 1
+            ] );
+        }
+    }
 }

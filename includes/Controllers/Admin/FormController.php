@@ -18,6 +18,8 @@ class FormController {
         add_action( 'wp_ajax_mtts_verify_form_payment', array( __CLASS__, 'ajax_verify_form_payment' ) );
         add_action( 'wp_ajax_nopriv_mtts_verify_form_payment', array( __CLASS__, 'ajax_verify_form_payment' ) );
 
+        add_action( 'wp_ajax_mtts_preview_form', array( __CLASS__, 'ajax_preview_form' ) );
+
         // Initialize Entry Controller
         FormEntryController::init();
     }
@@ -25,6 +27,16 @@ class FormController {
     public static function render() {
         $action = isset( $_GET['action'] ) ? sanitize_key( $_GET['action'] ) : 'list';
         $id     = isset( $_GET['id'] ) ? intval( $_GET['id'] ) : 0;
+
+        if ( 'delete' === $action && $id ) {
+            if ( isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'mtts_delete_form_' . $id) ) {
+                if ( current_user_can('manage_options') ) {
+                    Form::delete( $id );
+                    wp_redirect( admin_url( 'admin.php?page=mtts-form-builder&deleted=1' ) );
+                    exit;
+                }
+            }
+        }
 
         if ( 'edit' === $action || 'new' === $action ) {
             self::render_editor( $id );
@@ -45,16 +57,23 @@ class FormController {
         if ( isset( $_POST['mtts_save_form'] ) && check_admin_referer( 'mtts_save_form' ) ) {
             $title    = sanitize_text_field( $_POST['form_title'] );
             $slug     = sanitize_title( $_POST['form_slug'] );
-            $data     = $_POST['form_data']; 
+            if ( empty( $slug ) ) {
+                $slug = sanitize_title( $title );
+            }
+            $data     = wp_unslash( $_POST['form_data'] ); 
             $deadline = !empty($_POST['submission_deadline']) ? sanitize_text_field($_POST['submission_deadline']) : null;
 
             if ( $id ) {
-                $wpdb_update = Form::update_record( $id, array(
+                $wpdb_update = Form::update( $id, array(
                     'title'               => $title,
                     'form_slug'           => $slug,
                     'form_data'           => $data,
                     'submission_deadline' => $deadline
                 ) );
+                if ( false === $wpdb_update ) {
+                    global $wpdb;
+                    wp_die( 'Database Error during update: ' . $wpdb->last_error );
+                }
             } else {
                 $wpdb_insert = Form::create( array(
                     'title'               => $title,
@@ -62,6 +81,10 @@ class FormController {
                     'form_data'           => $data,
                     'submission_deadline' => $deadline
                 ) );
+                if ( ! $wpdb_insert ) {
+                    global $wpdb;
+                    wp_die( 'Database Error during insert: ' . $wpdb->last_error );
+                }
                 $id = $wpdb_insert;
             }
             
@@ -176,5 +199,37 @@ class FormController {
             'message' => 'Payment verified successfully.',
             'category' => $category
         ) );
+    }
+
+    public static function ajax_preview_form() {
+        check_ajax_referer( 'mtts_form_builder_nonce', 'nonce' );
+        
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => 'Unauthorized' ) );
+        }
+
+        $form_data_raw = wp_unslash( $_POST['form_data'] ?? '' );
+        $title         = sanitize_text_field( $_POST['title'] ?? 'Preview Form' );
+
+        // Create a mock Form model object in memory
+        $mock_form = new \stdClass();
+        $mock_form->id = 0; // 0 ensures it doesn't conflict with real db forms
+        $mock_form->title = $title;
+        $mock_form->form_slug = 'preview-form';
+        $mock_form->form_data = $form_data_raw;
+        $mock_form->submission_deadline = null;
+
+        // Ensure FormShortcode expects stdClass or handle it
+        if ( ! class_exists( '\MttsLms\Core\FormShortcode' ) ) {
+            wp_send_json_error( array( 'message' => 'Renderer not found.' ) );
+        }
+
+        // We bypass the shortcode attribute parsing and directly call the rendering logic
+        // For preview purposes, we simulate Super Admin bypassing payment so we see the full form.
+        ob_start();
+        echo \MttsLms\Core\FormShortcode::render_form_bypass( $mock_form );
+        $html = ob_get_clean();
+
+        wp_send_json_success( array( 'html' => $html ) );
     }
 }

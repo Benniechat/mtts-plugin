@@ -70,53 +70,53 @@ if ( in_array('mtts_campus_coordinator', $roles) || current_user_can('manage_opt
 }
 ?>
 
-<button class="mtts-mobile-toggle"><span class="dashicons dashicons-menu"></span> Menu</button>
-<div class="mtts-sidebar">
-    <button class="mtts-sidebar-close">&times;</button>
-
-    <div class="mtts-student-info">
-        <div class="mtts-avatar">
-            <img src="<?php echo get_avatar_url( $user->ID ); ?>" alt="Profile">
-        </div>
-        <h4><?php echo esc_html( $user->display_name ); ?></h4>
-        <small style="color:#a78bfa;"><?php echo esc_html( implode(', ', array_map('ucwords', str_replace('mtts_', '', $roles)))); ?></small>
+<!-- Left Sidebar Column: LinkedIn Style -->
+<div class="lms-sidebar-card">
+    <div class="lms-side-user-info">
+        <img src="<?php echo get_avatar_url( $user->ID ); ?>" alt="Profile">
+        <h3 style="font-size:16px; margin: 4px 0;">Staff Portal</h3>
+        <small style="color:var(--lms-text-sub); display:block; font-size:12px;"><?php echo esc_html( implode(', ', array_map('ucwords', str_replace('mtts_', '', $roles)))); ?></small>
     </div>
 
-    <nav class="mtts-nav">
-        <ul>
-            <?php foreach ($nav_links as $key => $portal): ?>
-                <?php
-                $is_active_portal = (strpos($current_slug, $key) !== false);
-                $active_views = $is_active_portal ? $portal['views'] : [];
-                ?>
-                <li>
-                    <a href="<?php echo esc_url($portal['url']); ?>" style="<?php echo $is_active_portal ? 'color:#a78bfa;font-weight:700;' : ''; ?>">
-                        <span class="dashicons <?php echo $portal['icon']; ?>"></span> <?php echo $portal['label']; ?>
-                    </a>
-                    <?php if ($is_active_portal && !empty($active_views)): ?>
-                    <ul style="padding-left:15px; margin-top:5px;">
-                        <?php foreach ($active_views as $v => $label): ?>
-                        <li>
-                            <a href="?view=<?php echo $v; ?>" class="<?php echo $view === $v ? 'active' : ''; ?>" style="font-size:0.9em;">
-                                <?php echo $label; ?>
-                            </a>
-                        </li>
-                        <?php endforeach; ?>
-                    </ul>
-                    <?php endif; ?>
-                </li>
-            <?php endforeach; ?>
-
-            <li style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;">
-                <a href="<?php echo esc_url(home_url('/alumni-network')); ?>" style="color:#a78bfa; font-weight:600;">
-                    <span class="dashicons dashicons-groups"></span> Alumni Network
-                </a>
-            </li>
+    <ul class="lms-side-nav-list">
+        <?php foreach ($nav_links as $key => $portal): ?>
+            <?php
+            $is_active_portal = (strpos($current_slug, $key) !== false);
+            $active_views = $is_active_portal ? $portal['views'] : [];
+            ?>
             <li>
-                <a href="<?php echo wp_logout_url(home_url()); ?>">
-                    <span class="dashicons dashicons-exit"></span> Logout
+                <a href="<?php echo esc_url($portal['url']); ?>" class="<?php echo $is_active_portal ? 'active' : ''; ?>">
+                    <span class="dashicons <?php echo $portal['icon']; ?>"></span> <?php echo $portal['label']; ?>
                 </a>
+                <?php if ($is_active_portal && !empty($active_views)): ?>
+                <ul style="padding-left:15px; list-style:none; margin: 5px 0 10px 10px; border-left: 1px solid var(--lms-border);">
+                    <?php foreach ($active_views as $v => $label): ?>
+                    <li>
+                        <a href="?view=<?php echo $v; ?>" class="<?php echo $view === $v ? 'active' : ''; ?>" style="font-size:13px; padding: 6px 12px; font-weight: normal;">
+                            <?php echo $label; ?>
+                        </a>
+                    </li>
+                    <?php endforeach; ?>
+                </ul>
+                <?php endif; ?>
             </li>
-        </ul>
-    </nav>
+        <?php endforeach; ?>
+    </ul>
 </div>
+
+<!-- Community/System Card -->
+<div class="lms-sidebar-card" style="margin-top: 12px;">
+    <ul class="lms-side-nav-list">
+        <li>
+            <a href="<?php echo esc_url(home_url('/alumni-network')); ?>" style="color:var(--lms-purple);">
+                <span class="dashicons dashicons-groups"></span> Alumni Network
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo wp_logout_url(home_url()); ?>" style="color:var(--mfm-danger);">
+                <span class="dashicons dashicons-exit"></span> Logout
+            </a>
+        </li>
+    </ul>
+</div>
+

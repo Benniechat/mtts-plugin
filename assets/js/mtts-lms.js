@@ -1,39 +1,29 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const sidebar = document.querySelector('.mtts-sidebar');
-    const toggleBtn = document.querySelector('.mtts-mobile-toggle');
-    const closeBtn = document.querySelector('.mtts-sidebar-close');
-    const overlay = document.createElement('div');
-    overlay.className = 'mtts-sidebar-overlay';
+    const sidebar = document.querySelector('.lms-sidebar-column');
+    const trigger = document.getElementById('lmsSideTrigger');
     
-    const wrapper = document.querySelector('.mtts-dashboard-wrapper');
-    if (wrapper) {
-        wrapper.appendChild(overlay);
-    }
+    if (!sidebar || !trigger) return;
 
-    function toggleSidebar() {
+    // Create Overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'lms-drawer-overlay';
+    document.querySelector('.mtts-lms-wrapper').appendChild(overlay);
+
+    function toggleDrawer() {
         sidebar.classList.toggle('active');
         overlay.classList.toggle('active');
-        document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        document.body.classList.toggle('lms-no-scroll');
     }
 
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', toggleSidebar);
-    }
+    trigger.addEventListener('click', toggleDrawer);
+    overlay.addEventListener('click', toggleDrawer);
 
-    if (closeBtn) {
-        closeBtn.addEventListener('click', toggleSidebar);
-    }
-
-    if (overlay) {
-        overlay.addEventListener('click', toggleSidebar);
-    }
-
-    // Close sidebar when clicking on a nav link (for mobile)
-    const navLinks = document.querySelectorAll('.mtts-nav a');
+    // Close when clicking nav links on mobile
+    const navLinks = sidebar.querySelectorAll('a');
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
-            if (window.innerWidth <= 991) {
-                toggleSidebar();
+            if (window.innerWidth <= 768) {
+                toggleDrawer();
             }
         });
     });

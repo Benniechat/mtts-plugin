@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define Plugin Constants
-define( 'MTTS_LMS_VERSION', '1.0.0' );
+define( 'MTTS_LMS_VERSION', '1.3.0' );
 define( 'MTTS_LMS_PATH', plugin_dir_path( __FILE__ ) );
 define( 'MTTS_LMS_URL', plugin_dir_url( __FILE__ ) );
 define( 'MTTS_LMS_FILE', __FILE__ );
@@ -57,6 +57,7 @@ register_activation_hook( __FILE__, 'mtts_lms_activate' );
 function mtts_lms_activate() {
     if ( class_exists( 'MttsLms\\Core\\Database\\Migration' ) ) {
         \MttsLms\Core\Database\Migration::run();
+        \MttsLms\Core\Database\Migration::seed_default_forms();
     }
 }
 

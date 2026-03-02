@@ -50,11 +50,34 @@ class StudentDashboardController {
         $view = isset( $_GET['view'] ) ? sanitize_key( $_GET['view'] ) : 'overview';
 
         ob_start();
-        
-        echo '<div class="mtts-dashboard-wrapper">';
-        include MTTS_LMS_PATH . 'includes/Views/Student/sidebar.php';
-        echo '<div class="mtts-dashboard-content">';
-        
+
+        $titles = array(
+            'overview'    => array('title' => 'Student Dashboard', 'subtitle' => 'Welcome back to your academic portal.'),
+            'profile'     => array('title' => 'My Profile',         'subtitle' => 'Manage your personal and academic information.'),
+            'courses'     => array('title' => 'My Courses',         'subtitle' => 'View and register for your academic courses.'),
+            'payments'    => array('title' => 'Payments & Fees',    'subtitle' => 'Track your financial records and make payments.'),
+            'exams'       => array('title' => 'Exam Center',        'subtitle' => 'Take your scheduled examinations here.'),
+            'results'     => array('title' => 'Exam Results',       'subtitle' => 'View your academic performance and grades.'),
+            'wallet'      => array('title' => 'My Wallet',         'subtitle' => 'Manage your digital credits and transactions.'),
+            'calendar'    => array('title' => 'Academic Calendar',   'subtitle' => 'Stay updated with important school dates.'),
+            'assignments' => array('title' => 'Assignments',       'subtitle' => 'Submit and track your coursework.'),
+            'inbox'       => array('title' => 'Message Center',     'subtitle' => 'Communicate with lecturers and administration.'),
+            'forum'       => array('title' => 'Community Forum',    'subtitle' => 'Engage in discussions with your fellow students.'),
+            'resources'   => array('title' => 'Academic Resources', 'subtitle' => 'Access study materials and library resources.'),
+            'badges'      => array('title' => 'My Achievements',   'subtitle' => 'View your earned badges and rewards.'),
+            'portfolio'   => array('title' => 'Academic Portfolio', 'subtitle' => 'Showcase your best academic work.'),
+            'change-password' => array('title' => 'Security Update', 'subtitle' => 'Please update your password to continue.'),
+        );
+
+        $current_title = isset($titles[$view]) ? $titles[$view] : array('title' => ucfirst($view), 'subtitle' => '');
+        $page_title    = $current_title['title'];
+        $page_subtitle = $current_title['subtitle'];
+
+        // Prepare Sidebar
+        $sidebar_path = MTTS_LMS_PATH . 'includes/Views/Student/sidebar.php';
+
+        // Capture Internal View Content
+        ob_start();
         switch ( $view ) {
             case 'profile':
                 include MTTS_LMS_PATH . 'includes/Views/Student/profile.php';
@@ -108,10 +131,11 @@ class StudentDashboardController {
                 include MTTS_LMS_PATH . 'includes/Views/Student/overview.php';
                 break;
         }
-        
-        echo '</div>'; // .mtts-dashboard-content
-        echo '</div>'; // .mtts-dashboard-wrapper
+        $lms_content = ob_get_clean();
 
+        // Render Scoped Layout
+        ob_start();
+        include MTTS_LMS_PATH . 'includes/Views/Shared/lms-layout.php';
         return ob_get_clean();
     }
 

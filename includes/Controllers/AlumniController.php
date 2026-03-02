@@ -20,44 +20,35 @@ class AlumniController {
         $view = isset( $_GET['view'] ) ? sanitize_key( $_GET['view'] ) : 'feed';
 
         ob_start();
-        echo '<div class="mtts-dashboard-wrapper">';
+
+        $titles = array(
+            'overview'     => array('title' => 'Connect+ Overview',          'subtitle' => 'Global view of the seminary community.'),
+            'feed'         => array('title' => 'MTTS Connect+',              'subtitle' => 'Stay connected with the latest ministry activities.'),
+            'directory'    => array('title' => 'Connect+ Directory',         'subtitle' => 'Browse and connect with fellow community members.'),
+            'profile'      => array('title' => 'Covenant Identity',          'subtitle' => 'View your public ministerial profile.'),
+            'profile-edit' => array('title' => 'Refine Identity',            'subtitle' => 'Manage your profile and personal details.'),
+            'messenger'    => array('title' => 'Direct Propagation',         'subtitle' => 'Secure communication for ministry collaboration.'),
+            'groups'       => array('title' => 'Ministry Circles',           'subtitle' => 'Join and engage in specialized ministry groups.'),
+            'friends'      => array('title' => 'Fellowship Circle',          'subtitle' => 'Manage your network of close ministry colleagues.'),
+            'events'       => array('title' => 'Academic & Alumni Calendar', 'subtitle' => 'Stay updated with upcoming school and network events.'),
+            'jobs'         => array('title' => 'Ministry Opportunities',     'subtitle' => 'Explore vocational and ministry positions.'),
+        );
+
+        $current_title = isset($titles[$view]) ? $titles[$view] : array('title' => 'MTTS Connect+', 'subtitle' => '');
+        $page_title    = $current_title['title'];
+        $page_subtitle = $current_title['subtitle'];
+
+        // Prepare Sidebar
+        $sidebar_path = MTTS_LMS_PATH . 'includes/Views/Alumni/sidebar.php';
+
+        // Capture Internal View Content
+        ob_start();
         
-        // GLOBAL TOP BAR - Facebook/LinkedIn Style
-        $view_titles = [
-            'overview' => 'Network Overview',
-            'feed' => 'Ministerial Nexus',
-            'directory' => 'Alumni Directory',
-            'profile' => 'Professional Portal',
-            'profile-edit' => 'Edit Covenant Identity',
-            'messenger' => 'Propagate Messenger',
-            'groups' => 'Ministry Circles',
-            'friends' => 'Fellowship Circle',
-            'events' => 'Academic & Alumni Calendar',
-            'jobs' => 'Ministry Opportunities'
-        ];
-        $current_title = isset($view_titles[$view]) ? $view_titles[$view] : 'Alumni Hub';
-
-        echo '<div class="mtts-dashboard-sticky-header koinonia-glass">';
-        echo '  <div class="mtts-header-left">';
-        echo '      <div class="mtts-school-logo-mini">';
-        echo '          <span class="dashicons dashicons-welcome-learn-more"></span>';
-        echo '      </div>';
-        echo '      <h2 class="spiritual-gradient-text" style="font-size:1.2rem; margin:0;">' . esc_html($current_title) . '</h2>';
-        echo '  </div>';
-        echo '  <div class="mtts-header-right">';
-        echo '      <span class="mtts-current-user">Koinonia: ' . esc_html($user->display_name) . '</span>';
-        echo '  </div>';
-        echo '</div>';
-
-        // Sidebar
-        include MTTS_LMS_PATH . 'includes/Views/Alumni/sidebar.php';
-
         // Handle Social & Professional Actions
         if ( isset( $_POST['mtts_alumni_action'] ) && \MttsLms\Core\Security::check_request( 'mtts_alumni_social' ) ) {
             self::handle_social_actions( $user );
         }
 
-        echo '<div class="mtts-dashboard-content">';
         echo '<div class="mtts-dashboard-inner-container">';
 
         // Router
@@ -97,8 +88,13 @@ class AlumniController {
                 break;
         }
 
-        echo '</div>'; // End inner container
-        echo '</div></div>';
+        echo '</div>'; // .mtts-dashboard-inner-container
+        $lms_content = ob_get_clean();
+
+        // Render Scoped Layout
+        $wrapper_class = 'lms-facebook-theme';
+        ob_start();
+        include MTTS_LMS_PATH . 'includes/Views/Shared/lms-layout.php';
         return ob_get_clean();
     }
 

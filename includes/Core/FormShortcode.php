@@ -25,6 +25,15 @@ class FormShortcode {
             return '<p>Form not found.</p>';
         }
 
+        return self::render_form_instance( $form );
+    }
+
+    public static function render_form_bypass( $form ) {
+        return self::render_form_instance( $form, true );
+    }
+
+    private static function render_form_instance( $form, $is_preview = false ) {
+
         // Check Deadline
         if ( ! empty( $form->submission_deadline ) ) {
             $deadline = strtotime( $form->submission_deadline );
@@ -39,31 +48,45 @@ class FormShortcode {
             self::handle_submission( $form );
         }
 
-        // --- PAYMENT GATEKEEPING ---
-        if ( ! session_id() ) session_start();
-        $paid_category = $_SESSION['mtts_form_paid_' . $form->id] ?? null;
-
-        if ( ! $paid_category ) {
-            return self::render_payment_selector( $form );
-        }
-
         $form_data     = json_decode( $form->form_data, true );
         $fields        = isset( $form_data['fields'] ) ? $form_data['fields'] : array();
+        $requires_pay  = ! empty( $form_data['requires_payment'] );
+        $pay_amount    = ! empty( $form_data['payment_amount'] ) ? floatval( $form_data['payment_amount'] ) : 0;
         
-        // Filter Program of Choice based on Paid Category
-        foreach ( $fields as &$field ) {
-            if ( 'Program of Choice' === $field['label'] ) {
-                $options = explode( ',', $field['options'] );
-                if ( 'undergraduate' === $paid_category ) {
-                    $filtered = array_filter( $options, function($opt) {
-                        return in_array( trim($opt), ['Certificate', 'Diploma', 'Bachelor'] );
-                    });
-                } else {
-                    $filtered = array_filter( $options, function($opt) {
-                        return in_array( trim($opt), ['Masters of Divinity', 'PhD'] );
-                    });
+        // Super Admin testing bypass check
+        $is_super_admin = current_user_can( 'manage_options' );
+        if ( $is_super_admin ) {
+            $requires_pay = false; 
+        }
+
+        // --- PAYMENT GATEKEEPING ---
+        if ( $requires_pay && $pay_amount > 0 ) {
+            if ( ! session_id() ) session_start();
+            $paid_category = $_SESSION['mtts_form_paid_' . $form->id] ?? null;
+
+            if ( ! $paid_category ) {
+                return self::render_payment_selector( $form, $pay_amount );
+            }
+            
+            // Filter Program of Choice based on Paid Category (for Admission Form backward compatibility)
+            foreach ( $fields as &$field ) {
+                if ( 'Program of Choice' === $field['label'] || 'program_id' === $field['name'] || stripos($field['label'], 'Program') !== false ) {
+                    if ( !empty($field['options']) ) {
+                        $options = explode( ',', $field['options'] );
+                        if ( 'undergraduate' === $paid_category ) {
+                            $filtered = array_filter( $options, function($opt) {
+                                return in_array( trim($opt), ['Certificate', 'Diploma', 'Bachelor'] );
+                            });
+                            // fallback if filtering wiped out everything
+                            if (!empty($filtered)) $field['options'] = implode( ', ', $filtered );
+                        } elseif ( 'postgraduate' === $paid_category ) {
+                            $filtered = array_filter( $options, function($opt) {
+                                return in_array( trim($opt), ['Masters of Divinity', 'PhD'] );
+                            });
+                             if (!empty($filtered)) $field['options'] = implode( ', ', $filtered );
+                        }
+                    }
                 }
-                $field['options'] = implode( ', ', $filtered );
             }
         }
 
@@ -324,20 +347,42 @@ class FormShortcode {
             if (nextBtn) {
                 nextBtn.addEventListener('click', () => {
                     const currentStepEl = steps[currentStep];
-                    const inputs = currentStepEl.querySelectorAll('[required]');
+                    const inputs = currentStepEl.querySelectorAll('input, select, textarea');
                     let valid = true;
+                    
+                    // Reset errors
                     inputs.forEach(input => {
-                        if (!input.value) {
-                            valid = false;
-                            input.style.borderColor = 'red';
-                        } else {
-                            input.style.borderColor = '#ddd';
+                        input.style.borderColor = '#ddd';
+                        if (input.parentElement) input.parentElement.style.color = '';
+                    });
+
+                    inputs.forEach(input => {
+                        // Only validate visible, required fields
+                        if (input.hasAttribute('required') && input.closest('.mtts-form-group').style.display !== 'none') {
+                            if (input.type === 'radio' || input.type === 'checkbox') {
+                                const name = input.name;
+                                // Escape name properly for selector and check if any is checked
+                                const group = currentStepEl.querySelectorAll(`input[name="${name}"]`);
+                                const checked = Array.from(group).some(r => r.checked);
+                                if (!checked && group.length > 0) {
+                                    valid = false;
+                                    group.forEach(r => {
+                                        if (r.parentElement) r.parentElement.style.color = 'red';
+                                    });
+                                }
+                            } else {
+                                if (!input.value.trim()) {
+                                    valid = false;
+                                    input.style.borderColor = 'red';
+                                }
+                            }
                         }
                     });
 
                     if (valid) {
                         currentStep++;
                         updateSteps();
+                        window.scrollTo({top: formContainer.offsetTop - 50, behavior: 'smooth'});
                     } else {
                         alert('Please fill all required fields in this step.');
                     }
@@ -349,6 +394,50 @@ class FormShortcode {
                     if (currentStep > 0) {
                         currentStep--;
                         updateSteps();
+                        window.scrollTo({top: formContainer.offsetTop - 50, behavior: 'smooth'});
+                    }
+                });
+            }
+
+            if (submitBtn) {
+                // Prevent silent HTML5 validation errors on hidden fields
+                form.setAttribute('novalidate', 'novalidate');
+                
+                form.addEventListener('submit', function(e) {
+                    // Validate last step before allowing submit
+                    if (steps.length > 0) {
+                        const currentStepEl = steps[currentStep];
+                        const inputs = currentStepEl.querySelectorAll('input, select, textarea');
+                        let valid = true;
+                        
+                        inputs.forEach(input => {
+                            if (input.hasAttribute('required') && input.closest('.mtts-form-group').style.display !== 'none') {
+                                if (input.type === 'radio' || input.type === 'checkbox') {
+                                    const name = input.name;
+                                    const group = currentStepEl.querySelectorAll(`input[name="${name}"]`);
+                                    const checked = Array.from(group).some(r => r.checked);
+                                    if (!checked && group.length > 0) {
+                                        valid = false;
+                                        group.forEach(r => {
+                                            if (r.parentElement) r.parentElement.style.color = 'red';
+                                        });
+                                    }
+                                } else {
+                                    if (!input.value.trim()) {
+                                        valid = false;
+                                        input.style.borderColor = 'red';
+                                    }
+                                }
+                            }
+                        });
+                        
+                        if (!valid) {
+                            e.preventDefault();
+                            alert('Please fill all required fields before submitting.');
+                        } else {
+                            submitBtn.innerHTML = 'Submitting...';
+                            submitBtn.disabled = true;
+                        }
                     }
                 });
             }
@@ -479,13 +568,18 @@ class FormShortcode {
 
                     const show = currentVal === targetVal;
                     el.closest('.mtts-form-group').style.display = show ? 'block' : 'none';
-                    if (!show) {
-                        const input = el.closest('.mtts-form-group').querySelector('input, select, textarea');
-                        if (input) input.required = false;
-                    } else {
-                        // Restore required if it was originally required
-                        // For simplicity, we'll just check if it has the required attribute in HTML
-                    }
+                    
+                    // Toggle required attribute purely based on visibility
+                    const inputs = el.closest('.mtts-form-group').querySelectorAll('input, select, textarea');
+                    inputs.forEach(input => {
+                        if (!show) {
+                            input.removeAttribute('required');
+                        } else {
+                            // If it should be shown, restore required if the outer condition dataset implies it
+                            // For simplicity, we just mark it required if the config originally commanded it, 
+                            // BUT given it was wiped, we just rely on JS validation. JS validation skips hidden elements now.
+                        }
+                    });
                 });
             }
 
@@ -638,9 +732,10 @@ class FormShortcode {
         }
     }
 
-    private static function render_payment_selector( $form ) {
-        $ug_price = get_option('mtts_undergraduate_form_price', '5000');
-        $pg_price = get_option('mtts_postgraduate_form_price', '10000');
+    private static function render_payment_selector( $form, $override_price = 0 ) {
+        // If the form specifies an amount, override global logic
+        $ug_price = $override_price > 0 ? $override_price : get_option('mtts_undergraduate_form_price', '5000');
+        $pg_price = $override_price > 0 ? $override_price : get_option('mtts_postgraduate_form_price', '10000');
         $pk       = get_option('mtts_paystack_public_key');
 
         ob_start();

@@ -27,11 +27,29 @@ class LecturerDashboardController {
         $view = isset( $_GET['view'] ) ? sanitize_key( $_GET['view'] ) : 'overview';
 
         ob_start();
-        
-        echo '<div class="mtts-dashboard-wrapper">';
-        include MTTS_LMS_PATH . 'includes/Views/Lecturer/sidebar.php';
-        echo '<div class="mtts-dashboard-content">';
-        
+
+        $titles = array(
+            'overview'    => array('title' => 'Lecturer Dashboard', 'subtitle' => 'Overview of your academic responsibilities.'),
+            'classes'     => array('title' => 'My Courses',         'subtitle' => 'Manage the courses you are currently teaching.'),
+            'assignments' => array('title' => 'Assignments',       'subtitle' => 'Create and manage assignments for your students.'),
+            'submissions' => array('title' => 'Student Submissions', 'subtitle' => 'Review and grade student assignment submissions.'),
+            'students'    => array('title' => 'Student Directory',   'subtitle' => 'Browse and manage students in your courses.'),
+            'inbox'       => array('title' => 'Lecturer Inbox',     'subtitle' => 'Communicate with students and administration.'),
+            'resources'   => array('title' => 'Academic Resources', 'subtitle' => 'Upload and manage course materials.'),
+            'events'      => array('title' => 'Virtual Classroom',  'subtitle' => 'Schedule and manage your live virtual sessions.'),
+            'questions'   => array('title' => 'Question Bank',     'subtitle' => 'Manage examination questions for your courses.'),
+            'attendance'  => array('title' => 'Attendance Register', 'subtitle' => 'Track and record student attendance.'),
+        );
+
+        $current_title = isset($titles[$view]) ? $titles[$view] : array('title' => ucfirst($view), 'subtitle' => '');
+        $page_title    = $current_title['title'];
+        $page_subtitle = $current_title['subtitle'];
+
+        // Prepare Sidebar
+        $sidebar_path = MTTS_LMS_PATH . 'includes/Views/Lecturer/sidebar.php';
+
+        // Capture Internal View Content
+        ob_start();
         switch ( $view ) {
             case 'classes':
                 self::render_classes();
@@ -65,10 +83,11 @@ class LecturerDashboardController {
                 include MTTS_LMS_PATH . 'includes/Views/Lecturer/overview.php';
                 break;
         }
-        
-        echo '</div>'; // .mtts-dashboard-content
-        echo '</div>'; // .mtts-dashboard-wrapper
+        $lms_content = ob_get_clean();
 
+        // Render Scoped Layout
+        ob_start();
+        include MTTS_LMS_PATH . 'includes/Views/Shared/lms-layout.php';
         return ob_get_clean();
     }
 

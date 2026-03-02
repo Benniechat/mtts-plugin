@@ -22,6 +22,10 @@
                     <tr>
                         <td>
                             <strong><a href="?page=mtts-form-builder&action=edit&id=<?php echo $form->id; ?>"><?php echo esc_html( $form->title ); ?></a></strong>
+                            <div class="row-actions">
+                                <span class="edit"><a href="?page=mtts-form-builder&action=edit&id=<?php echo $form->id; ?>">Edit</a> | </span>
+                                <span class="trash"><a href="<?php echo wp_nonce_url('?page=mtts-form-builder&action=delete&id=' . $form->id, 'mtts_delete_form_' . $form->id); ?>" class="submitdelete" style="color:red;" onclick="return confirm('Are you sure you want to delete this form?');">Delete</a></span>
+                            </div>
                         </td>
                         <td><code><?php echo esc_html( $form->form_slug ); ?></code></td>
                         <td><code>[mtts_form slug="<?php echo esc_attr( $form->form_slug ); ?>"]</code></td>

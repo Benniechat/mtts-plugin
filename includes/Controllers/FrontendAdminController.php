@@ -50,86 +50,112 @@ class FrontendAdminController {
         }
         $user = wp_get_current_user();
         $view = isset( $_GET['view'] ) ? sanitize_key( $_GET['view'] ) : 'overview';
-        ob_start();
-        echo '<div class="mtts-dashboard-wrapper">';
-        include MTTS_LMS_PATH . 'includes/Views/FrontendAdmin/shared-sidebar.php';
-        echo '<div class="mtts-dashboard-content">';
-        $view_file = MTTS_LMS_PATH . "includes/Views/FrontendAdmin/school-admin-{$view}.php";
-        if ( file_exists( $view_file ) ) {
-            include $view_file;
-        } else {
-            include MTTS_LMS_PATH . 'includes/Views/FrontendAdmin/school-admin-overview.php';
-        }
-        echo '</div></div>';
-        return ob_get_clean();
+        
+        $titles = array(
+            'overview' => array('title' => 'School Admin Overview', 'subtitle' => 'Global management of seminary operations.'),
+            'students' => array('title' => 'Student Management',   'subtitle' => 'Oversee all registered students across programs.'),
+            'lecturers'=> array('title' => 'Faculty Management',   'subtitle' => 'Manage lecturer profiles and course assignments.'),
+            'courses'  => array('title' => 'Academic Programs',    'subtitle' => 'Configure degrees, diplomas, and course structures.'),
+            'results'  => array('title' => 'Result Verification',  'subtitle' => 'Audit and verify student academic results.'),
+        );
+
+        $current_title = isset($titles[$view]) ? $titles[$view] : array('title' => 'Staff Portal', 'subtitle' => '');
+        
+        return self::render_portal_shell( 
+            $view, 
+            'school-admin', 
+            $current_title['title'], 
+            $current_title['subtitle'] 
+        );
     }
 
-    // ==============================
-    // REGISTRAR PORTAL
-    // ==============================
     public static function render_registrar() {
         if ( ! is_user_logged_in() ) {
             return '<div class="mtts-alert mtts-alert-warning">Access Denied. Please log in.</div>';
         }
-        $user = wp_get_current_user();
         $view = isset( $_GET['view'] ) ? sanitize_key( $_GET['view'] ) : 'overview';
-        ob_start();
-        echo '<div class="mtts-dashboard-wrapper">';
-        include MTTS_LMS_PATH . 'includes/Views/FrontendAdmin/shared-sidebar.php';
-        echo '<div class="mtts-dashboard-content">';
-        $view_file = MTTS_LMS_PATH . "includes/Views/FrontendAdmin/registrar-{$view}.php";
-        if ( file_exists( $view_file ) ) {
-            include $view_file;
-        } else {
-            include MTTS_LMS_PATH . 'includes/Views/FrontendAdmin/registrar-overview.php';
-        }
-        echo '</div></div>';
-        return ob_get_clean();
+
+        $titles = array(
+            'overview'   => array('title' => 'Registrar Overview',   'subtitle' => 'Registry and record management portal.'),
+            'admissions' => array('title' => 'Admission Processing', 'subtitle' => 'Review and process new student applications.'),
+            'students'   => array('title' => 'Student Records',     'subtitle' => 'Maintain official student files and transcripts.'),
+            'programs'   => array('title' => 'Academic Registry',   'subtitle' => 'Manage academic sessions and program registration.'),
+        );
+
+        $current_title = isset($titles[$view]) ? $titles[$view] : array('title' => 'Staff Portal', 'subtitle' => '');
+
+        return self::render_portal_shell( 
+            $view, 
+            'registrar', 
+            $current_title['title'], 
+            $current_title['subtitle'] 
+        );
     }
 
-    // ==============================
-    // ACCOUNTANT PORTAL
-    // ==============================
     public static function render_accountant() {
         if ( ! is_user_logged_in() ) {
             return '<div class="mtts-alert mtts-alert-warning">Access Denied. Please log in.</div>';
         }
-        $user = wp_get_current_user();
         $view = isset( $_GET['view'] ) ? sanitize_key( $_GET['view'] ) : 'overview';
-        ob_start();
-        echo '<div class="mtts-dashboard-wrapper">';
-        include MTTS_LMS_PATH . 'includes/Views/FrontendAdmin/shared-sidebar.php';
-        echo '<div class="mtts-dashboard-content">';
-        $view_file = MTTS_LMS_PATH . "includes/Views/FrontendAdmin/accountant-{$view}.php";
-        if ( file_exists( $view_file ) ) {
-            include $view_file;
-        } else {
-            include MTTS_LMS_PATH . 'includes/Views/FrontendAdmin/accountant-overview.php';
-        }
-        echo '</div></div>';
-        return ob_get_clean();
+
+        $titles = array(
+            'overview' => array('title' => 'Finance Overview',      'subtitle' => 'Monitor seminary financial status and transactions.'),
+            'payments' => array('title' => 'Tuition & Fee Tracking', 'subtitle' => 'Review student payments and payment receipts.'),
+            'wallet'   => array('title' => 'Wallet Management',     'subtitle' => 'Manage digital wallet balances and student credits.'),
+            'reports'  => array('title' => 'Financial Reporting',   'subtitle' => 'Generate and export financial statements.'),
+        );
+
+        $current_title = isset($titles[$view]) ? $titles[$view] : array('title' => 'Staff Portal', 'subtitle' => '');
+
+        return self::render_portal_shell( 
+            $view, 
+            'accountant', 
+            $current_title['title'], 
+            $current_title['subtitle'] 
+        );
     }
 
-    // ==============================
-    // CAMPUS COORDINATOR PORTAL
-    // ==============================
     public static function render_campus() {
         if ( ! is_user_logged_in() ) {
             return '<div class="mtts-alert mtts-alert-warning">Access Denied. Please log in.</div>';
         }
-        $user = wp_get_current_user();
         $view = isset( $_GET['view'] ) ? sanitize_key( $_GET['view'] ) : 'overview';
+
+        $titles = array(
+            'overview' => array('title' => 'Campus Overview',      'subtitle' => 'Manage local campus operations and students.'),
+            'students' => array('title' => 'Enrollment List',      'subtitle' => 'View students registered at this campus.'),
+            'centers'  => array('title' => 'Center Management',    'subtitle' => 'Coordinate local learning centers.'),
+        );
+
+        $current_title = isset($titles[$view]) ? $titles[$view] : array('title' => 'Staff Portal', 'subtitle' => '');
+
+        return self::render_portal_shell( 
+            $view, 
+            'campus', 
+            $current_title['title'], 
+            $current_title['subtitle'] 
+        );
+    }
+
+    private static function render_portal_shell( $view, $base_slug, $page_title, $page_subtitle = '' ) {
+        $user = wp_get_current_user();
+        
+        // Prepare Sidebar
+        $sidebar_path = MTTS_LMS_PATH . 'includes/Views/FrontendAdmin/shared-sidebar.php';
+
+        // Capture Internal View Content
         ob_start();
-        echo '<div class="mtts-dashboard-wrapper">';
-        include MTTS_LMS_PATH . 'includes/Views/FrontendAdmin/shared-sidebar.php';
-        echo '<div class="mtts-dashboard-content">';
-        $view_file = MTTS_LMS_PATH . "includes/Views/FrontendAdmin/campus-{$view}.php";
+        $view_file = MTTS_LMS_PATH . "includes/Views/FrontendAdmin/{$base_slug}-{$view}.php";
         if ( file_exists( $view_file ) ) {
             include $view_file;
         } else {
-            include MTTS_LMS_PATH . 'includes/Views/FrontendAdmin/campus-overview.php';
+            include MTTS_LMS_PATH . "includes/Views/FrontendAdmin/{$base_slug}-overview.php";
         }
-        echo '</div></div>';
+        $lms_content = ob_get_clean();
+
+        // Render Scoped Layout
+        ob_start();
+        include MTTS_LMS_PATH . 'includes/Views/Shared/lms-layout.php';
         return ob_get_clean();
     }
 }

@@ -68,6 +68,18 @@ $fields    = isset( $form_data['fields'] ) ? $form_data['fields'] : array();
                                 Enable "Save & Continue"
                             </label>
                         </div>
+                        <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
+                        <div>
+                            <label style="font-weight:bold; display:block; margin-bottom:5px;">
+                                <input type="checkbox" id="mtts-requires-payment" value="1" <?php echo !empty($form_data['requires_payment']) ? 'checked' : ''; ?>>
+                                Requires Payment
+                            </label>
+                        </div>
+                        <div id="mtts-payment-amount-container" style="margin-top:10px; <?php echo empty($form_data['requires_payment']) ? 'display:none;' : ''; ?>">
+                            <label style="display:block; margin-bottom:5px; font-weight:bold;">Payment Amount (₦)</label>
+                            <input type="number" id="mtts-payment-amount" class="widefat" value="<?php echo isset($form_data['payment_amount']) ? esc_attr($form_data['payment_amount']) : ''; ?>" placeholder="e.g. 5000">
+                            <small>Only applies if payment is required.</small>
+                        </div>
                     </div>
 
                     <h3>Standard Fields</h3>
@@ -113,7 +125,10 @@ $fields    = isset( $form_data['fields'] ) ? $form_data['fields'] : array();
                     
                     <hr>
                     <input type="hidden" name="form_data" id="mtts-form-data-input">
-                    <button type="submit" name="mtts_save_form" class="button button-primary button-large" style="width:100%; height:50px; font-size:1.1rem;">Save Form</button>
+                    <div style="display:flex; gap:10px; margin-top:20px;">
+                        <button type="submit" name="mtts_save_form" class="button button-primary button-large" style="flex:1; height:45px; font-size:1.1rem;">Save Form</button>
+                        <button type="button" id="mtts-preview-btn" class="button button-secondary button-large" style="flex:1; height:45px; font-size:1.1rem; border-color:#7c3aed; color:#7c3aed;">Preview Form</button>
+                    </div>
                 </div>
             </div>
 
@@ -144,6 +159,19 @@ $fields    = isset( $form_data['fields'] ) ? $form_data['fields'] : array();
                     </div>
                     <div style="text-align:right;">
                         <button type="button" class="button" id="mtts-template-cancel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Modal -->
+            <div id="mtts-preview-modal" class="mtts-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:99999; align-items:center; justify-content:center;">
+                <div class="mtts-modal-content" style="background:#fff; padding:30px; border-radius:12px; width:800px; max-width:95%; max-height:90vh; display:flex; flex-direction:column;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #eee; padding-bottom:15px;">
+                        <h2 style="margin:0;">Form Preview <span style="font-size:0.9rem; font-weight:normal; color:#666; background:#f0f0f0; padding:3px 8px; border-radius:4px;">Test Mode</span></h2>
+                        <button type="button" class="button" id="mtts-preview-cancel">Close Preview</button>
+                    </div>
+                    <div id="mtts-preview-container" style="overflow-y:auto; flex:1; padding:20px; border:1px solid #ddd; background:#f9fafb; border-radius:8px;">
+                        <div style="text-align:center; padding:40px; color:#999;"><span class="dashicons dashicons-update spin" style="font-size:30px; width:30px; height:30px;"></span><br>Loading Preview...</div>
                     </div>
                 </div>
             </div>
@@ -209,6 +237,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const tplBtn     = document.getElementById('mtts-templates-btn');
 
     let fields = <?php echo json_encode( $fields ); ?>;
+    let draggedIndex = null;
 
     function renderFields() {
         fieldsList.innerHTML = '';
@@ -218,10 +247,12 @@ document.addEventListener('DOMContentLoaded', function() {
         fields.forEach((field, index) => {
             const fieldEl = document.createElement('div');
             fieldEl.className = 'mtts-field-item';
+            fieldEl.setAttribute('draggable', 'true');
+            fieldEl.dataset.index = index;
             fieldEl.innerHTML = `
-                <div class="mtts-field-header">
-                    <span><span class="mtts-field-type-badge">${field.type.toUpperCase()}</span> <strong>${field.label}</strong></span>
-                    <span class="dashicons dashicons-dismiss" onclick="removeField(${index})"></span>
+                <div class="mtts-field-header" style="cursor: grab;">
+                    <span><span class="mtts-field-type-badge">${field.type.toUpperCase()}</span> <strong style="pointer-events:none;">${field.label}</strong></span>
+                    <span class="dashicons dashicons-dismiss" onclick="removeField(${index})" style="cursor:pointer; pointer-events:auto;"></span>
                 </div>
                 <div class="mtts-field-settings">
                     <div class="full">
@@ -253,6 +284,45 @@ document.addEventListener('DOMContentLoaded', function() {
                     ` : ''}
                 </div>
             `;
+            
+            // Drag and Drop Events
+            fieldEl.addEventListener('dragstart', function(e) {
+                // Ensure we don't drag if interacting with inputs
+                if(e.target.tagName.toLowerCase() === 'input' || e.target.tagName.toLowerCase() === 'textarea' || e.target.tagName.toLowerCase() === 'select') {
+                    e.preventDefault();
+                    return;
+                }
+                draggedIndex = index;
+                e.dataTransfer.effectAllowed = 'move';
+                setTimeout(() => this.style.opacity = '0.4', 0);
+            });
+            
+            fieldEl.addEventListener('dragend', function(e) {
+                this.style.opacity = '1';
+                document.querySelectorAll('.mtts-field-item').forEach(el => el.style.borderTop = '');
+                draggedIndex = null;
+            });
+            
+            fieldEl.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderTop = '3px solid #7c3aed';
+            });
+            
+            fieldEl.addEventListener('dragleave', function(e) {
+                this.style.borderTop = '';
+            });
+            
+            fieldEl.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderTop = '';
+                const dropIndex = index;
+                if (draggedIndex !== null && draggedIndex !== dropIndex) {
+                    const movedItem = fields.splice(draggedIndex, 1)[0];
+                    fields.splice(dropIndex, 0, movedItem);
+                    renderFields();
+                }
+            });
+
             fieldsList.appendChild(fieldEl);
         });
         updateDataInput();
@@ -271,15 +341,25 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateDataInput() {
         const type = document.getElementById('mtts-form-type').value;
         const saveContinue = document.getElementById('mtts-save-continue').checked ? 1 : 0;
+        const requiresPayment = document.getElementById('mtts-requires-payment').checked ? 1 : 0;
+        const paymentAmount = document.getElementById('mtts-payment-amount').value;
+        
         dataInput.value = JSON.stringify({ 
             fields: fields,
             type: type,
-            save_continue: saveContinue
+            save_continue: saveContinue,
+            requires_payment: requiresPayment,
+            payment_amount: paymentAmount
         });
     }
 
     document.getElementById('mtts-form-type').addEventListener('change', updateDataInput);
     document.getElementById('mtts-save-continue').addEventListener('change', updateDataInput);
+    document.getElementById('mtts-requires-payment').addEventListener('change', function() {
+        document.getElementById('mtts-payment-amount-container').style.display = this.checked ? 'block' : 'none';
+        updateDataInput();
+    });
+    document.getElementById('mtts-payment-amount').addEventListener('input', updateDataInput);
 
     addButton.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -349,12 +429,70 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     fields = data.data.fields;
                     document.querySelector('input[name="form_title"]').value = data.data.title;
+                    
+                    if (data.data.type) {
+                        document.getElementById('mtts-form-type').value = data.data.type;
+                    }
+                    if (data.data.save_continue !== undefined) {
+                        document.getElementById('mtts-save-continue').checked = data.data.save_continue;
+                    }
+                    if (data.data.requires_payment !== undefined) {
+                        const requiresPaymentCheckbox = document.getElementById('mtts-requires-payment');
+                        requiresPaymentCheckbox.checked = data.data.requires_payment;
+                        document.getElementById('mtts-payment-amount-container').style.display = data.data.requires_payment ? 'block' : 'none';
+                    }
+
                     renderFields();
                     tplModal.style.display = 'none';
                 }
             });
         });
     });
+
+    // Preview Logic
+    const previewBtn = document.getElementById('mtts-preview-btn');
+    const previewModal = document.getElementById('mtts-preview-modal');
+    const previewContainer = document.getElementById('mtts-preview-container');
+    const previewCancel = document.getElementById('mtts-preview-cancel');
+
+    previewBtn.addEventListener('click', () => {
+        previewModal.style.display = 'flex';
+        previewContainer.innerHTML = '<div style="text-align:center; padding:40px; color:#999;"><span class="dashicons dashicons-update spin" style="font-size:30px; width:30px; height:30px;"></span><br>Loading Preview...</div>';
+        updateDataInput(); // Ensure latest JSON is populated
+
+        fetch(ajaxurl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                action: 'mtts_preview_form',
+                title: document.querySelector('input[name="form_title"]').value,
+                form_data: dataInput.value,
+                nonce: '<?php echo wp_create_nonce("mtts_form_builder_nonce"); ?>'
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                previewContainer.innerHTML = data.data.html;
+
+                // Execute any inline scripts returned in the preview HTML (required for multistep/payment logic)
+                const scripts = previewContainer.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                });
+            } else {
+                previewContainer.innerHTML = '<div class="notice notice-error"><p>' + data.data.message + '</p></div>';
+            }
+        })
+        .catch(err => {
+            previewContainer.innerHTML = '<div class="notice notice-error"><p>Failed to load preview.</p></div>';
+        });
+    });
+
+    previewCancel.addEventListener('click', () => previewModal.style.display = 'none');
 
     renderFields();
 });

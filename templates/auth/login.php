@@ -131,7 +131,7 @@
 <div class="mtts-login-page">
     <div class="mtts-login-card">
         <div class="mtts-login-header">
-            <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo.png'; ?>" alt="MTTS Logo" style="height: 60px; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto;">
+            <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo-mtts.jpg'; ?>" alt="MTTS Logo" style="height: 80px; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto;">
             <h1>MTT Seminary LMS</h1>
             <p>Welcome Back. Please select your portal.</p>
         </div>
@@ -215,7 +215,7 @@
         </div>
 
         <div class="mtts-footer-links">
-            <p>© 2024 Mountain-Top Theological Seminary. All rights reserved.</p>
+            <p>© <?php echo date('Y'); ?> <?php echo esc_html(get_option('mtts_institution_name', 'Mountain-Top Theological Seminary')); ?>. All rights reserved.</p>
             <p><a href="https://mttseminary.org">mttseminary.org</a> | <a href="mailto:benniechatsystems@gmail.com">Support</a></p>
         </div>
     </div>

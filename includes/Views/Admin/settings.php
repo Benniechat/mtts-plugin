@@ -4,7 +4,32 @@
         <?php settings_fields( 'mtts_lms_options' ); ?>
         <?php do_settings_sections( 'mtts_lms_options' ); ?>
         
+        <h3>Institutional Branding</h3>
         <table class="form-table">
+            <tr valign="top">
+                <th scope="row">Institution Name</th>
+                <td>
+                    <input type="text" name="mtts_institution_name" value="<?php echo esc_attr( get_option('mtts_institution_name', 'Mountain-Top Theological Seminary') ); ?>" class="regular-text" />
+                    <p class="description">Main name used across the platform and in automated communications.</p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">Institution Tagline</th>
+                <td>
+                    <input type="text" name="mtts_institution_tagline" value="<?php echo esc_attr( get_option('mtts_institution_tagline', 'Empowering Ministers for Global Impact') ); ?>" class="regular-text" />
+                    <p class="description">Displayed on login pages and dashboard footers.</p>
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">Logo URL</th>
+                <td>
+                    <input type="url" name="mtts_institution_logo_url" value="<?php echo esc_attr( get_option('mtts_institution_logo_url') ); ?>" class="regular-text" />
+                    <p class="description">Direct link to the seminary logo (recommended height: 80px).</p>
+                </td>
+            </tr>
+        </table>
+
+        <h3>Academic Configuration</h3>
             <tr valign="top">
                 <th scope="row">Current Academic Session</th>
                 <td>
@@ -251,6 +276,17 @@
         </table>
         
         <?php submit_button(); ?>
+        
+        <h3>Developer Tools (Testing)</h3>
+        <div class="mtts-card" style="border: 1px solid #ef4444; padding: 15px; background: #fef2f2;">
+            <p style="color: #b91c1c; font-weight: bold;">Warning: These actions are for development/test environments only.</p>
+            <a href="<?php echo esc_url( wp_nonce_url( admin_url('admin.php?page=mtts-lms-settings&mtts_generate_mock_data=1'), 'mtts_generate_mock' ) ); ?>" class="button button-link-delete" onclick="return confirm('Are you sure you want to generate mock users? This may create duplicate entries if they already exist.');">
+                Generate Mock User Base (All Roles)
+            </a>
+            <?php if ( isset($_GET['mock_success']) ) : ?>
+                <span style="margin-left: 10px; color: green; font-weight: bold;">Mock users generated successfully!</span>
+            <?php endif; ?>
+        </div>
     </form>
 </div>
 

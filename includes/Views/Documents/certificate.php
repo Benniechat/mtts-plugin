@@ -45,8 +45,8 @@
     <div class="border-pattern">
         <div class="inner-border">
             <div class="header">
-                <!-- <img src="logo.png" style="width: 80px; margin-bottom: 10px;"> -->
-                <h1 class="school-name">Mountain-Top Theological Seminary</h1>
+                <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo-mtts.jpg'; ?>" style="width: 100px; margin-bottom: 10px; border-radius: 10px;">
+                <h1 class="school-name"><?php echo esc_html(get_option('mtts_institution_name', 'Mountain-Top Theological Seminary')); ?></h1>
                 <div class="school-motto">Raising Champions for the Kingdom</div>
             </div>
 

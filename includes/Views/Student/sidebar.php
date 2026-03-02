@@ -18,6 +18,7 @@
         <li><a href="?view=badges" class="<?php echo $view == 'badges' ? 'active' : ''; ?>"><span class="dashicons dashicons-awards"></span> Badges</a></li>
         <li><a href="?view=portfolio" class="<?php echo $view == 'portfolio' ? 'active' : ''; ?>"><span class="dashicons dashicons-id"></span> Portfolio</a></li>
         <li><a href="?view=calendar" class="<?php echo $view == 'calendar' ? 'active' : ''; ?>"><span class="dashicons dashicons-calendar"></span> <?php echo \MttsLms\Core\Translator::trans('calendar'); ?></a></li>
+        <li><a href="?view=change-password" class="<?php echo $view == 'change-password' ? 'active' : ''; ?>"><span class="dashicons dashicons-shield"></span> Security</a></li>
     </ul>
 </div>
 

@@ -232,9 +232,9 @@ $milestones     = array_filter(array_map('trim', explode("\n", $milestones_raw))
                         <span class="dashicons dashicons-welcome-learn-more" style="color:#6b21a8;"></span>
                     </div>
                     <div>
-                        <div style="font-weight:700;color:#1a1a2e;font-size:15px;"><?php echo esc_html($program_name ?: 'Mid-Town Theological Seminary (MTTS)'); ?></div>
+                        <div style="font-weight:700;color:#1a1a2e;font-size:15px;"><?php echo esc_html($program_name ?: 'Mountain-Top Theological Seminary (MTTS)'); ?></div>
                         <div style="font-size:13px;color:#6b7280;">
-                            Mid-Town Theological Seminary<?php echo $graduation_year ? ' • Class of ' . esc_html($graduation_year) : ''; ?>
+                            Mountain-Top Theological Seminary<?php echo $graduation_year ? ' • Class of ' . esc_html($graduation_year) : ''; ?>
                         </div>
                     </div>
                 </div>

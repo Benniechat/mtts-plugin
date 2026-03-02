@@ -1,6 +1,6 @@
 <div class="mtts-receipt" style="border: 2px solid #ccc; padding: 40px; max-width: 600px; margin: 0 auto; font-family: sans-serif;">
     <div style="text-align: center; border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 20px;">
-        <h2>Mountain-Top Theological Seminary</h2>
+        <h2><?php echo esc_html(get_option('mtts_institution_name', 'Mountain-Top Theological Seminary')); ?></h2>
         <p>Payment Receipt</p>
     </div>
 

@@ -19,7 +19,7 @@
 <body>
     <div class="id-card">
         <div class="header">
-            <h3>Mountain-Top Theological Seminary</h3>
+            <h3><?php echo esc_html(get_option('mtts_institution_name', 'Mountain-Top Theological Seminary')); ?></h3>
             <p>Student Identity Card</p>
         </div>
         <div class="content">

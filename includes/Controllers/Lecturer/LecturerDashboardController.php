@@ -39,6 +39,7 @@ class LecturerDashboardController {
             'events'      => array('title' => 'Virtual Classroom',  'subtitle' => 'Schedule and manage your live virtual sessions.'),
             'questions'   => array('title' => 'Question Bank',     'subtitle' => 'Manage examination questions for your courses.'),
             'attendance'  => array('title' => 'Attendance Register', 'subtitle' => 'Track and record student attendance.'),
+            'change-password' => array('title' => 'Security Settings', 'subtitle' => 'Update your account password.'),
         );
 
         $current_title = isset($titles[$view]) ? $titles[$view] : array('title' => ucfirst($view), 'subtitle' => '');
@@ -78,6 +79,9 @@ class LecturerDashboardController {
                 break;
             case 'attendance':
                 self::render_attendance();
+                break;
+            case 'change-password':
+                \MttsLms\Controllers\Student\StudentDashboardController::render_change_password();
                 break;
             default:
                 include MTTS_LMS_PATH . 'includes/Views/Lecturer/overview.php';

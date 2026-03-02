@@ -11,24 +11,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 class ShortcodeBank {
 
     public static function init() {
-        $shortcodes = array(
-            'mtts_user_name'    => 'get_user_name',
-            'mtts_user_email'   => 'get_user_email',
-            'mtts_user_matric'  => 'get_user_matric',
-            'mtts_user_program' => 'get_user_program',
-            'mtts_user_level'   => 'get_user_level',
+        $shortcodes = self::get_registered_shortcodes();
+
+        foreach ( $shortcodes as $tag => $callback ) {
+            add_shortcode( $tag, array( __CLASS__, $callback ) );
+        }
+    }
+
+    public static function get_registered_shortcodes() {
+        return array(
+            'mtts_user_name'        => 'get_user_name',
+            'mtts_user_email'       => 'get_user_email',
+            'mtts_user_matric'      => 'get_user_matric',
+            'mtts_user_program'     => 'get_user_program',
+            'mtts_user_level'       => 'get_user_level',
             'mtts_today'            => 'get_today_date',
             'mtts_site_name'        => 'get_site_name',
-            'mtts_portal_url'       => 'get_portal_url',
-            'mtts_alumni_url'       => 'get_alumni_url',
-            'mtts_stakeholder_url'  => 'get_stakeholder_url',
-            'mtts_admission_url'    => 'get_admission_url',
             'mtts_dashboard_url'    => 'get_dashboard_url',
             'mtts_logout_url'       => 'get_logout_url',
-            'mtts_portal_link'      => 'get_portal_link',
-            'mtts_alumni_link'      => 'get_alumni_link',
-            'mtts_stakeholder_link' => 'get_stakeholder_link',
-            'mtts_admission_link'   => 'get_admission_link',
             'mtts_dashboard_link'   => 'get_dashboard_link',
             'mtts_logout_link'      => 'get_logout_link',
             'mtts_id_card'          => 'get_id_card',
@@ -39,15 +39,49 @@ class ShortcodeBank {
             'mtts_wallet'           => 'get_wallet',
             'mtts_badges'           => 'get_badges',
             'mtts_student_profile'  => 'get_student_profile',
-            'mtts_inquiry_form'     => 'get_inquiry_form',
             'mtts_noticeboard'      => 'get_noticeboard',
             'mtts_alumni_directory' => 'get_alumni_directory',
             'mtts_translator'       => 'render_translator',
+            'mtts_change_password'  => 'render_change_password',
         );
+    }
 
-        foreach ( $shortcodes as $tag => $callback ) {
-            add_shortcode( $tag, array( __CLASS__, $callback ) );
-        }
+    public static function get_all_descriptions() {
+        return array(
+            'General & User Data' => array(
+                'mtts_user_name'    => 'Displays the current user\'s display name.',
+                'mtts_user_email'   => 'Displays the current user\'s email address.',
+                'mtts_user_matric'  => 'Displays the current student\'s matriculation number.',
+                'mtts_user_program' => 'Displays the current student\'s enrolled program name.',
+                'mtts_user_level'   => 'Displays the current student\'s academic level.',
+                'mtts_today'        => 'Displays today\'s date.',
+                'mtts_site_name'    => 'Displays the website name.',
+            ),
+            'Navigation' => array(
+                'mtts_dashboard_url'  => 'Returns the URL for the user\'s specific dashboard.',
+                'mtts_dashboard_link' => 'Renders a clickable button to the user\'s dashboard.',
+                'mtts_logout_url'     => 'Returns the logout URL.',
+                'mtts_logout_link'    => 'Renders a clickable logout button.',
+            ),
+            'LMS Components' => array(
+                'mtts_id_card'         => 'Renders the interactive Student ID Card.',
+                'mtts_exam_results'    => 'Displays the student\'s academic results.',
+                'mtts_study_materials' => 'Displays available course resources and materials.',
+                'mtts_assignments'     => 'Displays student assignments and status.',
+                'mtts_calendar'        => 'Renders the academic calendar.',
+                'mtts_wallet'          => 'Displays student financial records and wallet.',
+                'mtts_badges'          => 'Displays student achievements and badges.',
+                'mtts_student_profile' => 'Renders the comprehensive student profile view.',
+                'mtts_noticeboard'     => 'Displays institutional announcements and events.',
+                'mtts_translator'      => 'Embeds the multi-language translation widget.',
+            ),
+            'Portals & Forms' => array(
+                'mtts_login_form'      => 'Renders the unified login portal (Student, Staff, and Alumni).',
+                'mtts_form slug="abc"' => 'Renders a custom form created with the Form Builder.',
+                'mtts_alumni_directory' => 'Renders the community directory for networking.',
+                'mtts_change_password' => 'Renders the secure password update form.',
+            )
+        );
     }
 
     public static function get_user_name() {
@@ -302,6 +336,16 @@ class ShortcodeBank {
     public static function render_translator() {
         ob_start();
         \MttsLms\Core\Translator::render_google_translate_widget();
+        return ob_get_clean();
+    }
+
+    public static function render_change_password() {
+        if ( ! is_user_logged_in() ) {
+            return '<div class="mtts-alert mtts-alert-warning">Please log in to change your password.</div>';
+        }
+
+        ob_start();
+        include MTTS_LMS_PATH . 'templates/auth/change-password.php';
         return ob_get_clean();
     }
 }

@@ -3,11 +3,12 @@
  * Alumni Community Feed - Stitch UI Design
  */
 $u = wp_get_current_user();
-$my_profile = \MttsLms\Models\AlumniProfile::get_by_user( $u->ID );
-$avatar_url  = $my_profile->profile_picture_url ?: get_avatar_url( $u->ID );
+$is_guest = ! $u->exists();
+$my_profile = $is_guest ? (object)array('profile_picture_url' => '', 'headline' => 'MTTS Guest') : \MttsLms\Models\AlumniProfile::get_by_user( $u->ID );
+$avatar_url  = $my_profile->profile_picture_url ?: get_avatar_url( $is_guest ? 0 : $u->ID );
 
 // Suggested connections (non-friends)
-$all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number' => 4]);
+$all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$is_guest ? 0 : $u->ID], 'number' => 4]);
 ?>
 <style>
 :root {
@@ -233,6 +234,7 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
 
     <!-- CENTER: Feed -->
     <div class="stitch-center-feed">
+        <?php if ( ! $is_guest ) : ?>
         <!-- Post Composer -->
         <div class="stitch-card" style="padding:20px;margin-bottom:16px;">
             <form method="post" action="" enctype="multipart/form-data">
@@ -275,6 +277,13 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
                 </div>
             </form>
         </div>
+        <?php else : ?>
+        <div class="stitch-card" style="padding:20px;margin-bottom:16px;background:linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);color:#fff;text-align:center;">
+             <h4 style="margin:0 0 10px;">Join the Conversation</h4>
+             <p style="font-size:14px;margin:0 0 15px;opacity:0.9;">Sign in to share updates, amens, and connect with fellow ministers.</p>
+             <a href="<?php echo wp_login_url(get_permalink()); ?>" class="stitch-btn-primary" style="background:#fff;color:#7c3aed;">Sign In to Post</a>
+        </div>
+        <?php endif; ?>
 
         <!-- Feed Posts -->
         <?php foreach ( $posts as $post ) :
@@ -331,13 +340,13 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
 
                 <!-- Action Buttons -->
                 <div style="display:flex;border-top:1px solid var(--stitch-border);padding-top:6px;gap:4px;">
-                    <button type="button" class="post-action-btn <?php echo $post->likes_count > 0 ? 'amen-active' : ''; ?>" onclick="stSocialPost('amen_post', <?php echo $post->id; ?>, this)">
+                    <button type="button" class="post-action-btn <?php echo $post->likes_count > 0 ? 'amen-active' : ''; ?>" <?php echo $is_guest ? 'disabled' : ''; ?> onclick="stSocialPost('amen_post', <?php echo $post->id; ?>, this)">
                         <span class="dashicons dashicons-heart"></span> Amen
                     </button>
                     <button type="button" class="post-action-btn" onclick="stToggleComments(<?php echo $post->id; ?>)">
                         <span class="dashicons dashicons-admin-comments"></span> Comment
                     </button>
-                    <button type="button" class="post-action-btn" onclick="stSocialPost('propagate_post', <?php echo $post->id; ?>, this)">
+                    <button type="button" class="post-action-btn" <?php echo $is_guest ? 'disabled' : ''; ?> onclick="stSocialPost('propagate_post', <?php echo $post->id; ?>, this)">
                         <span class="dashicons dashicons-share"></span> Share
                     </button>
                 </div>
@@ -358,6 +367,7 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
                     </div>
                     <?php endforeach; ?>
                     <!-- Add comment -->
+                    <?php if ( ! $is_guest ) : ?>
                     <form method="post" action="" style="display:flex;gap:10px;align-items:center;margin-top:8px;">
                         <?php wp_nonce_field('mtts_alumni_social'); ?>
                         <input type="hidden" name="mtts_alumni_action" value="add_comment">
@@ -366,6 +376,9 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
                         <input type="text" name="content" placeholder="Write a comment..." required style="flex:1;border:1.5px solid var(--stitch-border);border-radius:20px;padding:8px 16px;font-size:13px;outline:none;background:var(--stitch-bg);">
                         <button type="submit" class="stitch-btn-primary" style="padding:8px 14px;border-radius:20px;">Post</button>
                     </form>
+                    <?php else : ?>
+                    <p style="font-size:12px;color:#6b7280;text-align:center;padding:10px;">Please <a href="<?php echo wp_login_url(get_permalink()); ?>">login</a> to leave a comment.</p>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

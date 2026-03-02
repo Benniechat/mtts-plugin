@@ -8,10 +8,10 @@ $user = wp_get_current_user();
     <div class="mtts-top-nav-left">
         <div class="mtts-logo-container">
             <!-- MFM Logo -->
-            <img src="<?php echo MTTS_LMS_URL . 'assets/images/mfm-logo.png'; ?>" alt="MFM Logo" onerror="this.style.display='none'">
+            <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo-mtts.jpg'; ?>" alt="MTTS Logo" onerror="this.style.display='none'" style="height: 40px;">
         </div>
         <div class="mtts-platform-name">
-            MFM Theological Seminary LMS
+            Mountain-Top Theological Seminary LMS
         </div>
     </div>
 

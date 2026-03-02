@@ -15,12 +15,16 @@ class AlumniController {
     }
 
     public static function render_dashboard() {
-        if ( ! is_user_logged_in() ) {
-            return '<div class="mtts-alert mtts-alert-info">Please <a href="' . wp_login_url( get_permalink() ) . '">log in</a> to access the Alumni &amp; Community Network.</div>';
-        }
+        $user_id  = get_current_user_id();
+        $is_guest = ! $user_id;
+        $user     = $user_id ? wp_get_current_user() : null;
+        $view     = isset( $_GET['view'] ) ? sanitize_key( $_GET['view'] ) : 'feed';
 
-        $user = wp_get_current_user();
-        $view = isset( $_GET['view'] ) ? sanitize_key( $_GET['view'] ) : 'feed';
+        // Restrict views for guests
+        $guest_allowed_views = array( 'feed', 'directory', 'events', 'jobs' );
+        if ( $is_guest && ! in_array( $view, $guest_allowed_views, true ) ) {
+            $view = 'registration_cta';
+        }
 
         ob_start();
 
@@ -35,6 +39,8 @@ class AlumniController {
             'friends'      => array('title' => 'Fellowship Circle',          'subtitle' => 'Manage your network of close ministry colleagues.'),
             'events'       => array('title' => 'Academic & Alumni Calendar', 'subtitle' => 'Stay updated with upcoming school and network events.'),
             'jobs'         => array('title' => 'Ministry Opportunities',     'subtitle' => 'Explore vocational and ministry positions.'),
+            'security'     => array('title' => 'Security Settings',         'subtitle' => 'Update your community account password.'),
+            'registration_cta' => array('title' => 'Join the Community',    'subtitle' => 'Become a part of the Mountain-Top Alumni Network.'),
         );
 
         $current_title = isset($titles[$view]) ? $titles[$view] : array('title' => 'MTTS Connect+', 'subtitle' => '');
@@ -88,6 +94,14 @@ class AlumniController {
                 break;
             case 'jobs':
                 self::render_jobs();
+                break;
+            case 'security':
+                if ( ! $is_guest ) {
+                    \MttsLms\Controllers\Student\StudentDashboardController::render_change_password();
+                }
+                break;
+            case 'registration_cta':
+                self::render_registration_cta();
                 break;
             default:
                 self::render_feed();
@@ -481,5 +495,26 @@ class AlumniController {
         $pending_requests = \MttsLms\Models\FriendRequest::get_pending_requests( $user->ID );
         $friends_data     = \MttsLms\Models\FriendRequest::get_friends( $user->ID );
         include MTTS_LMS_PATH . 'includes/Views/Alumni/friends.php';
+    }
+
+    private static function render_registration_cta() {
+        $admission_url = home_url('/admission');
+        ?>
+        <div class="mtts-card" style="padding: 60px; text-align: center; background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+            <div style="font-size: 64px; margin-bottom: 24px;">🎓</div>
+            <h2 style="font-size: 32px; font-weight: 800; color: #1a1a2e; margin: 0 0 12px;">Authentication Required</h2>
+            <p style="font-size: 18px; color: #6b7280; max-width: 600px; margin: 0 auto 30px; line-height: 1.6;">
+                The mountain-top is for everyone, but some areas of our network are reserved for registered alumni and students. 
+                Keep track of your colleagues and collaborate for ministry by joining us.
+            </p>
+            <div style="display: flex; gap: 16px; justify-content: center;">
+                <a href="<?php echo esc_url( wp_login_url( home_url('/alumni-network') ) ); ?>" class="stitch-btn-primary" style="padding: 14px 30px; font-size: 16px;">Log In Now</a>
+                <a href="<?php echo esc_url( $admission_url ); ?>" class="stitch-btn-outline" style="padding: 14px 30px; font-size: 16px;">Apply to Join</a>
+            </div>
+            <p style="margin-top: 24px; font-size: 14px; color: #9ca3af;">
+                Registration is only through official application or admin onboarding.
+            </p>
+        </div>
+        <?php
     }
 }

@@ -26,8 +26,8 @@
     </div>
 
     <div class="header">
-        <!-- <img src="logo.png" class="logo"> -->
-        <div class="title">Mountain-Top Theological Seminary</div>
+        <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo-mtts.jpg'; ?>" class="logo" style="border-radius: 10px;">
+        <div class="title"><?php echo esc_html(get_option('mtts_institution_name', 'Mountain-Top Theological Seminary')); ?></div>
         <div class="subtitle">Raising Champions for the Kingdom</div>
         <p>OFFICE OF THE REGISTRAR</p>
     </div>
@@ -39,7 +39,7 @@
 
         <h3 style="text-align: center; text-decoration: underline;">OFFER OF PROVISIONAL ADMISSION</h3>
 
-        <p>I am pleased to inform you that you have been offered provisional admission into the Mountain-Top Theological Seminary to pursue a course of study leading to the award of:</p>
+        <p>I am pleased to inform you that you have been offered provisional admission into the <?php echo esc_html(get_option('mtts_institution_name', 'Mountain-Top Theological Seminary')); ?> to pursue a course of study leading to the award of:</p>
 
         <h3 style="text-align: center;"><?php echo esc_html( $program->name ); ?></h3>
 
@@ -79,7 +79,7 @@
     </div>
 
     <div class="footer">
-        <p>Mountain-Top Theological Seminary | www.mtts.edu.ng | info@mtts.edu.ng</p>
+        <p><?php echo esc_html(get_option('mtts_institution_name', 'Mountain-Top Theological Seminary')); ?> | www.mtts.edu.ng | info@mtts.edu.ng</p>
     </div>
 
 </body>

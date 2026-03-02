@@ -132,22 +132,36 @@ class FormShortcode {
                 $step_index = 0;
                 if ( 'multistep' === $type ) echo '<div class="mtts-form-step active" data-step="0">';
 
+                echo '<div class="mtts-form-grid" style="display: flex; flex-wrap: wrap; gap: 20px;">';
+
                 foreach ( $fields as $index => $field ) : 
                     $field_id = "field_{$index}";
                     $required = ! empty( $field['required'] ) ? 'required' : '';
                     $value    = isset( $session_data[$field_id] ) ? $session_data[$field_id] : '';
+                    $width    = isset( $field['width'] ) ? $field['width'] : 'full';
+                    
+                    $flex_basis = '100%';
+                    if ( '1/2' === $width ) $flex_basis = 'calc(50% - 10px)';
+                    if ( '1/3' === $width ) $flex_basis = 'calc(33.333% - 13.4px)';
 
                     if ( 'multistep' === $type && 'section' === $field['type'] && $index > 0 ) :
                         $step_index++;
-                        echo '</div><div class="mtts-form-step" data-step="' . $step_index . '">';
+                        echo '</div></div><div class="mtts-form-step" data-step="' . $step_index . '"><div class="mtts-form-grid" style="display: flex; flex-wrap: wrap; gap: 20px;">';
                     endif;
                 ?>
-                    <div class="mtts-form-group" style="margin-bottom: 20px;">
+                    <div class="mtts-form-group" style="flex: 0 0 <?php echo $flex_basis; ?>; margin-bottom: 25px; box-sizing: border-box;">
                         <?php if ( 'section' !== $field['type'] && 'html' !== $field['type'] && 'hidden' !== $field['type'] ) : ?>
-                            <label for="<?php echo $field_id; ?>">
-                                <strong><?php echo esc_html( $field['label'] ); ?></strong>
-                                <?php if ( $required ) : ?><span style="color:red;">*</span><?php endif; ?>
+                            <label for="<?php echo $field_id; ?>" style="display: block; font-weight: 600; color: #1e293b; margin-bottom: 8px; font-size: 0.95rem;">
+                                <?php if ( ! empty( $field['icon'] ) ) : ?>
+                                    <span class="dashicons <?php echo esc_attr( $field['icon'] ); ?>" style="font-size: 18px; width: 18px; vertical-align: middle; margin-right: 5px; color: #7c3aed;"></span>
+                                <?php endif; ?>
+                                <?php echo esc_html( $field['label'] ); ?>
+                                <?php if ( $required ) : ?><span style="color:red; margin-left: 3px;">*</span><?php endif; ?>
                             </label>
+                            <?php if ( ! empty( $field['help_text'] ) ) : ?>
+                                <p class="mtts-field-help" style="margin: -5px 0 10px 0; font-size: 12px; color: #64748b; font-style: italic;"><?php echo esc_html( $field['help_text'] ); ?></p>
+                            <?php endif; ?>
+                        <?php endif; ?>
                             <br>
                         <?php endif; ?>
 
@@ -273,7 +287,7 @@ class FormShortcode {
                         <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
-
+                </div> <!-- Closing mtts-form-grid -->
                 <?php if ( 'multistep' === $type ) echo '</div>'; // Close last step ?>
 
                 <div class="mtts-form-footer" style="margin-top:30px; display:flex; gap:10px; flex-wrap:wrap;">

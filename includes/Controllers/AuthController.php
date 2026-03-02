@@ -11,6 +11,25 @@ class AuthController {
         add_shortcode( 'mtts_login_form', array( __CLASS__, 'render_login_form' ) );
         add_action( 'init', array( __CLASS__, 'handle_login' ) );
         add_action( 'wp_logout', array( __CLASS__, 'redirect_after_logout' ) );
+        
+        // Enforce Matric Number only for Students
+        add_filter( 'authenticate', array( __CLASS__, 'restrict_student_login_to_matric' ), 25, 3 );
+    }
+
+    public static function restrict_student_login_to_matric( $user, $username, $password ) {
+        if ( empty( $username ) || is_wp_error( $user ) ) {
+            return $user;
+        }
+
+        // If it's an email login attempt
+        if ( is_email( $username ) ) {
+            $check_user = get_user_by( 'email', $username );
+            if ( $check_user && in_array( 'mtts_student', (array) $check_user->roles ) ) {
+                return new \WP_Error( 'mtts_matric_required', 'Students must log in using their Matric Number, not email.' );
+            }
+        }
+
+        return $user;
     }
 
     public static function render_login_form( $atts ) {

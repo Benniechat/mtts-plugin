@@ -346,8 +346,8 @@ if ( ! defined( 'ABSPATH' ) ) {
             <div class="mtts-card" style="padding: 12px;">
                 <div class="mtts-id-card-formal">
                     <div class="mtts-id-header">
-                        <h4>Mountain-Top</h4>
-                        <p>Theological Seminary</p>
+                        <h4><?php echo esc_html(get_option('mtts_institution_name', 'Mountain-Top')); ?></h4>
+                        <p><?php echo esc_html(get_option('mtts_institution_tagline', 'Theological Seminary')); ?> </p>
                     </div>
                     <div class="mtts-id-body">
                         <div class="mtts-id-photo-frame">

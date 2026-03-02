@@ -53,6 +53,11 @@ class SettingsController {
         register_setting( 'mtts_lms_options', 'mtts_enable_admission_payments' );
         register_setting( 'mtts_lms_options', 'mtts_active_payment_gateway' );
         register_setting( 'mtts_lms_options', 'mtts_admin_bypass_payments' );
+        
+        // Branding Settings
+        register_setting( 'mtts_lms_options', 'mtts_institution_name' );
+        register_setting( 'mtts_lms_options', 'mtts_institution_tagline' );
+        register_setting( 'mtts_lms_options', 'mtts_institution_logo_url' );
 
         // SMTP Settings
         register_setting( 'mtts_lms_options', 'mtts_smtp_host' );

@@ -224,7 +224,7 @@
 
                 <div style="margin-top: 40px; padding: 20px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; font-size: 14px; color: #92400e;">
                     <span class="dashicons dashicons-shield" style="font-size: 16px; width: 16px; height: 16px;"></span> 
-                    Mountain-Top Theological Seminary is an accredited institution dedicated to spiritual excellence. Your data is protected under our privacy policy.
+                    <?php echo esc_html(get_option('mtts_institution_name', 'Mountain-Top Theological Seminary')); ?> is an accredited institution dedicated to spiritual excellence. Your data is protected under our privacy policy.
                 </div>
 
                 <button type="submit" name="mtts_admission_submit" class="mtts-submit-btn">Propagate Application <span class="dashicons dashicons-arrow-right-alt"></span></button>

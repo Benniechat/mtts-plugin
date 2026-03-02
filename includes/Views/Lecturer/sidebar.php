@@ -15,6 +15,7 @@
         <li><a href="?view=questions" class="<?php echo $view == 'questions' ? 'active' : ''; ?>"><span class="dashicons dashicons-database-add"></span> Question Bank</a></li>
         <li><a href="?view=attendance" class="<?php echo $view == 'attendance' ? 'active' : ''; ?>"><span class="dashicons dashicons-yes"></span> Attendance</a></li>
         <li><a href="?view=resources" class="<?php echo $view == 'resources' ? 'active' : ''; ?>"><span class="dashicons dashicons-book"></span> Resources</a></li>
+        <li><a href="?view=change-password" class="<?php echo $view == 'change-password' ? 'active' : ''; ?>"><span class="dashicons dashicons-shield"></span> Security</a></li>
     </ul>
 </div>
 

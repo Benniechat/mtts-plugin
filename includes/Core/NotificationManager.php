@@ -97,7 +97,7 @@ class NotificationManager {
                     <?php echo wp_kses_post( $content ); ?>
                 </div>
                 <div class="footer">
-                    &copy; <?php echo date('Y'); ?> Mountain-Top Theological Seminary. All rights reserved.
+                    &copy; <?php echo date('Y'); ?> <?php echo esc_html(get_option('mtts_institution_name', 'Mountain-Top Theological Seminary')); ?>. All rights reserved.
                 </div>
             </div>
         </body>
@@ -140,7 +140,8 @@ class NotificationManager {
      */
     public static function send_welcome_email( $user, $password ) {
         $role = reset( $user->roles );
-        $subject = "Welcome to Mountain-Top Theological Seminary - Your Portal Credentials";
+        $institution_name = get_option('mtts_institution_name', 'Mountain-Top Theological Seminary');
+        $subject = "Welcome to {$institution_name} - Your Portal Credentials";
         
         $portal_url = home_url( '/portal-login' );
         $username = $user->user_login;
@@ -166,7 +167,7 @@ class NotificationManager {
 
         $base_message = sprintf(
             "<p>Dear %s,</p>
-            <p>Welcome to the Mountain-Top Theological Seminary digital ecosystem.</p>
+            <p>Welcome to the <?php echo esc_html(get_option('mtts_institution_name', 'Mountain-Top Theological Seminary')); ?> digital ecosystem.</p>
             <p><strong>Your Access Credentials:</strong><br>
             Username: %s<br>
             Temporary Password: %s</p>

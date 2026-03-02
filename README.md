@@ -1,6 +1,6 @@
 # MTTS Learning Management System (LMS) Plugin
 
-A premium, secure, and brand-consistent Learning Management System specialized for Mid-Town Theological Seminary. This plugin transforms WordPress into a full-featured educational platform with dedicated portals for students, faculty, and administrative staff.
+A premium, secure, and brand-consistent Learning Management System specialized for Mountain-Top Theological Seminary. This plugin transforms WordPress into a full-featured educational platform with dedicated portals for students, faculty, and administrative staff.
 
 ## 🎨 Brand Identity
 

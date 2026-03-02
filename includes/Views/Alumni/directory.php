@@ -5,6 +5,7 @@
 if (!defined('ABSPATH')) exit;
 
 $current_uid = get_current_user_id();
+$is_guest = ! $current_uid;
 // Search support
 $search_q = isset($_GET['search_alumni']) ? sanitize_text_field($_GET['search_alumni']) : '';
 if (!empty($search_q)) {
@@ -148,12 +149,16 @@ $alumni       = $alumni_query->get_results();
                 <div class="st-dir-actions">
                     <a href="?view=profile&uid=<?php echo $alum->ID; ?>" class="stitch-btn-primary" style="flex:1;justify-content:center;padding:7px 12px;font-size:12px;border-radius:8px;text-decoration:none;">View Profile</a>
 
-                    <?php if ($req && $req->status === 'accepted'): ?>
-                        <a href="?view=messenger&chat_with=<?php echo $alum->ID; ?>" class="stitch-btn-outline" style="flex:1;justify-content:center;padding:7px 12px;font-size:12px;border-radius:8px;">💬 Chat</a>
-                    <?php elseif ($req && $req->status === 'pending'): ?>
-                        <span class="stitch-btn-outline" style="flex:1;justify-content:center;padding:7px 12px;font-size:12px;border-radius:8px;cursor:default;color:#9ca3af;border-color:#e5e7eb;">Pending</span>
-                    <?php else: ?>
-                        <button type="button" class="stitch-btn-outline" style="flex:1;justify-content:center;padding:7px 12px;font-size:12px;border-radius:8px;" onclick="stDirConnect(<?php echo $alum->ID; ?>, this)">🤝 Connect</button>
+                    <?php if ( ! $is_guest ) : ?>
+                        <?php if ($req && $req->status === 'accepted'): ?>
+                            <a href="?view=messenger&chat_with=<?php echo $alum->ID; ?>" class="stitch-btn-outline" style="flex:1;justify-content:center;padding:7px 12px;font-size:12px;border-radius:8px;">💬 Chat</a>
+                        <?php elseif ($req && $req->status === 'pending'): ?>
+                            <span class="stitch-btn-outline" style="flex:1;justify-content:center;padding:7px 12px;font-size:12px;border-radius:8px;cursor:default;color:#9ca3af;border-color:#e5e7eb;">Pending</span>
+                        <?php else: ?>
+                            <button type="button" class="stitch-btn-outline" style="flex:1;justify-content:center;padding:7px 12px;font-size:12px;border-radius:8px;" onclick="stDirConnect(<?php echo $alum->ID; ?>, this)">🤝 Connect</button>
+                        <?php endif; ?>
+                    <?php else : ?>
+                        <a href="<?php echo wp_login_url(get_permalink()); ?>" class="stitch-btn-outline" style="flex:1;justify-content:center;padding:7px 12px;font-size:12px;border-radius:8px; opacity:0.6;">Connect</a>
                     <?php endif; ?>
                 </div>
             </div>

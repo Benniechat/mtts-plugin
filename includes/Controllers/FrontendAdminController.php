@@ -57,6 +57,7 @@ class FrontendAdminController {
             'lecturers'=> array('title' => 'Faculty Management',   'subtitle' => 'Manage lecturer profiles and course assignments.'),
             'courses'  => array('title' => 'Academic Programs',    'subtitle' => 'Configure degrees, diplomas, and course structures.'),
             'results'  => array('title' => 'Result Verification',  'subtitle' => 'Audit and verify student academic results.'),
+            'security' => array('title' => 'Security Settings',   'subtitle' => 'Update your staff account password.'),
         );
 
         $current_title = isset($titles[$view]) ? $titles[$view] : array('title' => 'Staff Portal', 'subtitle' => '');
@@ -80,6 +81,7 @@ class FrontendAdminController {
             'admissions' => array('title' => 'Admission Processing', 'subtitle' => 'Review and process new student applications.'),
             'students'   => array('title' => 'Student Records',     'subtitle' => 'Maintain official student files and transcripts.'),
             'programs'   => array('title' => 'Academic Registry',   'subtitle' => 'Manage academic sessions and program registration.'),
+            'security'   => array('title' => 'Security Settings',   'subtitle' => 'Update your staff account password.'),
         );
 
         $current_title = isset($titles[$view]) ? $titles[$view] : array('title' => 'Staff Portal', 'subtitle' => '');
@@ -103,6 +105,7 @@ class FrontendAdminController {
             'payments' => array('title' => 'Tuition & Fee Tracking', 'subtitle' => 'Review student payments and payment receipts.'),
             'wallet'   => array('title' => 'Wallet Management',     'subtitle' => 'Manage digital wallet balances and student credits.'),
             'reports'  => array('title' => 'Financial Reporting',   'subtitle' => 'Generate and export financial statements.'),
+            'security' => array('title' => 'Security Settings',   'subtitle' => 'Update your staff account password.'),
         );
 
         $current_title = isset($titles[$view]) ? $titles[$view] : array('title' => 'Staff Portal', 'subtitle' => '');
@@ -125,6 +128,7 @@ class FrontendAdminController {
             'overview' => array('title' => 'Campus Overview',      'subtitle' => 'Manage local campus operations and students.'),
             'students' => array('title' => 'Enrollment List',      'subtitle' => 'View students registered at this campus.'),
             'centers'  => array('title' => 'Center Management',    'subtitle' => 'Coordinate local learning centers.'),
+            'security' => array('title' => 'Security Settings',   'subtitle' => 'Update your staff account password.'),
         );
 
         $current_title = isset($titles[$view]) ? $titles[$view] : array('title' => 'Staff Portal', 'subtitle' => '');
@@ -146,7 +150,9 @@ class FrontendAdminController {
         // Capture Internal View Content
         ob_start();
         $view_file = MTTS_LMS_PATH . "includes/Views/FrontendAdmin/{$base_slug}-{$view}.php";
-        if ( file_exists( $view_file ) ) {
+        if ( $view === 'security' ) {
+            \MttsLms\Controllers\Student\StudentDashboardController::render_change_password();
+        } elseif ( file_exists( $view_file ) ) {
             include $view_file;
         } else {
             include MTTS_LMS_PATH . "includes/Views/FrontendAdmin/{$base_slug}-overview.php";

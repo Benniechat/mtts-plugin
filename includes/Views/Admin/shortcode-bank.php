@@ -9,26 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-// Get shortcodes from the bank (we'll need to expose them or replicate the list)
-$shortcodes = array(
-    'mtts_user_name'    => 'Displays the current user\'s display name.',
-    'mtts_user_email'   => 'Displays the current user\'s email address.',
-    'mtts_user_matric'  => 'Displays the current student\'s matriculation number.',
-    'mtts_user_program' => 'Displays the current student\'s enrolled program name.',
-    'mtts_user_level'   => 'Displays the current student\'s academic level.',
-    'mtts_today'        => 'Displays today\'s date in the site\'s format.',
-    'mtts_site_name'    => 'Displays the name of the website.',
-    'mtts_portal_url'   => 'Displays the URL to the portal login page.',
-    'mtts_dashboard_url'=> 'Displays the dynamic dashboard URL based on user role.',
-    'mtts_id_card'      => 'Renders the student ID card component.',
-    'mtts_exam_results' => 'Renders the student exam results component.',
-    'mtts_wallet'       => 'Renders the student wallet/balance component.',
-    'mtts_badges'       => 'Renders the student\'s earned badges.',
-    'mtts_translator'         => 'Renders the Google Translate widget.',
-    'mtts_noticeboard'        => 'Renders the upcoming events noticeboard.',
-    'mtts_alumni_dashboard'   => 'Renders the complete Alumni and Community Network dashboard.',
-    'mtts_alumni_directory'   => 'Renders a standalone alumni listing and directory.',
-);
+// Get shortcodes from the bank
+$categories = ShortcodeBank::get_all_descriptions();
 ?>
 
 <div class="wrap" style="background: #0f172a; color: #f8fafc; padding: 30px; border-radius: 12px; margin-top: 20px; font-family: 'Inter', sans-serif; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);">
@@ -43,6 +25,8 @@ $shortcodes = array(
     </div>
 
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
+    <?php foreach ( $categories as $category => $shortcodes ) : ?>
+        <h2 style="grid-column: 1 / -1; color: #7c3aed; margin-top: 30px; border-bottom: 2px solid rgba(124, 58, 237, 0.2); padding-bottom: 10px;"><?php echo esc_html($category); ?></h2>
         <?php foreach ( $shortcodes as $tag => $description ) : ?>
             <div style="background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; transition: all 0.3s ease; position: relative; overflow: hidden;" class="mtts-shortcode-card">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
@@ -59,6 +43,7 @@ $shortcodes = array(
                 <div style="position: absolute; bottom: 0; right: 0; width: 60px; height: 60px; background: linear-gradient(135deg, transparent 50%, rgba(124, 58, 237, 0.05) 50%);"></div>
             </div>
         <?php endforeach; ?>
+    <?php endforeach; ?>
     </div>
 </div>
 

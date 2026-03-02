@@ -108,6 +108,11 @@ if ( in_array('mtts_campus_coordinator', $roles) || current_user_can('manage_opt
 <div class="lms-sidebar-card" style="margin-top: 12px;">
     <ul class="lms-side-nav-list">
         <li>
+            <a href="?view=security" style="color:var(--lms-text);">
+                <span class="dashicons dashicons-shield"></span> Security Settings
+            </a>
+        </li>
+        <li>
             <a href="<?php echo esc_url(home_url('/alumni-network')); ?>" style="color:var(--lms-purple);">
                 <span class="dashicons dashicons-groups"></span> Alumni Network
             </a>

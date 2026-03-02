@@ -14,7 +14,7 @@
     </style>
 </head>
 <body>
-    <h1>Mountain-Top Theological Seminary</h1>
+    <h1><?php echo esc_html(get_option('mtts_institution_name', 'Mountain-Top Theological Seminary')); ?></h1>
     <h3>Official Academic Transcript</h3>
 
     <table class="meta-table">

@@ -44,7 +44,7 @@
         <div>
             <h3 style="border-bottom:2px solid #7c3aed; padding-bottom:10px; margin-bottom:20px;">Academic Profile</h3>
             <p style="line-height:1.6; color:#555;">
-                Welcome to my academic portfolio at Mountain-Top Theological Seminary. I am currently pursuing my theological education with a focus on leadership and ministry.
+                Welcome to my academic portfolio at <?php echo esc_html(get_option('mtts_institution_name', 'Mountain-Top Theological Seminary')); ?>. I am currently pursuing my theological education with a focus on leadership and ministry.
             </p>
 
             <h4 style="margin-top:30px;">Completed Courses</h4>
@@ -65,7 +65,7 @@
             <?php endif; ?>
 
             <div style="margin-top:50px; text-align:center; padding-top:20px; border-top:1px solid #eee;">
-                <p style="font-size:0.9rem; color:#999;">Official Student Portfolio of Mountain-Top Theological Seminary</p>
+                <p style="font-size:0.9rem; color:#999;">Official Student Portfolio of <?php echo esc_html(get_option('mtts_institution_name', 'Mountain-Top Theological Seminary')); ?></p>
             </div>
         </div>
 

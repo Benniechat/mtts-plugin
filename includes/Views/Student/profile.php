@@ -8,6 +8,11 @@
         
         <div style="flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
             <div>
+                <label style="color: var(--mtts-text-light); display: block; font-size: 0.9rem;">Username (Matric Number)</label>
+                <div style="font-weight: 700; font-size: 1.1rem; color: var(--mtts-purple);"><?php echo esc_html( wp_get_current_user()->user_login ); ?></div>
+                <small style="color: #64748b; font-size: 11px;">Username is fixed and linked to your matric number.</small>
+            </div>
+            <div>
                 <label style="color: var(--mtts-text-light); display: block; font-size: 0.9rem;">Full Name</label>
                 <div style="font-weight: 600; font-size: 1.1rem;"><?php echo esc_html( wp_get_current_user()->display_name ); ?></div>
             </div>

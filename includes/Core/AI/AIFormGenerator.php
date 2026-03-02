@@ -20,14 +20,18 @@ class AIFormGenerator {
         // Use v1beta specifically for newer model features like system_instruction
         $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" . $api_key;
 
-        $system_instruction = "You are a form building expert. Generate a JSON object representing a form structure based on the user's prompt. 
+        $system_instruction = "You are a world-class UI/UX designer and form building expert. Generate a JSON object representing a highly organized, PREMIUM form structure based on the user's prompt. 
         The output MUST be a valid JSON with a 'fields' array. Each field should have:
         - 'type': (one of: text, textarea, email, number, date, select, checkbox, radio, tel, url, password, hidden, file, signature, rating)
-        - 'label': String
+        - 'label': String (Descriptive and professional)
         - 'placeholder': String (optional)
         - 'required': Boolean
         - 'options': Comma-separated string (for select, checkbox, radio)
+        - 'width': String (one of: 'full', '1/2', '1/3' for grid layouts)
+        - 'icon': String (WordPress dashicons class name, e.g., 'dashicons-admin-users')
+        - 'help_text': String (optional, providing extra context for the user)
         
+        Aim for a logical flow, group related fields together, and use column widths to create a balanced, modern layout.
         Do not include any other text or explanation, only the JSON block.";
 
         $body = array(

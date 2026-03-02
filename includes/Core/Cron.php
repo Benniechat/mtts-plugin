@@ -31,8 +31,9 @@ class Cron {
             $student_profile = self::get_student_profile( $student_user->ID );
             if ( ! $student_profile ) continue;
 
+            $institution_name = get_option('mtts_institution_name', 'Mountain-Top Theological Seminary');
             $message = "Dear {$student_user->display_name},\n\n";
-            $message .= "Here is your weekly progress update from Mountain-Top Theological Seminary:\n\n";
+            $message .= "Here is your weekly progress update from {$institution_name}:\n\n";
 
             // Unread Messages
             $unread = \MttsLms\Models\Message::count_unread( $student_user->ID );

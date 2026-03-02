@@ -71,6 +71,7 @@ class MttsLms {
         \MttsLms\Controllers\Admin\BulkAdmissionController::init();
         \MttsLms\Controllers\Admin\ReportsController::init();
         \MttsLms\Controllers\Admin\SettingsController::init();
+        \MttsLms\Controllers\Admin\MockDataController::init();
         \MttsLms\Controllers\ReceiptController::init();
         \MttsLms\Controllers\PdfController::init();
         \MttsLms\Controllers\FrontendController::init();

@@ -1,14 +1,14 @@
 <?php
 /**
- * Shared Top Navigation for MFM LMS Enterprise UI
+ * MTTS Enterprise LMS - Scoped Styles (LinkedIn Inspired)
  */
 $user = wp_get_current_user();
 ?>
 <div class="mtts-top-nav">
     <div class="mtts-top-nav-left">
         <div class="mtts-logo-container">
-            <!-- MFM Logo -->
-            <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo-mtts.jpg'; ?>" alt="MTTS Logo" onerror="this.style.display='none'" style="height: 40px;">
+            <!-- MTTS Logo -->
+            <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo-mtts.jpg'; ?>" alt="MTTS Logo" style="height: 40px;">
         </div>
         <div class="mtts-platform-name">
             Mountain-Top Theological Seminary LMS
@@ -38,7 +38,7 @@ $user = wp_get_current_user();
         </div>
 
         <div class="mtts-user-dropdown" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-            <img src="<?php echo get_avatar_url( $user->ID ); ?>" class="mtts-avatar" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--mfm-gold);">
+            <img src="<?php echo get_avatar_url( $user->ID ); ?>" class="mtts-avatar" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--lms-gold);">
             <span class="dashicons dashicons-arrow-down-alt2" style="font-size: 14px; width: 14px; height: 14px; opacity: 0.7;"></span>
         </div>
     </div>

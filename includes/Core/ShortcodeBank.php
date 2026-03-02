@@ -13,6 +13,9 @@ class ShortcodeBank {
     public static function init() {
         $shortcodes = self::get_registered_shortcodes();
 
+        // Allow other components to add shortcodes via filter
+        $shortcodes = apply_filters( 'mtts_lms_registered_shortcodes', $shortcodes );
+
         foreach ( $shortcodes as $tag => $callback ) {
             add_shortcode( $tag, array( __CLASS__, $callback ) );
         }
@@ -46,6 +49,23 @@ class ShortcodeBank {
         );
     }
 
+    /**
+     * Get dynamic forms from database
+     */
+    public static function get_dynamic_forms() {
+        global $wpdb;
+        $table = $wpdb->prefix . 'mtts_forms';
+        // Check if table exists
+        if($wpdb->get_var("SHOW TABLES LIKE '$table'") != $table) return array();
+        
+        $forms = $wpdb->get_results("SELECT title, form_slug FROM {$table}");
+        $dynamic = array();
+        foreach($forms as $f) {
+            $dynamic['mtts_form slug="' . $f->form_slug . '"'] = 'Form: ' . $f->title;
+        }
+        return $dynamic;
+    }
+
     public static function get_all_descriptions() {
         return array(
             'General & User Data' => array(
@@ -77,11 +97,18 @@ class ShortcodeBank {
             ),
             'Portals & Forms' => array(
                 'mtts_login_form'      => 'Renders the unified login portal (Student, Staff, and Alumni).',
-                'mtts_form slug="abc"' => 'Renders a custom form created with the Form Builder.',
                 'mtts_alumni_directory' => 'Renders the community directory for networking.',
                 'mtts_change_password' => 'Renders the secure password update form.',
             )
         );
+
+        // Add Dynamic Forms
+        $forms = self::get_dynamic_forms();
+        if ( !empty($forms) ) {
+            $categories['Dynamic Discovery: Forms'] = $forms;
+        }
+
+        return apply_filters( 'mtts_lms_shortcode_descriptions', $categories );
     }
 
     public static function get_user_name() {

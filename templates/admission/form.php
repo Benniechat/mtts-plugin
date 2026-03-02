@@ -145,8 +145,8 @@
             </div>
         <?php else: ?>
             <div class="mtts-form-header">
-                <h2>Student Admission Form</h2>
-            <p>Welcome to the MTTS Online Application Portal. Please fill in the details below correctly. Your progress is saved automatically.</p>
+                <h2>Mountain-Top Theological Seminary Enrollment</h2>
+                <p>Equipping for Spiritual Excellence</p>
             </div>
             
             <form method="post" action="" enctype="multipart/form-data" class="mtts-form mtts-form-body">
@@ -176,7 +176,7 @@
                 <div class="mtts-form-grid">
                     <div class="mtts-form-group" style="grid-column: span 2;">
                         <label for="denomination">Current Denomination / Local Church</label>
-                        <input type="text" name="denomination" id="denomination" class="mtts-form-control" placeholder="e.g. MFM Worldwide">
+                        <input type="text" name="denomination" id="denomination" class="mtts-form-control" placeholder="e.g. MTTS Fellowship">
                     </div>
                 </div>
 

@@ -72,6 +72,9 @@ if ( in_array('mtts_campus_coordinator', $roles) || current_user_can('manage_opt
 
 <!-- Left Sidebar Column: LinkedIn Style -->
 <div class="lms-sidebar-card">
+    <div style="text-align: center; padding: 20px 0 10px 0;">
+        <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo-mtts.jpg'; ?>" alt="MTTS Logo" style="height: 50px;">
+    </div>
     <div class="lms-side-user-info">
         <img src="<?php echo get_avatar_url( $user->ID ); ?>" alt="Profile">
         <h3 style="font-size:16px; margin: 4px 0;">Staff Portal</h3>

@@ -25,11 +25,12 @@
         <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">Print Admission Letter</button>
     </div>
 
-    <div class="header">
-        <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo-mtts.jpg'; ?>" class="logo" style="border-radius: 10px;">
-        <div class="title"><?php echo esc_html(get_option('mtts_institution_name', 'Mountain-Top Theological Seminary')); ?></div>
-        <div class="subtitle">Raising Champions for the Kingdom</div>
-        <p>OFFICE OF THE REGISTRAR</p>
+    <div class="letter-header">
+        <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo-mtts.jpg'; ?>" alt="MTTS Logo" class="logo">
+        <h1>Mountain-Top Theological Seminary</h1>
+        <p>Equipping for Spiritual Excellence</p>
+    </div>
+    <p>OFFICE OF THE REGISTRAR</p>
     </div>
 
     <div class="content">

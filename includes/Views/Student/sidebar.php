@@ -1,5 +1,8 @@
 <!-- Left Sidebar Column: LinkedIn Style -->
 <div class="lms-sidebar-card">
+    <div style="text-align: center; padding: 20px 0 10px 0;">
+        <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo-mtts.jpg'; ?>" alt="MTTS Logo" style="height: 60px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+    </div>
     <div class="lms-side-user-info">
         <img src="<?php echo get_avatar_url( get_current_user_id() ); ?>" alt="Profile">
         <h3 style="font-size:16px; margin: 4px 0;"><?php echo esc_html( $student->matric_number ); ?></h3>

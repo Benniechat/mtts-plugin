@@ -81,7 +81,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <div class="mtts-admin-container mtts-lms-wrapper">
     <aside class="mtts-sidebar">
-        <div class="mtts-sidebar-logo">MTT Seminary</div>
+        <div class="mtts-sidebar-logo" style="padding: 0 32px; margin-bottom: 32px;">
+            <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo-mtts.jpg'; ?>" alt="Logo" style="height: 40px; border-radius: 4px;">
+        </div>
         <nav>
             <a href="#" class="mtts-nav-item active">
                 <span class="dashicons dashicons-dashboard"></span> Dashboard

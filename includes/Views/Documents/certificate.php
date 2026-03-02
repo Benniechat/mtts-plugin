@@ -43,11 +43,11 @@
 </head>
 <body>
     <div class="border-pattern">
-        <div class="inner-border">
+        <div class="certificate-inner">
             <div class="header">
-                <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo-mtts.jpg'; ?>" style="width: 100px; margin-bottom: 10px; border-radius: 10px;">
-                <h1 class="school-name"><?php echo esc_html(get_option('mtts_institution_name', 'Mountain-Top Theological Seminary')); ?></h1>
-                <div class="school-motto">Raising Champions for the Kingdom</div>
+                <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo-mtts.jpg'; ?>" alt="Logo" class="logo">
+                <h1>Mountain-Top Theological Seminary</h1>
+                <h2>Equipping for Spiritual Excellence</h2>
             </div>
 
             <h2 class="cert-title">Certificate of Graduation</h2>

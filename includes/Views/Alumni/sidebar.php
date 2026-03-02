@@ -1,5 +1,9 @@
 <!-- Left Sidebar Column: Facebook Style -->
 <div class="lms-sidebar-card fb-sidebar-nav" style="background:transparent; shadow:none; border:none; padding: 0;">
+    <div style="padding: 16px 16px 8px 16px; display: flex; align-items: center; gap: 10px;">
+        <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo-mtts.jpg'; ?>" alt="MTTS Logo" style="height: 36px; border-radius: 6px;">
+        <h3 style="font-size: 18px; font-weight: 800; color: var(--lms-purple); margin: 0; letter-spacing: -0.5px;">MTTS Connect+</h3>
+    </div>
     <?php 
     $user_id = get_current_user_id();
     $profile = \MttsLms\Models\AlumniProfile::get_by_user( $user_id );
@@ -7,9 +11,6 @@
     ?>
     
     <ul class="lms-side-nav-list fb-nav-list" style="padding: 0;">
-        <li style="margin-bottom: 8px; padding-left: 8px;">
-            <h3 style="font-size: 18px; font-weight: 800; color: var(--lms-purple); margin: 0; letter-spacing: -0.5px;">MTTS Connect+</h3>
-        </li>
         <?php if ( ! $is_guest ) : ?>
         <li style="margin-bottom: 2px;">
             <a href="?view=profile" style="padding: 8px; border-radius: 8px; display: flex; align-items: center; gap: 12px; font-weight: 500;">

@@ -131,9 +131,9 @@
 <div class="mtts-login-page">
     <div class="mtts-login-card">
         <div class="mtts-login-header">
-            <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo-mtts.jpg'; ?>" alt="MTTS Logo" style="height: 80px; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto;">
-            <h1>MTT Seminary LMS</h1>
-            <p>Welcome Back. Please select your portal.</p>
+            <img src="<?php echo MTTS_LMS_URL . 'assets/images/logo-mtts.jpg'; ?>" alt="MTTS Logo" style="height: 120px; margin-bottom: 20px;">
+            <h1 style="color: var(--lms-purple); font-size: 24px; margin-bottom: 10px;">Mountain-Top Theological Seminary</h1>
+            <p style="color: var(--lms-text-sub);">Student & Staff Portal</p>
         </div>
 
         <div class="mtts-login-tabs">

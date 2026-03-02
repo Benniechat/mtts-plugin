@@ -254,34 +254,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span><span class="mtts-field-type-badge">${field.type.toUpperCase()}</span> <strong style="pointer-events:none;">${field.label}</strong></span>
                     <span class="dashicons dashicons-dismiss" onclick="removeField(${index})" style="cursor:pointer; pointer-events:auto;"></span>
                 </div>
-                <div class="mtts-field-settings">
-                    <div class="full">
-                        <label>Label</label><br>
-                        <input type="text" class="widefat" value="${field.label}" onchange="updateField(${index}, 'label', this.value)">
-                    </div>
-                    <div>
-                        <label>Placeholder</label><br>
-                        <input type="text" class="widefat" value="${field.placeholder || ''}" onchange="updateField(${index}, 'placeholder', this.value)">
-                    </div>
-                    <div>
-                        <label>Required?</label><br>
-                        <select onchange="updateField(${index}, 'required', this.value === 'yes')">
-                            <option value="no" ${!field.required ? 'selected' : ''}>No</option>
-                            <option value="yes" ${field.required ? 'selected' : ''}>Yes</option>
-                        </select>
-                    </div>
-                    ${['select', 'radio', 'checkbox', 'repeater'].includes(field.type) ? `
                         <div class="full">
-                            <label>Options (comma separated)</label><br>
-                            <input type="text" class="widefat" value="${field.options || ''}" onchange="updateField(${index}, 'options', this.value)">
+                            <label>Help Text (Premium UI)</label><br>
+                            <input type="text" class="widefat" value="${field.help_text || ''}" onchange="updateField(${index}, 'help_text', this.value)" placeholder="Subtext displayed below the label">
                         </div>
-                    ` : ''}
-                    ${field.type === 'html' ? `
-                         <div class="full">
-                            <label>HTML Content</label><br>
-                            <textarea class="widefat" onchange="updateField(${index}, 'content', this.value)">${field.content || ''}</textarea>
+                        <div>
+                            <label>Width (Premium UI)</label><br>
+                            <select class="widefat" onchange="updateField(${index}, 'width', this.value)">
+                                <option value="full" ${field.width === 'full' ? 'selected' : ''}>Full Width</option>
+                                <option value="1/2" ${field.width === '1/2' ? 'selected' : ''}>Half Width (1/2)</option>
+                                <option value="1/3" ${field.width === '1/3' ? 'selected' : ''}>Third Width (1/3)</option>
+                            </select>
                         </div>
-                    ` : ''}
+                        <div>
+                            <label>Icon (Dashicon)</label><br>
+                            <input type="text" class="widefat" value="${field.icon || ''}" onchange="updateField(${index}, 'icon', this.value)" placeholder="e.g. dashicons-admin-users">
+                        </div>
+                    </div>
                 </div>
             `;
             
@@ -368,7 +357,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 label: 'New ' + btn.dataset.type,
                 placeholder: '',
                 required: false,
-                options: ''
+                options: '',
+                width: 'full',
+                icon: '',
+                help_text: ''
             });
             renderFields();
         });

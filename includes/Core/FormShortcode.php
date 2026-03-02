@@ -162,8 +162,6 @@ class FormShortcode {
                                 <p class="mtts-field-help" style="margin: -5px 0 10px 0; font-size: 12px; color: #64748b; font-style: italic;"><?php echo esc_html( $field['help_text'] ); ?></p>
                             <?php endif; ?>
                         <?php endif; ?>
-                            <br>
-                        <?php endif; ?>
 
                         <?php if ( 'textarea' === $field['type'] ) : ?>
                             <textarea name="<?php echo $field_id; ?>" id="<?php echo $field_id; ?>" class="mtts-form-control" placeholder="<?php echo esc_attr( $field['placeholder'] ); ?>" <?php echo $required; ?>><?php echo esc_textarea($value); ?></textarea>

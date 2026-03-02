@@ -28,27 +28,34 @@ class AuthController {
     }
 
     public static function handle_login() {
+        // Handle Institutional Login
         if ( isset( $_POST['mtts_login_submit'] ) && wp_verify_nonce( $_POST['_wpnonce'], 'mtts_login_action' ) ) {
-            $creds = array(
-                'user_login'    => sanitize_text_field( $_POST['mtts_username'] ),
-                'user_password' => $_POST['mtts_password'],
-                'remember'      => isset( $_POST['mtts_remember'] ),
-            );
+            self::execute_signon();
+        }
 
-            $user = wp_signon( $creds, is_ssl() );
+        // Handle Others Portal Login
+        if ( isset( $_POST['mtts_others_login_submit'] ) && wp_verify_nonce( $_POST['_wpnonce'], 'mtts_others_login_action' ) ) {
+            self::execute_signon();
+        }
+    }
 
-            if ( is_wp_error( $user ) ) {
-                // Store error in session or query arg to display on form
-                // For now, simple redirect back with error
-                wp_redirect( add_query_arg( 'login_error', 'invalid_credentials', wp_get_referer() ) );
-                exit;
-            }
+    private static function execute_signon() {
+        $creds = array(
+            'user_login'    => sanitize_text_field( $_POST['mtts_username'] ),
+            'user_password' => $_POST['mtts_password'],
+            'remember'      => isset( $_POST['mtts_remember'] ),
+        );
 
-            // Redirect based on role
-            $redirect_url = self::get_redirect_url( $user );
-            wp_redirect( $redirect_url );
+        $user = wp_signon( $creds, is_ssl() );
+
+        if ( is_wp_error( $user ) ) {
+            wp_redirect( add_query_arg( 'login_error', 'invalid_credentials', wp_get_referer() ) );
             exit;
         }
+
+        $redirect_url = self::get_redirect_url( $user );
+        wp_redirect( $redirect_url );
+        exit;
     }
 
     public static function redirect_after_logout() {

@@ -63,7 +63,7 @@ class AdmissionProcessor {
         
         global $wpdb;
         $table = $wpdb->prefix . 'mtts_students';
-        $count = $wpdb->get_var( "SELECT COUNT(*) FROM $table WHERE matric_number LIKE '$prefix%'" );
+        $count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table WHERE matric_number LIKE %s", $prefix . '%' ) );
         $sequence = str_pad( $count + 1, 3, '0', STR_PAD_LEFT );
 
         return $prefix . $sequence;

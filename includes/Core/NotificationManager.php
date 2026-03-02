@@ -83,7 +83,7 @@ class NotificationManager {
         <head>
             <style>
                 body { font-family: sans-serif; background: #f4f6f9; padding: 20px; }
-                .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; border-top: 5px solid #4b0082; }
+                .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; border-top: 5px solid #6b21a8; }
                 .header { text-align: center; margin-bottom: 30px; }
                 .footer { margin-top: 30px; font-size: 12px; color: #777; text-align: center; }
             </style>

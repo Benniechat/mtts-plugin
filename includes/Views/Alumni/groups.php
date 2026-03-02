@@ -36,7 +36,7 @@ $active_group_id = isset($_GET['group_id']) ? intval($_GET['group_id']) : null;
 }
 .st-group-card-banner {
     height: 80px;
-    background: linear-gradient(135deg, #0d27a5, #7c3aed);
+    background: linear-gradient(135deg, #6b21a8, #7c3aed);
     position: relative;
 }
 .st-group-avatar {
@@ -82,12 +82,12 @@ $active_group_id = isset($_GET['group_id']) ? intval($_GET['group_id']) : null;
         $members = \MttsLms\Models\GroupMember::get_group_members($active_group_id);
     ?>
     <!-- GROUP DETAIL VIEW -->
-    <a href="?view=groups" style="display:inline-flex;align-items:center;gap:8px;color:#0d27a5;text-decoration:none;font-weight:600;font-size:14px;margin-bottom:20px;">
+    <a href="?view=groups" style="display:inline-flex;align-items:center;gap:8px;color:#6b21a8;text-decoration:none;font-weight:600;font-size:14px;margin-bottom:20px;">
         ← Back to Ministry Circles
     </a>
 
     <div class="st-card" style="overflow:visible;margin-bottom:24px;">
-        <div style="height:160px;background:linear-gradient(135deg,#0d27a5,#7c3aed);border-radius:12px 12px 0 0;"></div>
+        <div style="height:160px;background:linear-gradient(135deg,#6b21a8,#7c3aed);border-radius:12px 12px 0 0;"></div>
         <div style="padding:24px 32px;border-radius:0 0 12px 12px;">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
                 <div>
@@ -171,7 +171,7 @@ $active_group_id = isset($_GET['group_id']) ? intval($_GET['group_id']) : null;
                     <img src="<?php echo get_avatar_url($mem->user_id); ?>" style="width:38px;height:38px;border-radius:50%;object-fit:cover;">
                     <div style="flex:1;min-width:0;">
                         <a href="?view=profile&uid=<?php echo $mem->user_id; ?>" style="font-weight:700;font-size:13px;color:#1a1a2e;text-decoration:none;"><?php echo esc_html($mem->display_name); ?></a>
-                        <div style="font-size:11px;color:#0d27a5;font-weight:600;"><?php echo ucfirst($mem->role); ?></div>
+                        <div style="font-size:11px;color:#6b21a8;font-weight:600;"><?php echo ucfirst($mem->role); ?></div>
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -208,7 +208,7 @@ $active_group_id = isset($_GET['group_id']) ? intval($_GET['group_id']) : null;
         <div class="st-group-card" onclick="window.location.href='?view=groups&group_id=<?php echo $group->id; ?>'">
             <div class="st-group-card-banner" style="background: linear-gradient(135deg, hsl(<?php echo ($group->id * 47 % 360); ?>deg, 70%, 35%), hsl(<?php echo (($group->id * 47 + 60) % 360); ?>deg, 60%, 50%));">
                 <?php if ($is_mine): ?>
-                <span style="position:absolute;top:10px;right:12px;background:rgba(255,255,255,.9);color:#0d27a5;font-size:10px;font-weight:800;padding:2px 10px;border-radius:100px;letter-spacing:.5px;">MY CIRCLE</span>
+                <span style="position:absolute;top:10px;right:12px;background:rgba(255,255,255,.9);color:#6b21a8;font-size:10px;font-weight:800;padding:2px 10px;border-radius:100px;letter-spacing:.5px;">MY CIRCLE</span>
                 <?php endif; ?>
                 <div class="st-group-avatar"><?php echo $emoji; ?></div>
             </div>

@@ -54,7 +54,7 @@
     box-sizing: border-box;
     transition: border-color .15s;
 }
-.st-form-control:focus { border-color: #0d27a5; }
+.st-form-control:focus { border-color: #6b21a8; }
 .st-form-control textarea { resize: vertical; min-height: 100px; }
 .st-grid-2 {
     display: grid;
@@ -95,7 +95,7 @@
 
         <!-- Media Section -->
         <div class="st-edit-card">
-            <div style="height:160px;background:linear-gradient(135deg,#0d27a5,#7c3aed);position:relative;overflow:hidden;">
+            <div style="height:160px;background:linear-gradient(135deg,#6b21a8,#7c3aed);position:relative;overflow:hidden;">
                 <img id="st-banner-preview" src="<?php echo esc_url($profile->banner_url ?: ''); ?>"
                      style="width:100%;height:100%;object-fit:cover;<?php echo $profile->banner_url ? '' : 'display:none;'; ?>">
                 <label class="st-upload-btn" style="position:absolute;bottom:12px;right:16px;">
@@ -108,7 +108,7 @@
                     <img id="st-avatar-preview"
                          src="<?php echo esc_url($profile->profile_picture_url ?: get_avatar_url(get_current_user_id())); ?>"
                          style="width:96px;height:96px;border-radius:50%;border:4px solid #fff;object-fit:cover;box-shadow:0 4px 16px rgba(0,0,0,.12);">
-                    <label style="position:absolute;bottom:2px;right:2px;width:30px;height:30px;border-radius:50%;background:#0d27a5;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;">
+                    <label style="position:absolute;bottom:2px;right:2px;width:30px;height:30px;border-radius:50%;background:#6b21a8;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;">
                         <span style="color:#fff;font-size:14px;">✏</span>
                         <input type="file" name="profile_pic" accept="image/*" style="display:none;" onchange="stPreviewImg(this,'st-avatar-preview')">
                     </label>
@@ -217,7 +217,7 @@
 
     <!-- Success message after redirect -->
     <?php if (isset($_GET['profile_updated'])): ?>
-    <div style="position:fixed;bottom:24px;right:24px;background:#0d27a5;color:#fff;border-radius:10px;padding:14px 22px;font-weight:600;box-shadow:0 6px 20px rgba(13,39,165,.3);animation:fadeInUp .4s ease;z-index:9999;">
+    <div style="position:fixed;bottom:24px;right:24px;background:#6b21a8;color:#fff;border-radius:10px;padding:14px 22px;font-weight:600;box-shadow:0 6px 20px rgba(13,39,165,.3);animation:fadeInUp .4s ease;z-index:9999;">
         ✓ Profile updated successfully!
     </div>
     <script>setTimeout(()=>document.querySelector('[style*="fadeInUp"]')?.remove(), 4000);</script>

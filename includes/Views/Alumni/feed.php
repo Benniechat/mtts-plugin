@@ -20,7 +20,7 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
     --stitch-bg: #f3f4f8;
     --stitch-white: #ffffff;
     --stitch-card-radius: 12px;
-    --stitch-shadow: 0 1px 4px rgba(13,39,165,0.08);
+    --stitch-shadow: 0 1px 4px rgba(107,33,168,0.08);
 }
 .stitch-feed-layout {
     display: grid;
@@ -166,7 +166,7 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
 
             <nav style="padding-top:8px;">
                 <a href="?view=feed" class="stitch-nav-item <?php echo (!isset($_GET['view']) || $_GET['view'] === 'feed') ? 'active' : ''; ?>">
-                    <span class="nav-icon" style="background:#e8ecfd;"><span class="dashicons dashicons-admin-home" style="color:var(--stitch-purple);"></span></span>
+                    <span class="nav-icon" style="background:#f5f3ff;"><span class="dashicons dashicons-admin-home" style="color:var(--stitch-purple);"></span></span>
                     Home Feed
                 </a>
                 <a href="?view=events" class="stitch-nav-item <?php echo (isset($_GET['view']) && $_GET['view'] === 'events') ? 'active' : ''; ?>">
@@ -190,7 +190,7 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
                     Alumni Resources
                 </a>
                 <a href="?view=messenger" class="stitch-nav-item <?php echo (isset($_GET['view']) && $_GET['view'] === 'messenger') ? 'active' : ''; ?>">
-                    <span class="nav-icon" style="background:#e8ecfd;"><span class="dashicons dashicons-email-alt" style="color:var(--stitch-purple);"></span></span>
+                    <span class="nav-icon" style="background:#f5f3ff;"><span class="dashicons dashicons-email-alt" style="color:var(--stitch-purple);"></span></span>
                     Messages
                 </a>
                 <a href="?view=profile-edit" class="stitch-nav-item">

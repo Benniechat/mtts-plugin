@@ -26,7 +26,7 @@ $current_uid = get_current_user_id();
     transition: box-shadow 0.2s;
 }
 .st-req-card:hover { box-shadow: 0 6px 20px rgba(13,39,165,.12); }
-.st-req-avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 3px solid #e8ecfd; }
+.st-req-avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 3px solid #f5f3ff; }
 .st-friend-row {
     display: flex;
     align-items: center;
@@ -37,7 +37,7 @@ $current_uid = get_current_user_id();
 }
 .st-friend-row:hover { background: #f9fafb; }
 .st-friend-row:last-child { border-bottom: none; }
-.st-friend-avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid #e8ecfd; }
+.st-friend-avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid #f5f3ff; }
 .st-section-card {
     background: #fff;
     border-radius: 12px;
@@ -63,12 +63,12 @@ $current_uid = get_current_user_id();
 
     <!-- PENDING REQUESTS -->
     <?php if (!empty($pending_requests)): ?>
-    <div class="st-section-card" style="margin-bottom:32px;border-left:4px solid #0d27a5;">
+    <div class="st-section-card" style="margin-bottom:32px;border-left:4px solid #6b21a8;">
         <div class="st-section-card-header">
             <h3 style="margin:0;font-size:17px;color:#1a1a2e;font-weight:700;">
                 📬 Pending Invitations
             </h3>
-            <span style="background:#e8ecfd;color:#0d27a5;border-radius:100px;padding:3px 12px;font-size:12px;font-weight:700;"><?php echo count($pending_requests); ?> New</span>
+            <span style="background:#f5f3ff;color:#6b21a8;border-radius:100px;padding:3px 12px;font-size:12px;font-weight:700;"><?php echo count($pending_requests); ?> New</span>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;padding:20px;">
             <?php foreach ($pending_requests as $req):
@@ -81,7 +81,7 @@ $current_uid = get_current_user_id();
                     <img src="<?php echo esc_url($sender_profile->profile_picture_url ?: get_avatar_url($req->sender_id)); ?>" class="st-req-avatar">
                 </a>
                 <a href="?view=profile&uid=<?php echo $req->sender_id; ?>" style="font-weight:700;font-size:14px;color:#1a1a2e;text-decoration:none;"><?php echo esc_html($sender->display_name); ?></a>
-                <div style="font-size:12px;color:#0d27a5;font-weight:600;"><?php echo esc_html(substr($sender_profile->headline ?: 'MTTS Alumni', 0, 36)); ?></div>
+                <div style="font-size:12px;color:#6b21a8;font-weight:600;"><?php echo esc_html(substr($sender_profile->headline ?: 'MTTS Alumni', 0, 36)); ?></div>
                 <?php
                 $mutual_count = 0;
                 $my_friends    = \MttsLms\Models\FriendRequest::get_friends($current_uid);
@@ -140,7 +140,7 @@ $current_uid = get_current_user_id();
             </a>
             <div style="flex:1;min-width:0;">
                 <a href="?view=profile&uid=<?php echo $friend_id; ?>" style="font-weight:700;font-size:14px;color:#1a1a2e;text-decoration:none;"><?php echo esc_html($friend->display_name); ?></a>
-                <div style="font-size:12px;color:#0d27a5;font-weight:600;"><?php echo esc_html(substr($fprofile->headline ?: 'MTTS Alumni', 0, 40)); ?></div>
+                <div style="font-size:12px;color:#6b21a8;font-weight:600;"><?php echo esc_html(substr($fprofile->headline ?: 'MTTS Alumni', 0, 40)); ?></div>
                 <?php if ($fprofile->location): ?>
                 <div style="font-size:11px;color:#9ca3af;">📍 <?php echo esc_html($fprofile->location); ?></div>
                 <?php endif; ?>
@@ -155,7 +155,7 @@ $current_uid = get_current_user_id();
     </div>
 
     <!-- Discover More -->
-    <div style="text-align:center;padding:24px;background:linear-gradient(135deg,#e8ecfd,#f3e8ff);border-radius:12px;">
+    <div style="text-align:center;padding:24px;background:linear-gradient(135deg,#f5f3ff,#f3e8ff);border-radius:12px;">
         <h4 style="margin:0 0 8px;font-size:16px;color:#1a1a2e;">Grow your network</h4>
         <p style="color:#6b7280;margin:0 0 16px;font-size:14px;">Find and connect with more MTTS alumni and ministers.</p>
         <a href="?view=directory" class="stitch-btn-primary">Browse Alumni Directory</a>

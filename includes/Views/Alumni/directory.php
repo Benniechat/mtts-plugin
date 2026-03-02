@@ -74,7 +74,7 @@ $alumni       = $alumni_query->get_results();
 }
 .st-dir-card-banner {
     height: 70px;
-    background: linear-gradient(135deg, #0d27a5, #7c3aed);
+    background: linear-gradient(135deg, #6b21a8, #7c3aed);
 }
 .st-dir-card-body { padding: 0 20px 20px; }
 .st-dir-avatar {
@@ -135,7 +135,7 @@ $alumni       = $alumni_query->get_results();
             <div class="st-dir-card-body">
                 <img src="<?php echo esc_url($alp->profile_picture_url ?: get_avatar_url($alum->ID)); ?>" class="st-dir-avatar" alt="<?php echo esc_attr($alum->display_name); ?>">
                 <h4 style="margin:12px 0 4px;font-size:16px;color:#1a1a2e;"><?php echo esc_html($alum->display_name); ?></h4>
-                <p style="color:#0d27a5;font-weight:600;font-size:12px;margin:0 0 4px;"><?php echo esc_html($alp->headline ?: 'Minister of the Gospel'); ?></p>
+                <p style="color:#6b21a8;font-weight:600;font-size:12px;margin:0 0 4px;"><?php echo esc_html($alp->headline ?: 'Minister of the Gospel'); ?></p>
                 <p style="color:#6b7280;font-size:12px;margin:0 0 6px;">
                     <?php if ($alp->location): ?>📍 <?php echo esc_html($alp->location); ?><?php endif; ?>
                 </p>

@@ -60,7 +60,7 @@ $milestones     = array_filter(array_map('trim', explode("\n", $milestones_raw))
 }
 .st-profile-banner {
     height: 200px;
-    background: linear-gradient(135deg, #0d27a5, #3b5bdb, #7c3aed);
+    background: linear-gradient(135deg, #6b21a8, #7c3aed, #7c3aed);
     position: relative;
     overflow: hidden;
 }
@@ -105,8 +105,8 @@ $milestones     = array_filter(array_map('trim', explode("\n", $milestones_raw))
 }
 .st-badge {
     display: inline-block;
-    background: #e8ecfd;
-    color: #0d27a5;
+    background: #f5f3ff;
+    color: #6b21a8;
     border-radius: 100px;
     padding: 4px 12px;
     font-size: 12px;
@@ -124,7 +124,7 @@ $milestones     = array_filter(array_map('trim', explode("\n", $milestones_raw))
 .st-timeline-icon {
     width: 44px; height: 44px;
     border-radius: 8px;
-    background: #e8ecfd;
+    background: #f5f3ff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -152,7 +152,7 @@ $milestones     = array_filter(array_map('trim', explode("\n", $milestones_raw))
                         <?php if ($profile->location): ?>
                         📍 <?php echo esc_html($profile->location); ?> &nbsp;•&nbsp;
                         <?php endif; ?>
-                        <span style="color:#0d27a5;font-weight:600;"><?php echo $friend_count; ?> Connection<?php echo $friend_count !== 1 ? 's' : ''; ?></span>
+                        <span style="color:#6b21a8;font-weight:600;"><?php echo $friend_count; ?> Connection<?php echo $friend_count !== 1 ? 's' : ''; ?></span>
                     </p>
                     <?php if ($program_name || $graduation_year): ?>
                     <p style="font-size:12px;color:#9ca3af;margin:4px 0 0;">
@@ -198,7 +198,7 @@ $milestones     = array_filter(array_map('trim', explode("\n", $milestones_raw))
                 <h4>✝ Ministry Journey</h4>
                 <div class="st-timeline-item">
                     <div class="st-timeline-icon">
-                        <span class="dashicons dashicons-building" style="color:#0d27a5;"></span>
+                        <span class="dashicons dashicons-building" style="color:#6b21a8;"></span>
                     </div>
                     <div>
                         <div style="font-weight:700;color:#1a1a2e;font-size:15px;"><?php echo esc_html($profile->current_ministry ?: 'Active Service'); ?></div>
@@ -229,7 +229,7 @@ $milestones     = array_filter(array_map('trim', explode("\n", $milestones_raw))
                 <h4>🎓 Education</h4>
                 <div class="st-timeline-item">
                     <div class="st-timeline-icon">
-                        <span class="dashicons dashicons-welcome-learn-more" style="color:#0d27a5;"></span>
+                        <span class="dashicons dashicons-welcome-learn-more" style="color:#6b21a8;"></span>
                     </div>
                     <div>
                         <div style="font-weight:700;color:#1a1a2e;font-size:15px;"><?php echo esc_html($program_name ?: 'Mid-Town Theological Seminary (MTTS)'); ?></div>
@@ -280,11 +280,11 @@ $milestones     = array_filter(array_map('trim', explode("\n", $milestones_raw))
                 <h4>📊 Network Activity</h4>
                 <div style="display:flex;gap:20px;text-align:center;">
                     <div>
-                        <div style="font-size:24px;font-weight:800;color:#0d27a5;"><?php echo $friend_count; ?></div>
+                        <div style="font-size:24px;font-weight:800;color:#6b21a8;"><?php echo $friend_count; ?></div>
                         <div style="font-size:12px;color:#6b7280;">Connections</div>
                     </div>
                     <div>
-                        <div style="font-size:24px;font-weight:800;color:#0d27a5;">
+                        <div style="font-size:24px;font-weight:800;color:#6b21a8;">
                             <?php echo count((array)\MttsLms\Models\AlumniPost::get_posts_by_user($view_user_id, 99)); ?>
                         </div>
                         <div style="font-size:12px;color:#6b7280;">Posts</div>

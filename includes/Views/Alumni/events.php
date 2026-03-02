@@ -45,7 +45,7 @@ $my_schedule = [
     min-width: 80px;
     text-align: center;
     padding: 20px 10px;
-    background: linear-gradient(180deg, #0d27a5, #3b5bdb);
+    background: linear-gradient(180deg, #6b21a8, #7c3aed);
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -75,9 +75,9 @@ $my_schedule = [
 }
 .st-events-type-btn:hover,
 .st-events-type-btn.active {
-    background: #0d27a5;
+    background: #6b21a8;
     color: #fff;
-    border-color: #0d27a5;
+    border-color: #6b21a8;
 }
 @media(max-width:768px) { .st-events-layout { grid-template-columns: 1fr; } }
 </style>
@@ -133,7 +133,7 @@ $my_schedule = [
                             🔖 Save
                         </button>
                         <?php if ($is_virtual): ?>
-                        <button class="stitch-btn-outline" style="font-size:13px;padding:7px 16px;border-radius:8px;color:#0d27a5;" onclick="alert('Link will be shared after RSVP.')">
+                        <button class="stitch-btn-outline" style="font-size:13px;padding:7px 16px;border-radius:8px;color:#6b21a8;" onclick="alert('Link will be shared after RSVP.')">
                             🔗 Join Online
                         </button>
                         <?php endif; ?>
@@ -148,13 +148,13 @@ $my_schedule = [
     <div>
         <!-- My Schedule -->
         <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;box-shadow:0 1px 4px rgba(13,39,165,.08);margin-bottom:16px;overflow:hidden;">
-            <div style="background:linear-gradient(135deg,#0d27a5,#3b5bdb);padding:16px 20px;color:#fff;">
+            <div style="background:linear-gradient(135deg,#6b21a8,#7c3aed);padding:16px 20px;color:#fff;">
                 <h4 style="margin:0;font-size:15px;font-weight:700;">📅 My Schedule</h4>
                 <p style="margin:4px 0 0;font-size:12px;opacity:.8;">You have <?php echo count($my_schedule); ?> events this week</p>
             </div>
             <?php foreach ($my_schedule as $sch): ?>
             <div style="padding:14px 20px;border-bottom:1px solid #f3f4f8;display:flex;gap:12px;align-items:center;">
-                <div style="width:8px;height:8px;border-radius:50%;background:#0d27a5;flex-shrink:0;"></div>
+                <div style="width:8px;height:8px;border-radius:50%;background:#6b21a8;flex-shrink:0;"></div>
                 <div>
                     <div style="font-weight:600;font-size:13px;color:#1a1a2e;"><?php echo esc_html($sch['title']); ?></div>
                     <div style="font-size:11px;color:#6b7280;"><?php echo esc_html($sch['when']); ?></div>
@@ -162,7 +162,7 @@ $my_schedule = [
             </div>
             <?php endforeach; ?>
             <div style="padding:12px 20px;border-bottom:1px solid #f3f4f8;">
-                <a href="#" style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#0d27a5;text-decoration:none;">
+                <a href="#" style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#6b21a8;text-decoration:none;">
                     📅 Active Schedule
                 </a>
             </div>
@@ -184,7 +184,7 @@ $my_schedule = [
         </div>
 
         <!-- Member Perks -->
-        <div style="background:linear-gradient(135deg,#e8ecfd,#f3e8ff);border-radius:12px;padding:20px;">
+        <div style="background:linear-gradient(135deg,#f5f3ff,#f3e8ff);border-radius:12px;padding:20px;">
             <h4 style="margin:0 0 8px;font-size:14px;font-weight:700;color:#1a1a2e;">🎁 Member Perks</h4>
             <p style="font-size:13px;color:#374151;margin:0 0 12px;line-height:1.6;">Get exclusive access to early registration and member-only meetups.</p>
             <a href="?view=profile" class="stitch-btn-primary" style="font-size:13px;padding:8px 16px;border-radius:8px;text-decoration:none;">View My Benefits</a>
@@ -213,7 +213,7 @@ function stRSVP(btn) {
 
 function stSaveEvent(btn) {
     btn.textContent = '✓ Saved';
-    btn.style.color = '#0d27a5';
+    btn.style.color = '#6b21a8';
     btn.disabled = true;
 }
 </script>

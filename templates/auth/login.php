@@ -24,7 +24,9 @@
         margin-bottom: 35px;
     }
     .mtts-login-header h1 {
-        color: #144bb8;
+        background: linear-gradient(135deg, #6b21a8 0%, #ea580c 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         font-weight: 700;
         font-size: 28px;
         margin-bottom: 5px;
@@ -61,12 +63,12 @@
         transition: all 0.3s;
     }
     .mtts-form-control:focus {
-        border-color: #144bb8;
+        border-color: #6b21a8;
         outline: none;
-        box-shadow: 0 0 0 3px rgba(20, 75, 184, 0.1);
+        box-shadow: 0 0 0 3px rgba(107, 33, 168, 0.1);
     }
     .mtts-btn-primary {
-        background: #144bb8;
+        background: #6b21a8;
         color: #fff;
         border: none;
         padding: 14px;
@@ -81,7 +83,7 @@
         gap: 10px;
     }
     .mtts-btn-primary:hover {
-        background: #0d3a8e;
+        background: #581c87;
     }
     .mtts-footer-links {
         margin-top: 30px;
@@ -90,7 +92,7 @@
         color: #64748b;
     }
     .mtts-footer-links a {
-        color: #144bb8;
+        color: #6b21a8;
         text-decoration: none;
         font-weight: 500;
     }
@@ -133,7 +135,7 @@
                 <label style="display:flex; align-items:center; gap:8px; color: #475569; cursor: pointer;">
                     <input type="checkbox" name="mtts_remember"> Remember me
                 </label>
-                <a href="<?php echo wp_lostpassword_url(); ?>" style="color: #144bb8; text-decoration: none;">Forgot password?</a>
+                <a href="<?php echo wp_lostpassword_url(); ?>" style="color: #6b21a8; text-decoration: none;">Forgot password?</a>
             </div>
 
             <button type="submit" name="mtts_login_submit" class="mtts-btn-primary">

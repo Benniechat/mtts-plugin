@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         color: #1e293b;
     }
     .mtts-hero-banner {
-        background: #144bb8;
+        background: linear-gradient(135deg, #6b21a8 0%, #ea580c 100%);
         border-radius: 12px;
         padding: 40px;
         color: #ffffff;
@@ -57,7 +57,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     .mtts-stat-value {
         font-size: 32px;
         font-weight: 700;
-        color: #144bb8;
+        color: #6b21a8;
     }
     .mtts-stat-trend {
         font-size: 12px;
@@ -90,7 +90,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         gap: 12px;
     }
     .mtts-card-title .dashicons {
-        color: #144bb8;
+        color: #6b21a8;
     }
     .mtts-list-item {
         padding: 16px;
@@ -103,8 +103,8 @@ if ( ! defined( 'ABSPATH' ) ) {
         align-items: center;
     }
     .mtts-badge {
-        background: #e0e7ff;
-        color: #4338ca;
+        background: #f5f3ff;
+        color: #6b21a8;
         padding: 4px 12px;
         border-radius: 20px;
         font-size: 12px;
@@ -169,11 +169,11 @@ if ( ! defined( 'ABSPATH' ) ) {
                 </div>
                 <div class="mtts-list-item" style="display: block;">
                     <div style="font-size: 14px; color: #64748b; margin-bottom: 5px;">Professor, I'm having trouble accessing the module 4 reading...</div>
-                    <div style="font-weight: 600; font-size: 12px; color: #144bb8;">John Samuel • 2h ago</div>
+                    <div style="font-weight: 600; font-size: 12px; color: #6b21a8;">John Samuel • 2h ago</div>
                 </div>
                 <div class="mtts-list-item" style="display: block;">
                     <div style="font-size: 14px; color: #64748b; margin-bottom: 5px;">Thank you for the extension on the paper!</div>
-                    <div style="font-weight: 600; font-size: 12px; color: #144bb8;">Sarah Miller • 5h ago</div>
+                    <div style="font-weight: 600; font-size: 12px; color: #6b21a8;">Sarah Miller • 5h ago</div>
                 </div>
             </div>
         </div>
@@ -183,12 +183,12 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <div class="mtts-card-title" style="margin-bottom: 20px;"><span class="dashicons dashicons-megaphone"></span> Faculty Notices</div>
                 
                 <div style="margin-bottom: 24px; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px;">
-                    <strong style="font-size: 15px; color: #144bb8; display: block; margin-bottom: 4px;">Grade submission deadline</strong>
+                    <strong style="font-size: 15px; color: #6b21a8; display: block; margin-bottom: 4px;">Grade submission deadline</strong>
                     <p style="font-size: 13px; color: #64748b; margin: 0;">Please ensure all midterm results are uploaded by Friday, 5 PM.</p>
                 </div>
 
                 <div>
-                    <strong style="font-size: 15px; color: #144bb8; display: block; margin-bottom: 4px;">New Library Resources</strong>
+                    <strong style="font-size: 15px; color: #6b21a8; display: block; margin-bottom: 4px;">New Library Resources</strong>
                     <p style="font-size: 13px; color: #64748b; margin: 0;">E-access to the Vatican Archives is now available for all faculty.</p>
                 </div>
             </div>

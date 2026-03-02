@@ -63,7 +63,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     .mtts-tracker-value {
         font-size: 32px;
         font-weight: 700;
-        color: #144bb8;
+        color: #6b21a8;
     }
     .mtts-tracker-sub {
         font-size: 12px;
@@ -99,7 +99,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         gap: 10px;
     }
     .mtts-card-title .dashicons {
-        color: #144bb8;
+        color: #6b21a8;
     }
     .mtts-lecture-item {
         padding: 16px;
@@ -120,7 +120,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         color: #64748b;
     }
     .mtts-zoom-btn {
-        background: #2D8CFF;
+        background: #ea580c;
         color: #fff;
         padding: 8px 16px;
         border-radius: 6px;
@@ -146,7 +146,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         font-weight: 600;
     }
     .mtts-id-preview {
-        background: linear-gradient(135deg, #144bb8 0%, #0d3a8e 100%);
+        background: linear-gradient(135deg, #6b21a8 0%, #ea580c 100%);
         padding: 24px;
         border-radius: 12px;
         color: #ffffff;
@@ -161,7 +161,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             <p>Matric Number: <?php echo esc_html( $student->matric_number ?: 'Pending' ); ?></p>
         </div>
         <div style="text-align: right;">
-            <div style="font-weight: 700; color: #144bb8;"><?php echo esc_html($student->current_level); ?></div>
+            <div style="font-weight: 700; color: #6b21a8;"><?php echo esc_html($student->current_level); ?></div>
             <div style="font-size: 14px; color: #64748b;">Undergraduate</div>
         </div>
     </div>
@@ -251,7 +251,7 @@ if ( ! defined( 'ABSPATH' ) ) {
             <div class="mtts-card" style="padding: 12px;">
                 <div class="mtts-id-preview">
                     <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.8; margin-bottom: 15px;">Mountain-Top Seminary Digital ID</div>
-                    <div style="width: 80px; height: 80px; background: #fff; border-radius: 50%; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center; color: #144bb8;">
+                    <div style="width: 80px; height: 80px; background: #fff; border-radius: 50%; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center; color: #6b21a8;">
                         <span class="dashicons dashicons-admin-users" style="font-size: 40px; width: 40px; height: 40px;"></span>
                     </div>
                     <div style="font-weight: 700; font-size: 16px;"><?php echo esc_html(strtoupper($student->applicant_name)); ?></div>

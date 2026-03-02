@@ -3,19 +3,19 @@
    ========================================================================== */
 
 .mtts-lms-wrapper {
-    --lms-purple: #4B0082;
-    --lms-purple-light: rgba(75, 0, 130, 0.05);
-    --lms-gold: #D4AF37;
-    --lms-gold-hover: #C39B2E;
-    --lms-bg: #F3F2EF; /* LinkedIn Gray Background */
+    --lms-purple: #6b21a8;
+    --lms-purple-light: rgba(107, 33, 168, 0.05);
+    --lms-orange: #ea580c;
+    --lms-gold: #facc15;
+    --lms-bg: #f8fafc;
     --lms-surface: #FFFFFF;
-    --lms-border: #E0E0E0;
-    --lms-text-main: #1A1A1A;
-    --lms-text-sub: #666666;
-    --lms-shadow: 0 0 0 1px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.08);
-    --lms-radius: 8px;
-    --lms-success: #057642;
-    --lms-danger: #D11124;
+    --lms-border: #e2e8f0;
+    --lms-text-main: #1e293b;
+    --lms-text-sub: #64748b;
+    --lms-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --lms-radius: 12px;
+    --lms-success: #10b981;
+    --lms-danger: #ef4444;
     
     background: var(--lms-bg);
     min-height: 500px;
@@ -333,7 +333,7 @@
 }
 
 .spiritual-gradient-text {
-    background: linear-gradient(135deg, #7c3aed 0%, #fbbf24 100%);
+    background: linear-gradient(135deg, #6b21a8 0%, #ea580c 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -432,8 +432,8 @@
    ========================================================================== */
 
 :root {
-    --stitch-blue:        #7c3aed;
-    --stitch-blue-mid:    #6d28d9;
+    --stitch-blue:        #6b21a8;
+    --stitch-blue-mid:    #581c87;
     --stitch-blue-light:  #f5f3ff;
     --stitch-text:        #1e1b2e;
     --stitch-muted:       #6b7280;

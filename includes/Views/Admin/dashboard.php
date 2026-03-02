@@ -27,7 +27,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     .mtts-header h1 {
         font-size: 24px;
         font-weight: 700;
-        color: #144bb8;
+        background: linear-gradient(135deg, #6b21a8 0%, #ea580c 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         margin: 0;
     }
     .mtts-content {
@@ -69,7 +71,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     .mtts-stat-value {
         font-size: 36px;
         font-weight: 700;
-        color: #144bb8;
+        color: #6b21a8;
     }
     .mtts-main-sections {
         display: grid;
@@ -97,10 +99,10 @@ if ( ! defined( 'ABSPATH' ) ) {
         gap: 12px;
     }
     .mtts-section-title .dashicons {
-        color: #144bb8;
+        color: #6b21a8;
     }
     .mtts-btn-link {
-        color: #144bb8;
+        color: #6b21a8;
         text-decoration: none;
         font-weight: 600;
         font-size: 14px;
@@ -225,7 +227,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                             Academic Calendar
                         </div>
                     </div>
-                    <div style="border-left: 2px solid #144bb8; padding-left: 15px; margin-bottom: 20px;">
+                    <div style="border-left: 2px solid #6b21a8; padding-left: 15px; margin-bottom: 20px;">
                         <div style="font-weight: 600; font-size: 15px;">Mid-Semester Examinations</div>
                         <div style="color: #64748b; font-size: 13px;">Nov 12 - Nov 18, 2023</div>
                     </div>
@@ -240,7 +242,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                         <span class="dashicons dashicons-megaphone"></span>
                         Faculty Notices
                     </div>
-                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 15px; color: #1e40af; font-size: 14px; line-height: 1.5;">
+                    <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; padding: 15px; color: #581c87; font-size: 14px; line-height: 1.5;">
                         <strong>Staff Meeting tomorrow</strong><br>
                         Reminder: General staff meeting via Zoom at 10:00 AM.
                     </div>
@@ -252,7 +254,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                         Smart ID Generation
                     </div>
                     <p style="font-size: 14px; color: #64748b; margin-bottom: 15px;">Auto-generate secure digital and physical ID cards for approved students.</p>
-                    <a href="#" class="button button-primary" style="background: #144bb8; border: none; width: 100%; text-align: center;">Generate Bulk IDs</a>
+                    <a href="#" class="button button-primary" style="background: #6b21a8; border: none; width: 100%; text-align: center;">Generate Bulk IDs</a>
                 </div>
             </div>
         </div>

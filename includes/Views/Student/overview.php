@@ -145,12 +145,107 @@ if ( ! defined( 'ABSPATH' ) ) {
         color: #ef4444;
         font-weight: 600;
     }
-    .mtts-id-preview {
+    .mtts-id-card-formal {
+        background: #ffffff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(107, 33, 168, 0.15);
+        border: 1px solid #e2e8f0;
+        max-width: 320px;
+        margin: 0 auto;
+        position: relative;
+    }
+    .mtts-id-header {
         background: linear-gradient(135deg, #6b21a8 0%, #ea580c 100%);
-        padding: 24px;
-        border-radius: 12px;
-        color: #ffffff;
+        padding: 24px 16px;
+        color: white;
         text-align: center;
+    }
+    .mtts-id-header h4 {
+        font-size: 14px;
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+    .mtts-id-header p {
+        font-size: 10px;
+        margin: 4px 0 0 0;
+        opacity: 0.9;
+    }
+    .mtts-id-body {
+        padding: 32px 24px;
+        text-align: center;
+    }
+    .mtts-id-photo-frame {
+        width: 120px;
+        height: 120px;
+        background: #f1f5f9;
+        border-radius: 12px;
+        margin: 0 auto 24px auto;
+        border: 4px solid #ffffff;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6b21a8;
+    }
+    .mtts-id-info h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0 0 4px 0;
+        color: #1e293b;
+    }
+    .mtts-id-info p {
+        font-size: 14px;
+        color: #64748b;
+        margin: 0 0 20px 0;
+    }
+    .mtts-id-details {
+        text-align: left;
+        background: #f8fafc;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+    }
+    .mtts-id-detail-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 12px;
+    }
+    .mtts-id-detail-row:last-child {
+        margin-bottom: 0;
+    }
+    .mtts-id-detail-label {
+        color: #94a3b8;
+        font-weight: 500;
+    }
+    .mtts-id-detail-value {
+        color: #1e293b;
+        font-weight: 600;
+    }
+    .mtts-id-qr {
+        width: 60px;
+        height: 60px;
+        background: #ffffff;
+        padding: 8px;
+        border-radius: 8px;
+        margin: 0 auto;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .mtts-id-footer {
+        padding: 12px;
+        background: #f1f5f9;
+        font-size: 10px;
+        color: #94a3b8;
+        text-align: center;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
     }
 </style>
 
@@ -249,14 +344,41 @@ if ( ! defined( 'ABSPATH' ) ) {
             </div>
 
             <div class="mtts-card" style="padding: 12px;">
-                <div class="mtts-id-preview">
-                    <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.8; margin-bottom: 15px;">Mountain-Top Seminary Digital ID</div>
-                    <div style="width: 80px; height: 80px; background: #fff; border-radius: 50%; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center; color: #6b21a8;">
-                        <span class="dashicons dashicons-admin-users" style="font-size: 40px; width: 40px; height: 40px;"></span>
+                <div class="mtts-id-card-formal">
+                    <div class="mtts-id-header">
+                        <h4>Mountain-Top</h4>
+                        <p>Theological Seminary</p>
                     </div>
-                    <div style="font-weight: 700; font-size: 16px;"><?php echo esc_html(strtoupper($student->applicant_name)); ?></div>
-                    <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">ID: <?php echo esc_html($student->matric_number ?: 'PENDING'); ?></div>
-                    <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; font-size: 10px;">VALID THROUGH 2024 SESSION</div>
+                    <div class="mtts-id-body">
+                        <div class="mtts-id-photo-frame">
+                            <span class="dashicons dashicons-admin-users" style="font-size: 60px; width: 60px; height: 60px;"></span>
+                        </div>
+                        <div class="mtts-id-info">
+                            <h3><?php echo esc_html(strtoupper($student->applicant_name)); ?></h3>
+                            <p><?php echo esc_html($student->current_level); ?> Student</p>
+                        </div>
+                        <div class="mtts-id-details">
+                            <div class="mtts-id-detail-row">
+                                <span class="mtts-id-detail-label">Matric No:</span>
+                                <span class="mtts-id-detail-value"><?php echo esc_html($student->matric_number ?: 'PENDING'); ?></span>
+                            </div>
+                            <div class="mtts-id-detail-row">
+                                <span class="mtts-id-detail-label">Department:</span>
+                                <span class="mtts-id-detail-value">Theology</span>
+                            </div>
+                            <div class="mtts-id-detail-row">
+                                <span class="mtts-id-detail-label">Issue Date:</span>
+                                <span class="mtts-id-detail-value">Oct 2023</span>
+                            </div>
+                        </div>
+                        <div class="mtts-id-qr" title="Scan to validate">
+                            <span class="dashicons dashicons-grid-view" style="font-size: 40px; width: 40px; height: 40px; color: #1e293b;"></span>
+                        </div>
+                        <div style="font-size: 10px; color: #94a3b8; margin-top: 10px; font-weight: 500;">Scan to Validate</div>
+                    </div>
+                    <div class="mtts-id-footer">
+                        Valid Through 2024 Session
+                    </div>
                 </div>
             </div>
             

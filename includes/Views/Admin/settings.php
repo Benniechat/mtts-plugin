@@ -265,7 +265,7 @@ function sendMttsTestEmail() {
     }
 
     responseSpan.innerText = 'Sending...';
-    responseSpan.style.color = 'blue';
+    responseSpan.style.color = '#6b21a8';
 
     jQuery.post(ajaxurl, {
         action: 'mtts_send_test_email',

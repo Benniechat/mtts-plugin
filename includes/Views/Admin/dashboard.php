@@ -10,253 +10,189 @@ if ( ! defined( 'ABSPATH' ) ) {
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap');
     
-    .mtts-admin-wrapper {
-        font-family: 'Lexend', sans-serif;
-        background: #f8fafc;
+    .mtts-admin-container {
+        display: flex;
         min-height: 100vh;
-        color: #1e293b;
     }
-    .mtts-header {
-        background: #ffffff;
-        padding: 24px 40px;
-        border-bottom: 1px solid #e2e8f0;
+    .mtts-sidebar {
+        width: 280px;
+        background: #1e1b2e; /* Dark slate from Stitch */
+        color: #ffffff;
+        padding: 32px 0;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column;
     }
-    .mtts-header h1 {
-        font-size: 24px;
+    .mtts-sidebar-logo {
+        padding: 0 32px;
+        margin-bottom: 48px;
         font-weight: 700;
-        background: linear-gradient(135deg, #6b21a8 0%, #ea580c 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin: 0;
-    }
-    .mtts-content {
-        padding: 40px;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-    .mtts-overview-header {
-        margin-bottom: 40px;
-    }
-    .mtts-overview-header h2 {
-        font-size: 32px;
-        font-weight: 700;
-        margin-bottom: 8px;
-    }
-    .mtts-overview-header p {
-        color: #64748b;
-        font-size: 18px;
-    }
-    .mtts-stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 24px;
-        margin-bottom: 40px;
-    }
-    .mtts-stat-card {
-        background: #ffffff;
-        padding: 32px;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        border: 1px solid #e2e8f0;
-    }
-    .mtts-stat-label {
-        color: #64748b;
-        font-size: 16px;
-        font-weight: 500;
-        margin-bottom: 12px;
-    }
-    .mtts-stat-value {
-        font-size: 36px;
-        font-weight: 700;
-        color: #6b21a8;
-    }
-    .mtts-main-sections {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 24px;
-    }
-    .mtts-section-card {
-        background: #ffffff;
-        padding: 32px;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
-        margin-bottom: 24px;
-    }
-    .mtts-section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 24px;
-    }
-    .mtts-section-title {
         font-size: 20px;
-        font-weight: 700;
+        color: #ea580c;
+    }
+    .mtts-nav-item {
+        padding: 12px 32px;
         display: flex;
         align-items: center;
         gap: 12px;
-    }
-    .mtts-section-title .dashicons {
-        color: #6b21a8;
-    }
-    .mtts-btn-link {
-        color: #6b21a8;
+        color: #a5b4fc;
         text-decoration: none;
+        transition: all 0.3s;
+        font-size: 15px;
+    }
+    .mtts-nav-item:hover, .mtts-nav-item.active {
+        background: rgba(107, 33, 168, 0.2);
+        color: #ffffff;
+        border-right: 4px solid #ea580c;
+    }
+    .mtts-nav-item .dashicons {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+    }
+    .mtts-main-content {
+        flex: 1;
+        background: #f8fafc;
+    }
+    .mtts-content-inner {
+        padding: 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .mtts-stat-card {
+        background: #ffffff;
+        padding: 24px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+    .mtts-stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 10px 0;
+        color: #1e1b2e;
+    }
+    .mtts-stat-trend {
+        font-size: 13px;
         font-weight: 600;
-        font-size: 14px;
     }
-    .mtts-data-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    .mtts-data-item {
-        padding: 16px 0;
-        border-bottom: 1px solid #f1f5f9;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .mtts-data-item:last-child {
-        border-bottom: none;
-    }
-    .mtts-item-info strong {
-        display: block;
-        font-size: 16px;
-    }
-    .mtts-item-info span {
-        color: #64748b;
-        font-size: 14px;
-    }
+    .mtts-stat-trend.up { color: #10b981; }
+    .mtts-stat-trend.down { color: #f59e0b; }
 </style>
 
-<div class="mtts-admin-wrapper">
-    <div class="mtts-header">
-        <h1>Mountain-Top Theological Seminary</h1>
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <div style="text-align: right;">
-                <div style="font-weight: 600;">Admin User</div>
-                <div style="font-size: 12px; color: #64748b;">Super Administrator</div>
-            </div>
-            <div style="width: 40px; height: 40px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                <span class="dashicons dashicons-admin-users"></span>
-            </div>
-        </div>
-    </div>
+<div class="mtts-admin-container mtts-lms-wrapper">
+    <aside class="mtts-sidebar">
+        <div class="mtts-sidebar-logo">MTT Seminary</div>
+        <nav>
+            <a href="#" class="mtts-nav-item active">
+                <span class="dashicons dashicons-dashboard"></span> Dashboard
+            </a>
+            <a href="#" class="mtts-nav-item">
+                <span class="dashicons dashicons-groups"></span> Student Records
+            </a>
+            <a href="#" class="mtts-nav-item">
+                <span class="dashicons dashicons-book-alt"></span> Course Registry
+            </a>
+            <a href="#" class="mtts-nav-item">
+                <span class="dashicons dashicons-shield"></span> Document Verification
+            </a>
+            <a href="#" class="mtts-nav-item">
+                <span class="dashicons dashicons-analytics"></span> Reports & Data
+            </a>
+            <a href="#" class="mtts-nav-item">
+                <span class="dashicons dashicons-admin-settings"></span> System Settings
+            </a>
+        </nav>
+    </aside>
 
-    <div class="mtts-content">
-        <div class="mtts-overview-header">
-            <h2>Dashboard Overview</h2>
-            <p>Institutional performance and management control.</p>
-        </div>
-
-        <div class="mtts-stats-grid">
-            <div class="mtts-stat-card">
-                <div class="mtts-stat-label">Total Students</div>
-                <div class="mtts-stat-value">1,240</div>
-            </div>
-            <div class="mtts-stat-card">
-                <div class="mtts-stat-label">Active Lecturers</div>
-                <div class="mtts-stat-value">45</div>
-            </div>
-            <div class="mtts-stat-card">
-                <div class="mtts-stat-label">Total Revenue</div>
-                <div class="mtts-stat-value">$158,400</div>
-            </div>
-        </div>
-
-        <div class="mtts-main-sections">
-            <div class="mtts-left-col">
-                <div class="mtts-section-card">
-                    <div class="mtts-section-header">
-                        <div class="mtts-section-title">
-                            <span class="dashicons dashicons-id"></span>
-                            Pending Applications
-                        </div>
-                        <a href="<?php echo admin_url('admin.php?page=mtts-applications'); ?>" class="mtts-btn-link">View All</a>
-                    </div>
-                    <ul class="mtts-data-list">
-                        <li class="mtts-data-item">
-                            <div class="mtts-item-info">
-                                <strong>John Doe</strong>
-                                <span>j.doe@email.com</span>
-                            </div>
-                            <span style="background: #f1f5f9; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;">Under Review</span>
-                        </li>
-                        <li class="mtts-data-item">
-                            <div class="mtts-item-info">
-                                <strong>Sarah Miller</strong>
-                                <span>s.miller@email.com</span>
-                            </div>
-                            <span style="background: #f1f5f9; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;">Pending</span>
-                        </li>
-                        <li class="mtts-data-item">
-                            <div class="mtts-item-info">
-                                <strong>Abraham Kwesi</strong>
-                                <span>akwesi@email.com</span>
-                            </div>
-                            <span style="background: #f1f5f9; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;">Awaiting Doc</span>
-                        </li>
-                    </ul>
+    <main class="mtts-main-content">
+        <header style="background: #ffffff; padding: 24px 40px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 20px; font-weight: 700; color: #1e1b2e;">Registrar Management Portal</div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="text-align: right;">
+                    <div style="font-weight: 700; font-size: 15px;">Dr. Aris Thorne</div>
+                    <div style="font-size: 12px; color: #64748b;">Lead Registrar</div>
                 </div>
+                <div style="width: 44px; height: 44px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #6b21a8;">
+                    <span class="dashicons dashicons-admin-users" style="color: #6b21a8;"></span>
+                </div>
+            </div>
+        </header>
 
-                <div class="mtts-section-card">
-                    <div class="mtts-section-header">
-                        <div class="mtts-section-title">
-                            <span class="dashicons dashicons-analytics"></span>
-                            Quick Reports
-                        </div>
-                    </div>
-                    <p style="color: #64748b; margin-bottom: 20px;">Instantly generate PDF or Excel reports for various seminary departments.</p>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
-                        <button class="button" style="padding: 10px; height: auto;">Students Record</button>
-                        <button class="button" style="padding: 10px; height: auto;">Financial Report</button>
-                        <button class="button" style="padding: 10px; height: auto;">LMS Engagement</button>
-                        <button class="button" style="padding: 10px; height: auto;">Faculty Load</button>
-                    </div>
+        <div class="mtts-content-inner">
+            <div style="margin-bottom: 32px;">
+                <h2 style="font-size: 28px; font-weight: 700; color: #1e1b2e; margin-bottom: 8px;">Academic Overview</h2>
+                <p style="color: #64748b; font-size: 15px;">Status report for Fall Semester 2024 admissions and registrar actions.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 32px;">
+                <div class="mtts-stat-card">
+                    <div style="color: #64748b; font-size: 14px; font-weight: 600;">New Registrations</div>
+                    <div class="mtts-stat-value">1,248</div>
+                    <div class="mtts-stat-trend up">↑ 65% of target reached</div>
+                </div>
+                <div class="mtts-stat-card">
+                    <div style="color: #64748b; font-size: 14px; font-weight: 600;">Verified Documents</div>
+                    <div class="mtts-stat-value">856</div>
+                    <div class="mtts-stat-trend up">↑ 88% Completion rate</div>
+                </div>
+                <div class="mtts-stat-card">
+                    <div style="color: #64748b; font-size: 14px; font-weight: 600;">Pending Approvals</div>
+                    <div class="mtts-stat-value">42</div>
+                    <div class="mtts-stat-trend down">↓ Down 5% from yesterday</div>
                 </div>
             </div>
 
-            <div class="mtts-right-col">
-                <div class="mtts-section-card">
-                    <div class="mtts-section-header">
-                        <div class="mtts-section-title">
-                            <span class="dashicons dashicons-calendar-alt"></span>
-                            Academic Calendar
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+                <div style="background: #ffffff; padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <h3 style="font-size: 18px; font-weight: 700; color: #1e1b2e;">Recent Student Applications</h3>
+                        <a href="#" style="color: #6b21a8; font-size: 14px; font-weight: 600; text-decoration: none;">View All</a>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">
+                            <div>
+                                <div style="font-weight: 600;">Elijah Samuel</div>
+                                <div style="font-size: 12px; color: #64748b;">ID: #MTS-9021</div>
+                            </div>
+                            <span style="background: #f5f3ff; color: #6b21a8; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">Under Review</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">
+                            <div>
+                                <div style="font-weight: 600;">Hannah Adebayo</div>
+                                <div style="font-size: 12px; color: #64748b;">ID: #MTS-8842</div>
+                            </div>
+                            <span style="background: #fdf2f8; color: #db2777; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">Urgent</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                            <div>
+                                <div style="font-weight: 600;">James Crawford</div>
+                                <div style="font-size: 12px; color: #64748b;">ID: #MTS-8551</div>
+                            </div>
+                            <span style="background: #f0fdf4; color: #16a34a; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">Verified</span>
                         </div>
                     </div>
-                    <div style="border-left: 2px solid #6b21a8; padding-left: 15px; margin-bottom: 20px;">
-                        <div style="font-weight: 600; font-size: 15px;">Mid-Semester Examinations</div>
-                        <div style="color: #64748b; font-size: 13px;">Nov 12 - Nov 18, 2023</div>
-                    </div>
-                    <div style="border-left: 2px solid #e2e8f0; padding-left: 15px;">
-                        <div style="font-weight: 600; font-size: 15px;">Seminar: Comparative Theology</div>
-                        <div style="color: #64748b; font-size: 13px;">Dec 05, 2023</div>
-                    </div>
                 </div>
 
-                <div class="mtts-section-card">
-                    <div class="mtts-section-title" style="margin-bottom: 15px;">
-                        <span class="dashicons dashicons-megaphone"></span>
-                        Faculty Notices
+                <div>
+                    <div style="background: #ffffff; padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
+                        <h3 style="font-size: 18px; font-weight: 700; color: #1e1b2e; margin-bottom: 16px;">Upcoming Deadlines</h3>
+                        <div style="margin-bottom: 16px; border-left: 3px solid #6b21a8; padding-left: 12px;">
+                            <div style="font-weight: 700; color: #6b21a8;">Registration Freeze</div>
+                            <div style="font-size: 12px; color: #64748b;">All Fall '24 applications must be processed by 5 PM.</div>
+                        </div>
+                        <div style="border-left: 3px solid #ea580c; padding-left: 12px;">
+                            <div style="font-weight: 700; color: #ea580c;">Term Opening Ceremony</div>
+                            <div style="font-size: 12px; color: #64748b;">Faculty and Staff mandatory attendance.</div>
+                        </div>
                     </div>
-                    <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; padding: 15px; color: #581c87; font-size: 14px; line-height: 1.5;">
-                        <strong>Staff Meeting tomorrow</strong><br>
-                        Reminder: General staff meeting via Zoom at 10:00 AM.
-                    </div>
-                </div>
 
-                <div class="mtts-section-card">
-                    <div class="mtts-section-title" style="margin-bottom: 15px;">
-                        <span class="dashicons dashicons-awards"></span>
-                        Smart ID Generation
+                    <div style="background: #6b21a8; padding: 24px; border-radius: 12px; color: #ffffff;">
+                        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">System Integrity</h3>
+                        <p style="font-size: 13px; opacity: 0.9; line-height: 1.5;">Next database maintenance scheduled for Saturday, 2 AM EST.</p>
+                        <button style="margin-top: 16px; width: 100%; padding: 10px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; color: white; cursor: pointer; font-weight: 600;">Run Diagnostic</button>
                     </div>
-                    <p style="font-size: 14px; color: #64748b; margin-bottom: 15px;">Auto-generate secure digital and physical ID cards for approved students.</p>
-                    <a href="#" class="button button-primary" style="background: #6b21a8; border: none; width: 100%; text-align: center;">Generate Bulk IDs</a>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 </div>

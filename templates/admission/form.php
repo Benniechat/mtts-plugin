@@ -17,7 +17,7 @@
         border: 1px solid #e2e8f0;
     }
     .mtts-form-header {
-        background: #144bb8;
+        background: linear-gradient(135deg, #6b21a8 0%, #ea580c 100%);
         padding: 48px;
         color: #ffffff;
         text-align: center;
@@ -47,7 +47,7 @@
         gap: 12px;
     }
     .mtts-section-divider .dashicons {
-        color: #144bb8;
+        color: #6b21a8;
     }
     .mtts-form-grid {
         display: grid;
@@ -74,9 +74,9 @@
         transition: all 0.3s;
     }
     .mtts-form-control:focus {
-        border-color: #144bb8;
+        border-color: #6b21a8;
         outline: none;
-        box-shadow: 0 0 0 3px rgba(20, 75, 184, 0.1);
+        box-shadow: 0 0 0 3px rgba(107, 33, 168, 0.1);
     }
     .mtts-upload-box {
         border: 2px dashed #e2e8f0;
@@ -88,11 +88,11 @@
         cursor: pointer;
     }
     .mtts-upload-box:hover {
-        border-color: #144bb8;
-        background: #eff6ff;
+        border-color: #6b21a8;
+        background: #f5f3ff;
     }
     .mtts-submit-btn {
-        background: #144bb8;
+        background: #6b21a8;
         color: #ffffff;
         padding: 16px 48px;
         border-radius: 8px;
@@ -102,10 +102,12 @@
         cursor: pointer;
         width: 100%;
         margin-top: 32px;
-        transition: background 0.3s;
+        transition: all 0.3s;
     }
     .mtts-submit-btn:hover {
-        background: #0d3a8e;
+        background: #581c87;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(107, 33, 168, 0.3);
     }
     .mtts-alert {
         padding: 20px;
@@ -131,11 +133,11 @@
                 <h3 style="font-size: 24px; margin-bottom: 15px;">What's Next?</h3>
                 <div style="max-width: 500px; margin: 0 auto; text-align: left;">
                     <div style="display: flex; gap: 15px; margin-bottom: 20px;">
-                        <div style="width: 32px; height: 32px; background: #eff6ff; color: #144bb8; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700;">1</div>
+                        <div style="width: 32px; height: 32px; background: #f5f3ff; color: #6b21a8; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700;">1</div>
                         <div><strong>Application Review</strong><br><span style="color: #64748b; font-size: 14px;">Our Academic Board will review your credentials within 7 working days.</span></div>
                     </div>
                     <div style="display: flex; gap: 15px;">
-                        <div style="width: 32px; height: 32px; background: #eff6ff; color: #144bb8; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700;">2</div>
+                        <div style="width: 32px; height: 32px; background: #fff7ed; color: #ea580c; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700;">2</div>
                         <div><strong>Admission Letter</strong><br><span style="color: #64748b; font-size: 14px;">Keep an eye on your email for your official acceptance letter and fee payment link.</span></div>
                     </div>
                 </div>
@@ -242,7 +244,7 @@
         $('input[type="file"]').on('change', function() {
             const fileName = $(this).val().split('\\').pop();
             if(fileName) {
-                $(this).closest('.mtts-upload-box').find('div').text(fileName).css('color', '#144bb8');
+                $(this).closest('.mtts-upload-box').find('div').text(fileName).css('color', '#6b21a8');
             }
         });
     });

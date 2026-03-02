@@ -11,9 +11,9 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
 ?>
 <style>
 :root {
-    --stitch-blue: #0d27a5;
-    --stitch-blue-light: #e8ecfd;
-    --stitch-blue-mid: #3b5bdb;
+    --stitch-purple: #6b21a8;
+    --stitch-purple-light: #f5f3ff;
+    --stitch-purple-mid: #7c3aed;
     --stitch-text: #1a1a2e;
     --stitch-muted: #6b7280;
     --stitch-border: #e5e7eb;
@@ -51,8 +51,8 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
     transition: background 0.15s;
 }
 .stitch-nav-item:hover, .stitch-nav-item.active {
-    background: var(--stitch-blue-light);
-    color: var(--stitch-blue);
+    background: var(--stitch-purple-light);
+    color: var(--stitch-purple);
     text-decoration: none;
 }
 .stitch-nav-item .nav-icon {
@@ -66,7 +66,7 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
     font-size: 18px;
 }
 .stitch-btn-primary {
-    background: var(--stitch-blue);
+    background: var(--stitch-purple);
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -80,11 +80,11 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
     gap: 6px;
     text-decoration: none;
 }
-.stitch-btn-primary:hover { background: var(--stitch-blue-mid); color: #fff; text-decoration: none; }
+.stitch-btn-primary:hover { background: var(--stitch-purple-mid); color: #fff; text-decoration: none; }
 .stitch-btn-outline {
     background: transparent;
-    color: var(--stitch-blue);
-    border: 1.5px solid var(--stitch-blue);
+    color: var(--stitch-purple);
+    border: 1.5px solid var(--stitch-purple);
     border-radius: 8px;
     padding: 7px 16px;
     font-weight: 600;
@@ -96,7 +96,7 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
     align-items: center;
     gap: 6px;
 }
-.stitch-btn-outline:hover { background: var(--stitch-blue-light); text-decoration: none; }
+.stitch-btn-outline:hover { background: var(--stitch-purple-light); text-decoration: none; }
 .stitch-section-title {
     font-weight: 700;
     font-size: 15px;
@@ -126,8 +126,8 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
 .feed-author-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
 .stitch-tag {
     display: inline-block;
-    background: var(--stitch-blue-light);
-    color: var(--stitch-blue);
+    background: var(--stitch-purple-light);
+    color: var(--stitch-purple);
     border-radius: 100px;
     padding: 3px 10px;
     font-size: 12px;
@@ -157,16 +157,16 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
         <div class="stitch-card" style="padding: 16px;">
             <!-- User Quick Profile -->
             <a href="?view=profile" class="stitch-nav-item" style="padding: 10px; margin-bottom: 8px; border-bottom: 1px solid var(--stitch-border); padding-bottom: 16px;">
-                <img src="<?php echo esc_url($avatar_url); ?>" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--stitch-blue);">
+                <img src="<?php echo esc_url($avatar_url); ?>" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--stitch-purple);">
                 <div>
                     <div style="font-weight:700;font-size:14px;color:var(--stitch-text);"><?php echo esc_html($u->display_name); ?></div>
-                    <div style="font-size:12px;color:var(--stitch-blue);font-weight:600;"><?php echo esc_html(substr($my_profile->headline ?: 'MTTS Alumni', 0, 32)); ?></div>
+                    <div style="font-size:12px;color:var(--stitch-purple);font-weight:600;"><?php echo esc_html(substr($my_profile->headline ?: 'MTTS Alumni', 0, 32)); ?></div>
                 </div>
             </a>
 
             <nav style="padding-top:8px;">
                 <a href="?view=feed" class="stitch-nav-item <?php echo (!isset($_GET['view']) || $_GET['view'] === 'feed') ? 'active' : ''; ?>">
-                    <span class="nav-icon" style="background:#e8ecfd;"><span class="dashicons dashicons-admin-home" style="color:var(--stitch-blue);"></span></span>
+                    <span class="nav-icon" style="background:#e8ecfd;"><span class="dashicons dashicons-admin-home" style="color:var(--stitch-purple);"></span></span>
                     Home Feed
                 </a>
                 <a href="?view=events" class="stitch-nav-item <?php echo (isset($_GET['view']) && $_GET['view'] === 'events') ? 'active' : ''; ?>">
@@ -190,7 +190,7 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
                     Alumni Resources
                 </a>
                 <a href="?view=messenger" class="stitch-nav-item <?php echo (isset($_GET['view']) && $_GET['view'] === 'messenger') ? 'active' : ''; ?>">
-                    <span class="nav-icon" style="background:#e8ecfd;"><span class="dashicons dashicons-email-alt" style="color:var(--stitch-blue);"></span></span>
+                    <span class="nav-icon" style="background:#e8ecfd;"><span class="dashicons dashicons-email-alt" style="color:var(--stitch-purple);"></span></span>
                     Messages
                 </a>
                 <a href="?view=profile-edit" class="stitch-nav-item">
@@ -287,7 +287,7 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
                     <div style="display:flex;gap:12px;align-items:center;">
                         <a href="?view=profile&uid=<?php echo $post->author_id; ?>">
-                            <img src="<?php echo esc_url($post_avatar); ?>" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--stitch-blue-light);">
+                            <img src="<?php echo esc_url($post_avatar); ?>" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--stitch-purple-light);">
                         </a>
                         <div>
                             <a href="?view=profile&uid=<?php echo $post->author_id; ?>" style="font-weight:700;font-size:14px;color:var(--stitch-text);text-decoration:none;"><?php echo esc_html($post->display_name); ?></a>
@@ -405,7 +405,7 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
             </div>
             <?php endforeach; ?>
             <div style="padding:10px 20px;border-top:1px solid var(--stitch-border);">
-                <a href="?view=directory" style="font-size:13px;font-weight:600;color:var(--stitch-blue);text-decoration:none;">View more →</a>
+                <a href="?view=directory" style="font-size:13px;font-weight:600;color:var(--stitch-purple);text-decoration:none;">View more →</a>
             </div>
         </div>
 
@@ -428,7 +428,7 @@ $all_alumni = get_users(['role' => 'mtts_alumni', 'exclude' => [$u->ID], 'number
             </div>
             <?php endforeach; ?>
             <div style="padding:10px 20px;">
-                <a href="?view=events" style="font-size:13px;font-weight:600;color:var(--stitch-blue);text-decoration:none;">View all events →</a>
+                <a href="?view=events" style="font-size:13px;font-weight:600;color:var(--stitch-purple);text-decoration:none;">View all events →</a>
             </div>
         </div>
 

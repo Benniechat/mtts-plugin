@@ -146,7 +146,7 @@
         <?php else: ?>
             <div class="mtts-form-header">
                 <h2>Student Admission Form</h2>
-                <p>Shape your calling. Join our community of scholars and spiritual leaders.</p>
+            <p>Welcome to the MTTS Online Application Portal. Please fill in the details below correctly. Your progress is saved automatically.</p>
             </div>
             
             <form method="post" action="" enctype="multipart/form-data" class="mtts-form mtts-form-body">

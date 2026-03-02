@@ -31,7 +31,7 @@
             </a>
         </li>
         <li>
-            <a href="<?php echo wp_logout_url( home_url() ); ?>" style="color:var(--mfm-danger);">
+            <a href="<?php echo wp_logout_url( home_url() ); ?>" style="color:var(--lms-danger);">
                 <span class="dashicons dashicons-exit"></span> <?php echo \MttsLms\Core\Translator::trans('logout'); ?>
             </a>
         </li>

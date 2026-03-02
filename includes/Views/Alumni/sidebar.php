@@ -81,7 +81,7 @@
     <ul class="lms-side-nav-list">
         <li>
             <?php if ( ! $is_guest ) : ?>
-            <a href="<?php echo wp_logout_url( home_url() ); ?>" style="color:var(--mfm-danger);">
+            <a href="<?php echo wp_logout_url( home_url() ); ?>" style="color:var(--lms-danger);">
                 <span class="dashicons dashicons-exit"></span> Logout
             </a>
             <?php else : ?>

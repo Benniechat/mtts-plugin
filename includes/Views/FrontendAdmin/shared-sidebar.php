@@ -118,10 +118,9 @@ if ( in_array('mtts_campus_coordinator', $roles) || current_user_can('manage_opt
             </a>
         </li>
         <li>
-            <a href="<?php echo wp_logout_url(home_url()); ?>" style="color:var(--mfm-danger);">
+            <a href="<?php echo wp_logout_url( home_url() ); ?>" style="color:var(--lms-danger);">
                 <span class="dashicons dashicons-exit"></span> Logout
             </a>
         </li>
     </ul>
 </div>
-

@@ -3,9 +3,11 @@
     <a href="#" class="page-title-action" onclick="document.getElementById('add-course-form').style.display='block'; return false;">Add New</a>
     <hr class="wp-header-end">
 
-    <div id="add-course-form" style="display: none; margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; background: #fff;">
-        <form method="post" action="<?php echo admin_url('admin-post.php'); ?>">
+    <div id="mtts-form-container" style="display: none; margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; background: #fff;">
+        <h2 id="form-title">Add New Course</h2>
+        <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" id="course-form">
             <input type="hidden" name="action" value="mtts_save_course">
+            <input type="hidden" name="id" id="course-id" value="0">
             <?php wp_nonce_field( 'mtts_save_course' ); ?>
             
             <table class="form-table">
@@ -52,8 +54,22 @@
                         </select>
                     </td>
                 </tr>
+                <tr>
+                    <th><label for="lecturer_id">Lecturer</label></th>
+                    <td>
+                        <select name="lecturer_id" id="lecturer_id">
+                            <option value="0">Unassigned</option>
+                            <?php foreach($lecturers as $lec): ?>
+                                <option value="<?php echo esc_attr($lec->ID); ?>"><?php echo esc_html($lec->display_name); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </td>
+                </tr>
             </table>
-            <p class="submit"><input type="submit" class="button button-primary" value="Save Course"></p>
+            <p class="submit">
+                <input type="submit" id="submit-btn" class="button button-primary" value="Save Course">
+                <button type="button" class="button" onclick="resetCourseForm()">Cancel</button>
+            </p>
         </form>
     </div>
 
@@ -65,6 +81,8 @@
                 <th>Unit</th>
                 <th>Level</th>
                 <th>Semester</th>
+                <th>Lecturer</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -76,11 +94,49 @@
                         <td><?php echo esc_html( $course->credit_unit ); ?></td>
                         <td><?php echo esc_html( $course->level ); ?></td>
                         <td><?php echo esc_html( $course->semester ); ?></td>
+                        <td>
+                            <?php 
+                            if ($course->lecturer_id) {
+                                $lec = get_userdata($course->lecturer_id);
+                                echo $lec ? esc_html($lec->display_name) : 'Unknown';
+                            } else {
+                                echo '<span style="color:#94a3b8;">Unassigned</span>';
+                            }
+                            ?>
+                        </td>
+                        <td>
+                            <a href="#" class="button button-small" onclick="editCourse(<?php echo htmlspecialchars(json_encode($course)); ?>); return false;">Edit</a>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>
-                <tr><td colspan="5">No courses found.</td></tr>
+                <tr><td colspan="6">No courses found.</td></tr>
             <?php endif; ?>
         </tbody>
     </table>
 </div>
+
+<script>
+function editCourse(course) {
+    document.getElementById('mtts-form-container').style.display = 'block';
+    document.getElementById('form-title').innerText = 'Edit Course: ' + course.course_title;
+    document.getElementById('course-id').value = course.id;
+    document.getElementById('course_code').value = course.course_code;
+    document.getElementById('course_title').value = course.course_title;
+    document.getElementById('credit_unit').value = course.credit_unit;
+    document.getElementById('program_id').value = course.program_id;
+    document.getElementById('level').value = course.level;
+    document.getElementById('semester').value = course.semester;
+    document.getElementById('lecturer_id').value = course.lecturer_id || 0;
+    document.getElementById('submit-btn').value = 'Update Course';
+    window.scrollTo(0, 0);
+}
+
+function resetCourseForm() {
+    document.getElementById('course-form').reset();
+    document.getElementById('course-id').value = '0';
+    document.getElementById('form-title').innerText = 'Add New Course';
+    document.getElementById('submit-btn').value = 'Save Course';
+    document.getElementById('mtts-form-container').style.display = 'none';
+}
+</script>

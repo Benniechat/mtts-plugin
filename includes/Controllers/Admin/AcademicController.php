@@ -39,14 +39,7 @@ class AcademicController {
             array( __CLASS__, 'render_programs' )
         );
 
-        add_submenu_page(
-            'mtts-lms',
-            'Settings',
-            'Settings',
-            'manage_options',
-            'mtts-settings',
-            array( __CLASS__, 'render_settings' )
-        );
+
 
         add_submenu_page(
             'mtts-lms',
@@ -101,10 +94,28 @@ class AcademicController {
             'mtts-stakeholders',
             array( __CLASS__, 'render_stakeholders' )
         );
+
+        add_submenu_page(
+            'mtts-lms',
+            'Shortcode Bank',
+            'Shortcode Bank',
+            'manage_options',
+            'mtts-shortcode-bank',
+            array( __CLASS__, 'render_shortcode_bank' )
+        );
+
+        add_submenu_page(
+            'mtts-lms',
+            'Form Entries',
+            'Form Entries',
+            'manage_options',
+            'mtts-form-entries',
+            array( __CLASS__, 'render_form_entries' )
+        );
     }
 
     public static function render_dashboard() {
-        echo '<h1>MTTS LMS Dashboard</h1>';
+        include MTTS_LMS_PATH . 'includes/Views/Admin/dashboard.php';
     }
 
     public static function render_programs() {
@@ -120,6 +131,7 @@ class AcademicController {
     public static function render_courses() {
         $courses = Course::all();
         $programs = Program::all();
+        $lecturers = get_users( array( 'role__in' => array( 'mtts_lecturer', 'administrator' ) ) );
         include MTTS_LMS_PATH . 'includes/Views/Admin/courses.php';
     }
 
@@ -130,6 +142,7 @@ class AcademicController {
 
         check_admin_referer( 'mtts_save_program' );
 
+        $id = isset( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
         $data = array(
             'name' => sanitize_text_field( $_POST['name'] ),
             'code' => sanitize_text_field( $_POST['code'] ),
@@ -138,7 +151,11 @@ class AcademicController {
             'certificate_type' => sanitize_text_field( $_POST['certificate_type'] ),
         );
 
-        Program::create( $data );
+        if ( $id ) {
+            Program::update( $id, $data );
+        } else {
+            Program::create( $data );
+        }
 
         wp_redirect( admin_url( 'admin.php?page=mtts-programs&message=saved' ) );
         exit;
@@ -151,6 +168,7 @@ class AcademicController {
 
         check_admin_referer( 'mtts_save_session' );
 
+        $id = isset( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
         $data = array(
             'name' => sanitize_text_field( $_POST['name'] ),
             'start_date' => sanitize_text_field( $_POST['start_date'] ),
@@ -158,7 +176,11 @@ class AcademicController {
             'status' => sanitize_text_field( $_POST['status'] ),
         );
 
-        Session::create( $data );
+        if ( $id ) {
+            Session::update( $id, $data );
+        } else {
+            Session::create( $data );
+        }
 
         wp_redirect( admin_url( 'admin.php?page=mtts-sessions&message=saved' ) );
         exit;
@@ -171,6 +193,7 @@ class AcademicController {
 
         check_admin_referer( 'mtts_save_course' );
 
+        $id = isset( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
         $data = array(
             'course_code' => sanitize_text_field( $_POST['course_code'] ),
             'course_title' => sanitize_text_field( $_POST['course_title'] ),
@@ -178,9 +201,14 @@ class AcademicController {
             'program_id' => intval( $_POST['program_id'] ),
             'level' => sanitize_text_field( $_POST['level'] ),
             'semester' => sanitize_text_field( $_POST['semester'] ),
+            'lecturer_id' => intval( $_POST['lecturer_id'] ),
         );
 
-        Course::create( $data );
+        if ( $id ) {
+            Course::update( $id, $data );
+        } else {
+            Course::create( $data );
+        }
 
         wp_redirect( admin_url( 'admin.php?page=mtts-courses&message=saved' ) );
         exit;
@@ -201,21 +229,29 @@ class AcademicController {
             }
         }
 
-        // Handle Event Addition
-        if ( isset( $_POST['mtts_action'] ) && $_POST['mtts_action'] == 'add_event' && check_admin_referer( 'mtts_add_event' ) ) {
-            $session = \MttsLms\Models\Session::get_active_session();
-            if ( $session ) {
-                \MttsLms\Models\Event::create( array(
-                    'title' => sanitize_text_field( $_POST['title'] ),
-                    'start_date' => sanitize_text_field( $_POST['start_date'] ),
-                    'end_date' => sanitize_text_field( $_POST['end_date'] ),
-                    'type' => sanitize_text_field( $_POST['type'] ),
-                    'description' => sanitize_textarea_field( $_POST['description'] ),
-                    'session_id' => $session->id
-                ) );
-                echo '<div class="notice notice-success"><p>Event added successfully.</p></div>';
+        // Handle Event Addition/Update
+        if ( isset( $_POST['mtts_action'] ) && $_POST['mtts_action'] == 'save_event' && check_admin_referer( 'mtts_save_event' ) ) {
+            $id = isset( $_POST['event_id'] ) ? intval( $_POST['event_id'] ) : 0;
+            $data = array(
+                'title' => sanitize_text_field( $_POST['title'] ),
+                'start_date' => sanitize_text_field( $_POST['start_date'] ),
+                'end_date' => sanitize_text_field( $_POST['end_date'] ),
+                'type' => sanitize_text_field( $_POST['type'] ),
+                'description' => sanitize_textarea_field( $_POST['description'] ),
+            );
+
+            if ( $id ) {
+                \MttsLms\Models\Event::update( $id, $data );
+                echo '<div class="notice notice-success"><p>Event updated successfully.</p></div>';
             } else {
-                echo '<div class="notice notice-error"><p>No active session found.</p></div>';
+                $session = \MttsLms\Models\Session::get_active_session();
+                if ( $session ) {
+                    $data['session_id'] = $session->id;
+                    \MttsLms\Models\Event::create( $data );
+                    echo '<div class="notice notice-success"><p>Event added successfully.</p></div>';
+                } else {
+                    echo '<div class="notice notice-error"><p>No active session found.</p></div>';
+                }
             }
         }
 
@@ -225,12 +261,18 @@ class AcademicController {
         include MTTS_LMS_PATH . 'includes/Views/Admin/calendar.php';
     }
 
-    public static function render_settings() {
-        include MTTS_LMS_PATH . 'includes/Views/Admin/settings.php';
+
+
+    public static function render_shortcode_bank() {
+        include MTTS_LMS_PATH . 'includes/Views/Admin/shortcode-bank.php';
     }
 
     public static function render_form_builder() {
         \MttsLms\Controllers\Admin\FormController::render();
+    }
+
+    public static function render_form_entries() {
+        \MttsLms\Controllers\Admin\FormEntryController::render();
     }
 
     public static function render_campus_centers() {
@@ -242,24 +284,31 @@ class AcademicController {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_die( 'Unauthorized' );
         }
-        check_admin_referer( 'mtts_save_campus_center' );
-
+        $id = isset( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
         $code = strtoupper( sanitize_text_field( $_POST['code'] ) );
 
-        // Ensure code is unique
-        $existing = \MttsLms\Models\CampusCenter::find_by_code( $code );
-        if ( $existing ) {
-            wp_redirect( add_query_arg( [ 'page' => 'mtts-campus-centers', 'error' => 'duplicate_code' ], admin_url( 'admin.php' ) ) );
-            exit;
+        // Ensure code is unique (only for new records)
+        if ( ! $id ) {
+            $existing = \MttsLms\Models\CampusCenter::find_by_code( $code );
+            if ( $existing ) {
+                wp_redirect( add_query_arg( [ 'page' => 'mtts-campus-centers', 'error' => 'duplicate_code' ], admin_url( 'admin.php' ) ) );
+                exit;
+            }
         }
 
-        \MttsLms\Models\CampusCenter::create( array(
+        $data = array(
             'name'      => sanitize_text_field( $_POST['name'] ),
             'code'      => $code,
             'city'      => sanitize_text_field( $_POST['city'] ),
             'state'     => sanitize_text_field( $_POST['state'] ),
-            'is_active' => 1,
-        ) );
+        );
+
+        if ( $id ) {
+            \MttsLms\Models\CampusCenter::update( $id, $data );
+        } else {
+            $data['is_active'] = 1;
+            \MttsLms\Models\CampusCenter::create( $data );
+        }
 
         wp_redirect( add_query_arg( [ 'page' => 'mtts-campus-centers', 'saved' => '1' ], admin_url( 'admin.php' ) ) );
         exit;

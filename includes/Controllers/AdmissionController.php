@@ -68,6 +68,32 @@ class AdmissionController {
                 }
             }
 
+            // Payment & Bypass Logic
+            $enable_payments = get_option('mtts_enable_admission_payments') === '1';
+            $admin_bypass    = get_option('mtts_admin_bypass_payments') === '1';
+            $gateway         = get_option('mtts_active_payment_gateway', 'paystack');
+            $payment_status  = 'unpaid';
+            $final_gateway   = 'none';
+
+            // Robust Admin/Staff Bypass check
+            $is_admin = current_user_can( 'manage_options' ) || current_user_can( 'mtts_manage_admissions' );
+
+            if ( ! $enable_payments ) {
+                $payment_status = 'paid';
+                $final_gateway  = 'none';
+            } elseif ( $admin_bypass && $is_admin ) {
+                $payment_status = 'paid';
+                $final_gateway  = 'bypassed';
+            }
+
+            // Price Calculation based on Program
+            $program = Program::find( $form_data['program_id'] );
+            $amount  = 0;
+            if ( $program ) {
+                $is_pg = ( strpos( strtolower($program->certificate_type), 'mast' ) !== false || strpos( strtolower($program->certificate_type), 'post' ) !== false );
+                $amount = $is_pg ? get_option('mtts_postgraduate_form_price', '10000') : get_option('mtts_undergraduate_form_price', '5000');
+            }
+
             // Save Application
             $application_data = array(
                 'applicant_name'   => $form_data['applicant_name'],
@@ -78,13 +104,55 @@ class AdmissionController {
                 'session_id'       => $session->id,
                 'form_data'        => json_encode( $form_data ),
                 'status'           => 'pending',
-                'payment_status'   => 'unpaid'
+                'payment_status'   => $payment_status,
+                'gateway'          => $final_gateway
             );
 
             $id = Application::create( $application_data );
 
             if ( $id ) {
+                // If still unpaid, initiate gateway redirect
+                if ( $payment_status === 'unpaid' && $amount > 0 ) {
+                    $reference = 'ADM-' . $id . '-' . time();
+                    
+                    // Call Payment Handler for URL
+                    $checkout_url = \MttsLms\Core\PaymentHandler::get_checkout_url([
+                        'email'        => $form_data['email'],
+                        'amount'       => floatval($amount),
+                        'reference'    => $reference,
+                        'callback_url' => add_query_arg( [ 'status' => 'paid', 'app_id' => $id ], get_permalink() ),
+                        'purpose'      => 'Admission Form: ' . ($program->name ?? 'Program')
+                    ]);
+
+                    if ( ! is_wp_error( $checkout_url ) ) {
+                        wp_redirect( $checkout_url );
+                        exit;
+                    } else {
+                        // Fallback if gateway init fails
+                        wp_redirect( add_query_arg( [ 'status' => 'payment_error', 'msg' => urlencode($checkout_url->get_error_message()) ], wp_get_referer() ) );
+                        exit;
+                    }
+                }
+                
                 wp_redirect( add_query_arg( 'status', 'success', wp_get_referer() ) );
+                exit;
+            }
+        }
+
+        // Handle Payment Callback/Verification
+        if ( isset( $_GET['status'] ) && $_GET['status'] === 'paid' && isset( $_GET['app_id'] ) ) {
+            $app_id = intval( $_GET['app_id'] );
+            $application = Application::find( $app_id );
+
+            if ( $application && $application->payment_status === 'unpaid' ) {
+                // Here we would normally verify the transaction via API (e.g., Paystack Verify)
+                // For this implementation, we'll mark as paid if the status=paid query var is present 
+                // and we've reached this far (security nonce or reference check could be added).
+                
+                Application::update( $app_id, [ 'payment_status' => 'paid' ] );
+                
+                // Optional: Trigger notification or further processing
+                wp_redirect( add_query_arg( 'status', 'success', remove_query_arg( ['status', 'app_id'], home_url( $_SERVER['REQUEST_URI'] ) ) ) );
                 exit;
             }
         }

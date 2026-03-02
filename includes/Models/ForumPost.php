@@ -27,6 +27,10 @@ class ForumPost extends Model {
             $where .= ' AND course_id = %d';
             $args[] = $course_id;
         }
+        if ( isset( $category['group_id'] ) ) {
+            $where .= ' AND group_id = %d';
+            $args[] = intval( $category['group_id'] );
+        }
 
         $sql = "SELECT * FROM {$table} {$where} ORDER BY is_pinned DESC, created_at DESC";
         return $args ? $wpdb->get_results( $wpdb->prepare( $sql, ...$args ) ) : $wpdb->get_results( $sql );

@@ -72,10 +72,16 @@ class LecturerDashboardController {
         return ob_get_clean();
     }
 
-    private static function render_classes() {
-        // Fetch courses assigned to lecturer (Assuming relation exists or logic to fetch)
-        // For now, listing all courses or a mock set
-        $courses = \MttsLms\Models\Course::all(); 
+    public static function render_classes() {
+        $user_id = get_current_user_id();
+        global $wpdb;
+        $table = $wpdb->prefix . 'mtts_courses';
+        
+        $classes = $wpdb->get_results( $wpdb->prepare(
+            "SELECT * FROM $table WHERE lecturer_id = %d ORDER BY course_title ASC",
+            $user_id
+        ) );
+
         include MTTS_LMS_PATH . 'includes/Views/Lecturer/classes.php';
     }
 

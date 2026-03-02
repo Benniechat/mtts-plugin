@@ -3,9 +3,11 @@
     <a href="#" class="page-title-action" onclick="document.getElementById('add-program-form').style.display='block'; return false;">Add New</a>
     <hr class="wp-header-end">
 
-    <div id="add-program-form" style="display: none; margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; background: #fff;">
-        <form method="post" action="<?php echo admin_url('admin-post.php'); ?>">
+    <div id="mtts-form-container" style="display: none; margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; background: #fff;">
+        <h2 id="form-title">Add New Program</h2>
+        <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" id="program-form">
             <input type="hidden" name="action" value="mtts_save_program">
+            <input type="hidden" name="id" id="program-id" value="0">
             <?php wp_nonce_field( 'mtts_save_program' ); ?>
             
             <table class="form-table">
@@ -38,7 +40,10 @@
                     </td>
                 </tr>
             </table>
-            <p class="submit"><input type="submit" class="button button-primary" value="Save Program"></p>
+            <p class="submit">
+                <input type="submit" id="submit-btn" class="button button-primary" value="Save Program">
+                <button type="button" class="button" onclick="resetProgramForm()">Cancel</button>
+            </p>
         </form>
     </div>
 
@@ -50,7 +55,7 @@
                 <th>Duration</th>
                 <th>Levels</th>
                 <th>Certificate</th>
-                <th>Created At</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -62,7 +67,9 @@
                         <td><?php echo esc_html( $program->duration_years ); ?> Years</td>
                         <td><?php echo esc_html( $program->levels ); ?></td>
                         <td><?php echo esc_html( $program->certificate_type ); ?></td>
-                        <td><?php echo esc_html( $program->created_at ); ?></td>
+                        <td>
+                            <a href="#" class="button button-small" onclick="editProgram(<?php echo htmlspecialchars(json_encode($program)); ?>); return false;">Edit</a>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>
@@ -71,3 +78,26 @@
         </tbody>
     </table>
 </div>
+
+<script>
+function editProgram(program) {
+    document.getElementById('mtts-form-container').style.display = 'block';
+    document.getElementById('form-title').innerText = 'Edit Program: ' + program.name;
+    document.getElementById('program-id').value = program.id;
+    document.getElementById('name').value = program.name;
+    document.getElementById('code').value = program.code;
+    document.getElementById('duration_years').value = program.duration_years;
+    document.getElementById('levels').value = program.levels;
+    document.getElementById('certificate_type').value = program.certificate_type;
+    document.getElementById('submit-btn').value = 'Update Program';
+    window.scrollTo(0, 0);
+}
+
+function resetProgramForm() {
+    document.getElementById('program-form').reset();
+    document.getElementById('program-id').value = '0';
+    document.getElementById('form-title').innerText = 'Add New Program';
+    document.getElementById('submit-btn').value = 'Save Program';
+    document.getElementById('mtts-form-container').style.display = 'none';
+}
+</script>

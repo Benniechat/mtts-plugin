@@ -67,17 +67,67 @@ class Message extends Model {
         $wpdb->update( $table, [ 'is_read' => 1 ], [ 'id' => $message_id ] );
     }
 
+    private static $encryption_key = 'mtts_koinonia_secure_key_2026'; // Should be in wp-config in production
+    private static $cipher = 'AES-256-CBC';
+
     /**
-     * Send a message
+     * Encrypt message body
      */
-    public static function send( $sender_id, $receiver_id, $subject, $body, $parent_id = null ) {
+    public static function encrypt_body( $plaintext ) {
+        $iv_length = openssl_cipher_iv_length( self::$cipher );
+        $iv = openssl_random_pseudo_bytes( $iv_length );
+        $ciphertext = openssl_encrypt( $plaintext, self::$cipher, self::$encryption_key, 0, $iv );
+        return base64_encode( $iv . $ciphertext );
+    }
+
+    /**
+     * Decrypt message body
+     */
+    public static function decrypt_body( $encoded_ciphertext ) {
+        $data = base64_decode( $encoded_ciphertext );
+        $iv_length = openssl_cipher_iv_length( self::$cipher );
+        $iv = substr( $data, 0, $iv_length );
+        $ciphertext = substr( $data, $iv_length );
+        return openssl_decrypt( $ciphertext, self::$cipher, self::$encryption_key, 0, $iv );
+    }
+
+    /**
+     * Send a secure message
+     */
+    public static function send( $sender_id, $receiver_id, $subject, $body, $parent_id = null, $encrypt = true ) {
+        $is_encrypted = 0;
+        if ( $encrypt ) {
+            $body = self::encrypt_body( $body );
+            $is_encrypted = 1;
+        }
+
         return self::create( [
-            'sender_id'   => $sender_id,
-            'receiver_id' => $receiver_id,
-            'subject'     => $subject,
-            'body'        => $body,
-            'parent_id'   => $parent_id,
-            'is_read'     => 0,
+            'sender_id'    => $sender_id,
+            'receiver_id'  => $receiver_id,
+            'subject'      => $subject,
+            'body'         => $body,
+            'parent_id'    => $parent_id,
+            'is_read'      => 0,
+            'is_encrypted' => $is_encrypted,
         ] );
+    }
+
+    /**
+     * Get thread with auto-decryption
+     */
+    public static function get_thread( $message_id ) {
+        global $wpdb;
+        $table = self::get_table_name();
+        $messages = $wpdb->get_results( $wpdb->prepare(
+            "SELECT * FROM {$table} WHERE id = %d OR parent_id = %d ORDER BY created_at ASC",
+            $message_id, $message_id
+        ) );
+
+        foreach ( $messages as &$msg ) {
+            if ( $msg->is_encrypted ) {
+                $msg->body = self::decrypt_body( $msg->body );
+            }
+        }
+        return $messages;
     }
 }

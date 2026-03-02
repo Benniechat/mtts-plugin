@@ -13,7 +13,7 @@ class Form extends Model {
     /**
      * Get form by slug
      */
-    public static function get_by_slug( $slug ) {
+    public static function find_by_slug( $slug ) {
         global $wpdb;
         $table = self::get_table_name();
         return $wpdb->get_row( $wpdb->prepare(
@@ -28,7 +28,7 @@ class Form extends Model {
     public static function save_form( $title, $slug, $data ) {
         global $wpdb;
         $table = self::get_table_name();
-        $exists = self::get_by_slug( $slug );
+        $exists = self::find_by_slug( $slug );
 
         if ( $exists ) {
             return $wpdb->update(

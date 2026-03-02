@@ -9,6 +9,7 @@ class Migration {
 
     public static function run() {
         self::create_tables();
+        self::ensure_alumni_columns();
     }
 
     private static function create_tables() {
@@ -31,14 +32,13 @@ class Migration {
         ) $charset_collate;";
         dbDelta( $sql );
 
-        // Table: mtts_sessions
         $table_name = $wpdb->prefix . 'mtts_sessions';
         $sql = "CREATE TABLE $table_name (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
-            name varchar(100) NOT NULL, -- e.g., 2024/2025
+            name varchar(100) NOT NULL,
             start_date date NOT NULL,
             end_date date NOT NULL,
-            status varchar(20) DEFAULT 'inactive', -- active, inactive
+            status varchar(20) DEFAULT 'inactive',
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY  (id)
         ) $charset_collate;";
@@ -53,6 +53,7 @@ class Migration {
             city varchar(100) DEFAULT '',
             state varchar(100) DEFAULT '',
             is_active tinyint(1) DEFAULT 1,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY  (id),
             UNIQUE KEY code (code)
         ) $charset_collate;";
@@ -88,6 +89,8 @@ class Migration {
             campus_center_id mediumint(9) DEFAULT NULL,
             current_level varchar(50) NOT NULL,
             admission_year int(4) NOT NULL,
+            current_gpa float DEFAULT 0,
+            cumulative_gpa float DEFAULT 0,
             date_of_birth date DEFAULT '0000-00-00',
             gender varchar(20) DEFAULT '',
             phone varchar(20) DEFAULT '',
@@ -107,11 +110,12 @@ class Migration {
              course_code varchar(20) NOT NULL UNIQUE,
              course_title varchar(255) NOT NULL,
              credit_unit int(2) NOT NULL DEFAULT 0,
+             lecturer_id bigint(20) DEFAULT 0,
              program_id mediumint(9) NOT NULL,
              level varchar(50) NOT NULL,
-             semester varchar(20) NOT NULL DEFAULT '1', -- 1 or 2
+             semester varchar(20) NOT NULL DEFAULT '1',
              department_id mediumint(9) DEFAULT 0,
-             exam_duration int(3) DEFAULT 60, -- in minutes
+             exam_duration int(3) DEFAULT 60,
              created_at datetime DEFAULT CURRENT_TIMESTAMP,
              PRIMARY KEY  (id)
          ) $charset_collate;";
@@ -126,24 +130,21 @@ class Migration {
              phone varchar(20) DEFAULT '',
              program_id mediumint(9) NOT NULL,
              session_id mediumint(9) NOT NULL,
-             form_data longtext NOT NULL, -- JSON data of the application
-             status varchar(20) DEFAULT 'pending', -- pending, approved, rejected
+             form_data longtext NOT NULL,
+             status varchar(20) DEFAULT 'pending',
              payment_status varchar(20) DEFAULT 'unpaid',
-             submitted_at datetime DEFAULT CURRENT_TIMESTAMP,
+            gateway varchar(50) DEFAULT 'none',
+            submitted_at datetime DEFAULT CURRENT_TIMESTAMP,
              PRIMARY KEY  (id)
          ) $charset_collate;";
          dbDelta( $sql );
 
-         // ... (Skipping mtts_registrations, mtts_transactions, mtts_attendance, mtts_assignments, mtts_submissions, mtts_questions for brevity in tool call, but ensuring DBDelta handles them if I don't touch them. Wait, ReplaceFileContent replaces a block. I must be careful.)
-         // Actually, I should just target the specific blocks.
-         
-         // Let's do multiple replacements.
 
          // Table: mtts_registrations (Student Course Registration)
          $table_name = $wpdb->prefix . 'mtts_registrations';
          $sql = "CREATE TABLE $table_name (
              id mediumint(9) NOT NULL AUTO_INCREMENT,
-             student_id mediumint(9) NOT NULL, -- link to mtts_students.id
+             student_id mediumint(9) NOT NULL,
              course_id mediumint(9) NOT NULL,
              session_id mediumint(9) NOT NULL,
              semester varchar(20) NOT NULL,
@@ -151,7 +152,7 @@ class Migration {
              score_exam float DEFAULT 0,
              total_score float DEFAULT 0,
              grade varchar(5) DEFAULT '',
-             status varchar(20) DEFAULT 'registered', -- registered, approved
+             status varchar(20) DEFAULT 'registered',
              created_at datetime DEFAULT CURRENT_TIMESTAMP,
              PRIMARY KEY  (id),
              UNIQUE KEY student_course (student_id, course_id, session_id)
@@ -166,9 +167,9 @@ class Migration {
              session_id mediumint(9) NOT NULL,
              reference varchar(100) NOT NULL UNIQUE,
              amount decimal(10,2) NOT NULL,
-             gateway varchar(50) NOT NULL, -- paystack, flutterwave, manual
-             status varchar(20) DEFAULT 'pending', -- pending, success, failed
-             purpose varchar(100) DEFAULT 'tuition', -- tuition, acceptance_fee, etc
+             gateway varchar(50) NOT NULL,
+             status varchar(20) DEFAULT 'pending',
+             purpose varchar(100) DEFAULT 'tuition',
              created_at datetime DEFAULT CURRENT_TIMESTAMP,
              paid_at datetime DEFAULT NULL,
              PRIMARY KEY  (id)
@@ -183,7 +184,7 @@ class Migration {
              session_id mediumint(9) NOT NULL,
              student_id mediumint(9) NOT NULL,
              class_date date NOT NULL,
-             status varchar(20) NOT NULL DEFAULT 'present', -- present, absent, excused
+             status varchar(20) NOT NULL DEFAULT 'present',
              created_at datetime DEFAULT CURRENT_TIMESTAMP,
              PRIMARY KEY  (id),
              UNIQUE KEY student_class_date (student_id, course_id, class_date)
@@ -211,7 +212,7 @@ class Migration {
              id mediumint(9) NOT NULL AUTO_INCREMENT,
              assignment_id mediumint(9) NOT NULL,
              student_id mediumint(9) NOT NULL,
-             content longtext DEFAULT '', -- Text or File URL
+             content longtext DEFAULT '',
              submitted_at datetime DEFAULT CURRENT_TIMESTAMP,
              grade float DEFAULT NULL,
              feedback longtext DEFAULT '',
@@ -231,7 +232,7 @@ class Migration {
              option_b text NOT NULL,
              option_c text DEFAULT '',
              option_d text DEFAULT '',
-             correct_option varchar(1) NOT NULL, -- a, b, c, d
+             correct_option varchar(1) NOT NULL,
              points int(3) DEFAULT 1,
              created_at datetime DEFAULT CURRENT_TIMESTAMP,
              PRIMARY KEY  (id)
@@ -247,9 +248,10 @@ class Migration {
              session_id mediumint(9) NOT NULL,
              score float DEFAULT 0,
              total_questions int(5) DEFAULT 0,
-             answers longtext DEFAULT '', -- JSON store of student answers
-             status varchar(20) DEFAULT 'started', -- started, submitted
+             answers longtext DEFAULT '',
+             status varchar(20) DEFAULT 'started',
              started_at datetime DEFAULT CURRENT_TIMESTAMP,
+             created_at datetime DEFAULT CURRENT_TIMESTAMP,
              PRIMARY KEY  (id)
          ) $charset_collate;";
          dbDelta( $sql );
@@ -260,6 +262,7 @@ class Migration {
              id mediumint(9) NOT NULL AUTO_INCREMENT,
              student_id mediumint(9) NOT NULL UNIQUE,
              balance decimal(10,2) DEFAULT 0.00,
+             created_at datetime DEFAULT CURRENT_TIMESTAMP,
              updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
              PRIMARY KEY  (id)
          ) $charset_collate;";
@@ -270,11 +273,10 @@ class Migration {
          $sql = "CREATE TABLE $table_name (
              id mediumint(9) NOT NULL AUTO_INCREMENT,
              wallet_id mediumint(9) NOT NULL,
-             type varchar(20) NOT NULL, -- credit, debit
+             type varchar(20) NOT NULL,
              amount decimal(10,2) NOT NULL,
              description varchar(255) DEFAULT '',
              reference varchar(100) DEFAULT '',
-             created_at datetime DEFAULT CURRENT_TIMESTAMP,
              created_at datetime DEFAULT CURRENT_TIMESTAMP,
              PRIMARY KEY  (id)
          ) $charset_collate;";
@@ -288,7 +290,7 @@ class Migration {
              start_date date NOT NULL,
              end_date date DEFAULT NULL,
              description text DEFAULT '',
-             type varchar(50) DEFAULT 'general', -- holiday, exam, resumption, deadline
+             type varchar(50) DEFAULT 'general',
              session_id mediumint(9) NOT NULL,
              created_at datetime DEFAULT CURRENT_TIMESTAMP,
              PRIMARY KEY  (id)
@@ -332,6 +334,7 @@ class Migration {
              subject varchar(255) DEFAULT '',
              body longtext NOT NULL,
              is_read tinyint(1) DEFAULT 0,
+             is_encrypted tinyint(1) DEFAULT 0,
              parent_id mediumint(9) DEFAULT NULL,
              created_at datetime DEFAULT CURRENT_TIMESTAMP,
              PRIMARY KEY  (id),
@@ -346,6 +349,7 @@ class Migration {
              id mediumint(9) NOT NULL AUTO_INCREMENT,
              author_id bigint(20) NOT NULL,
              course_id mediumint(9) DEFAULT NULL,
+             group_id bigint(20) DEFAULT NULL,
              category varchar(50) DEFAULT 'general',
              title varchar(255) NOT NULL,
              body longtext NOT NULL,
@@ -439,34 +443,54 @@ class Migration {
              title varchar(255) NOT NULL,
              form_slug varchar(100) NOT NULL,
              form_data longtext NOT NULL,
+             submission_deadline datetime DEFAULT NULL,
              is_active tinyint(1) DEFAULT 1,
              created_at datetime DEFAULT CURRENT_TIMESTAMP,
              PRIMARY KEY  (id),
              UNIQUE KEY form_slug (form_slug)
          ) $charset_collate;";
          dbDelta( $sql );
-
+ 
          // Table: mtts_form_entries
          $table_name = $wpdb->prefix . 'mtts_form_entries';
          $sql = "CREATE TABLE $table_name (
              id mediumint(9) NOT NULL AUTO_INCREMENT,
              form_id mediumint(9) NOT NULL,
-             user_id bigint(20) DEFAULT NULL,
-             entry_data longtext NOT NULL,
-             created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            user_id bigint(20) DEFAULT NULL,
+            entry_data longtext NOT NULL,
+            status varchar(20) DEFAULT 'pending',
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
              PRIMARY KEY  (id),
              KEY form_id (form_id)
          ) $charset_collate;";
          dbDelta( $sql );
-        // Table: mtts_alumni_posts (Ministry Feed)
+ 
+         // Table: mtts_form_sessions (Save & Continue Later)
+         $table_name = $wpdb->prefix . 'mtts_form_sessions';
+         $sql = "CREATE TABLE $table_name (
+             id bigint(20) NOT NULL AUTO_INCREMENT,
+             form_id mediumint(9) NOT NULL,
+             user_id bigint(20) DEFAULT NULL,
+             session_key varchar(100) NOT NULL,
+             partial_data longtext NOT NULL,
+             last_step_index int DEFAULT 0,
+             updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+             PRIMARY KEY  (id),
+             UNIQUE KEY session_key (session_key),
+             KEY form_user (form_id, user_id)
+         ) $charset_collate;";
+         dbDelta( $sql );
+        // Table: mtts_alumni_posts
         $table_name = $wpdb->prefix . 'mtts_alumni_posts';
         $sql = "CREATE TABLE $table_name (
             id bigint(20) NOT NULL AUTO_INCREMENT,
             author_id bigint(20) NOT NULL,
             content longtext NOT NULL,
-            type varchar(20) DEFAULT 'social', -- social, professional, job_opening
-            job_details longtext DEFAULT NULL, -- JSON for LinkedIn-style job info
+            type varchar(20) DEFAULT 'social',
+            job_details longtext DEFAULT NULL,
             media_url varchar(500) DEFAULT NULL,
+            media_type varchar(20) DEFAULT 'text',
             likes_count int DEFAULT 0,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY  (id),
@@ -481,11 +505,18 @@ class Migration {
             user_id bigint(20) NOT NULL UNIQUE,
             headline varchar(255) DEFAULT '',
             current_ministry varchar(255) DEFAULT '',
-            gifts_graces text DEFAULT '', -- Theological skills
-            ministry_milestones longtext DEFAULT '', -- Timeline of appointments
-            skills text DEFAULT '', -- Comma separated or JSON
-            experience longtext DEFAULT '', -- JSON list of past roles
+            location varchar(100) DEFAULT '',
+            interests text DEFAULT '',
+            profile_picture_url varchar(255) DEFAULT '',
+            banner_url varchar(255) DEFAULT '',
+            gifts_graces text DEFAULT '',
+            ministry_milestones text DEFAULT '',
+            skills text DEFAULT '',
+            experience longtext DEFAULT '',
             bio text DEFAULT '',
+            graduation_year int DEFAULT NULL,
+            occupation varchar(255) DEFAULT '',
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
             updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY  (id)
         ) $charset_collate;";
@@ -498,10 +529,93 @@ class Migration {
             post_id bigint(20) NOT NULL,
             author_id bigint(20) NOT NULL,
             content text NOT NULL,
+            likes_count int DEFAULT 0,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY  (id),
             KEY post_id (post_id)
         ) $charset_collate;";
         dbDelta( $sql );
+
+        // Table: mtts_groups
+        $table_name = $wpdb->prefix . 'mtts_groups';
+        $sql = "CREATE TABLE $table_name (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            name varchar(255) NOT NULL,
+            description text DEFAULT '',
+            privacy varchar(20) DEFAULT 'public',
+            creator_id bigint(20) NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY creator_id (creator_id)
+        ) $charset_collate;";
+        dbDelta( $sql );
+
+        // Table: mtts_group_members
+        $table_name = $wpdb->prefix . 'mtts_group_members';
+        $sql = "CREATE TABLE $table_name (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            group_id bigint(20) NOT NULL,
+            user_id bigint(20) NOT NULL,
+            role varchar(20) DEFAULT 'member',
+            joined_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            UNIQUE KEY group_user (group_id, user_id)
+        ) $charset_collate;";
+        dbDelta( $sql );
+
+        // Table: mtts_lecturers
+        $table_name = $wpdb->prefix . 'mtts_lecturers';
+        $sql = "CREATE TABLE $table_name (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            user_id bigint(20) unsigned NOT NULL UNIQUE,
+            department varchar(255) DEFAULT '',
+            specialization varchar(255) DEFAULT '',
+            qualification varchar(255) DEFAULT '',
+            status varchar(20) DEFAULT 'active',
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id)
+        ) $charset_collate;";
+        dbDelta( $sql );
+    }
+
+    private static function ensure_alumni_columns() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'mtts_alumni_profiles';
+        
+        $required_columns = [
+            'interests'            => 'text DEFAULT \'\'',
+            'profile_picture_url'  => 'varchar(255) DEFAULT \'\'',
+            'banner_url'           => 'varchar(255) DEFAULT \'\'',
+            'gifts_graces'         => 'text DEFAULT \'\'',
+            'ministry_milestones'  => 'text DEFAULT \'\'',
+            'skills'               => 'text DEFAULT \'\'',
+            'experience'           => 'longtext DEFAULT \'\'',
+            'headline'             => 'varchar(255) DEFAULT \'\'',
+            'current_ministry'     => 'varchar(255) DEFAULT \'\'',
+            'location'             => 'varchar(100) DEFAULT \'\'',
+            'bio'                  => 'text DEFAULT \'\''
+        ];
+
+        foreach ( $required_columns as $column => $definition ) {
+            $check = $wpdb->get_results( $wpdb->prepare( "SHOW COLUMNS FROM `$table_name` LIKE %s", $column ) );
+            if ( empty( $check ) ) {
+                $wpdb->query( "ALTER TABLE `$table_name` ADD COLUMN `$column` $definition" );
+            }
+        }
+
+        // Recovery for Alumni Posts table
+        $table_posts = $wpdb->prefix . 'mtts_alumni_posts';
+        $check_media_type = $wpdb->get_results( $wpdb->prepare( "SHOW COLUMNS FROM `$table_posts` LIKE %s", 'media_type' ) );
+        if ( empty( $check_media_type ) ) {
+            $wpdb->query( "ALTER TABLE `$table_posts` ADD COLUMN `media_type` varchar(20) DEFAULT 'text' AFTER `media_url`" );
+        }
+
+        // Recovery for Applications table
+        $table_apps = $wpdb->prefix . 'mtts_applications';
+        $check_gateway = $wpdb->get_results( $wpdb->prepare( "SHOW COLUMNS FROM `$table_apps` LIKE %s", 'gateway' ) );
+        if ( empty( $check_gateway ) ) {
+            $wpdb->query( "ALTER TABLE `$table_apps` ADD COLUMN `gateway` varchar(50) DEFAULT 'none' AFTER `payment_status`" );
+        }
     }
 }

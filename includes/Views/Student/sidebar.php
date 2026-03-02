@@ -38,6 +38,11 @@
                     <?php endif; ?>
                 </a>
             </li>
+            <li>
+                <a href="<?php echo esc_url( home_url('/alumni-network') ); ?>" style="color:#a78bfa; font-weight:600;">
+                    <span class="dashicons dashicons-groups"></span> Alumni Network
+                </a>
+            </li>
             <li><a href="<?php echo wp_logout_url( home_url() ); ?>"><?php echo \MttsLms\Core\Translator::trans('logout'); ?></a></li>
         </ul>
     </nav>

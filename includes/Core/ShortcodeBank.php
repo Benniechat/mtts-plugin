@@ -41,6 +41,7 @@ class ShortcodeBank {
             'mtts_student_profile'  => 'get_student_profile',
             'mtts_inquiry_form'     => 'get_inquiry_form',
             'mtts_noticeboard'      => 'get_noticeboard',
+            'mtts_alumni_directory' => 'get_alumni_directory',
             'mtts_translator'       => 'render_translator',
         );
 
@@ -220,6 +221,12 @@ class ShortcodeBank {
         } else {
             echo "Component [{$view}] not found.";
         }
+        return ob_get_clean();
+    }
+
+    public static function get_alumni_directory() {
+        ob_start();
+        \MttsLms\Controllers\AlumniController::render_directory();
         return ob_get_clean();
     }
 

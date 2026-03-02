@@ -3,7 +3,18 @@
     
     <?php if ( isset( $_GET['status'] ) && $_GET['status'] == 'success' ) : ?>
         <div class="mtts-alert mtts-alert-success">
-            Application submitted successfully! Please check your email for further instructions.
+            Application submitted successfully! Your ministerial journey with MTTS has officially begun.
+        </div>
+    <?php elseif ( isset( $_GET['status'] ) && $_GET['status'] == 'pending_payment' ) : ?>
+        <div class="mtts-alert mtts-alert-info">
+            <span class="dashicons dashicons-cart"></span> 
+            Application saved! Redirecting to <strong><?php echo esc_html( ucfirst( $_GET['gateway'] ?? 'gateway' ) ); ?></strong> for payment processing...
+        </div>
+    <?php elseif ( isset( $_GET['status'] ) && $_GET['status'] == 'payment_error' ) : ?>
+        <div class="mtts-alert mtts-alert-error">
+            <span class="dashicons dashicons-warning"></span> 
+            Payment Initialization Failed: <?php echo esc_html( $_GET['msg'] ?? 'Unknown gateway error.' ); ?>
+            <p style="margin-top:10px;"><a href="<?php echo remove_query_arg(['status', 'msg']); ?>" class="mtts-btn mtts-btn-sm" style="background:#fff; color:#e11d48;">Try Again</a></p>
         </div>
     <?php else: ?>
 
@@ -90,5 +101,17 @@
             <button type="submit" name="mtts_admission_submit" class="mtts-btn mtts-btn-primary">Submit Application</button>
         </div>
     </form>
+    <script>
+    jQuery(document).ready(function($) {
+        $('.mtts-form').on('submit', function() {
+            const btn = $(this).find('button[type="submit"]');
+            btn.prop('disabled', true).html('<span class="dashicons dashicons-update spin"></span> Propagating Application...');
+        });
+    });
+    </script>
+    <style>
+    .spin { animation: mtts-spin 2s linear infinite; }
+    @keyframes mtts-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
     <?php endif; ?>
 </div>

@@ -18,29 +18,30 @@
 
     <h2>Important Dates & Events</h2>
     <div style="display: flex; gap: 20px;">
-        <div style="flex: 1;">
-            <h3>Add New Event</h3>
-            <form method="post" action="">
-                <input type="hidden" name="mtts_action" value="add_event">
-                <?php wp_nonce_field( 'mtts_add_event' ); ?>
+        <div style="flex: 1;" id="mtts-form-container">
+            <h3 id="form-title">Add New Event</h3>
+            <form method="post" action="" id="event-form">
+                <input type="hidden" name="mtts_action" value="save_event">
+                <input type="hidden" name="event_id" id="event-id" value="0">
+                <?php wp_nonce_field( 'mtts_save_event' ); ?>
                 
                 <table class="form-table">
                     <tr>
                         <th>Title</th>
-                        <td><input type="text" name="title" class="regular-text" required></td>
+                        <td><input type="text" name="title" id="title" class="regular-text" required></td>
                     </tr>
                     <tr>
                         <th>Start Date</th>
-                        <td><input type="date" name="start_date" required></td>
+                        <td><input type="date" name="start_date" id="start_date" required></td>
                     </tr>
                     <tr>
                         <th>End Date</th>
-                        <td><input type="date" name="end_date"></td>
+                        <td><input type="date" name="end_date" id="end_date"></td>
                     </tr>
                     <tr>
                         <th>Type</th>
                         <td>
-                            <select name="type">
+                            <select name="type" id="type">
                                 <option value="general">General</option>
                                 <option value="holiday">Holiday</option>
                                 <option value="exam">Exam</option>
@@ -51,10 +52,13 @@
                     </tr>
                     <tr>
                         <th>Description</th>
-                        <td><textarea name="description" rows="3" class="large-text"></textarea></td>
+                        <td><textarea name="description" id="description" rows="3" class="large-text"></textarea></td>
                     </tr>
                 </table>
-                <p><button type="submit" class="button button-primary">Add Event</button></p>
+                <p>
+                    <button type="submit" id="submit-btn" class="button button-primary">Add Event</button>
+                    <button type="button" class="button" onclick="resetEventForm()">Cancel</button>
+                </p>
             </form>
         </div>
 
@@ -85,7 +89,7 @@
                                 </td>
                                 <td><?php echo ucfirst( $event->type ); ?></td>
                                 <td>
-                                    <a href="#" style="color: red;">Delete</a> <!-- Placeholder for delete -->
+                                    <a href="#" class="button button-small" onclick="editEvent(<?php echo htmlspecialchars(json_encode($event)); ?>); return false;">Edit</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -95,3 +99,24 @@
         </div>
     </div>
 </div>
+
+<script>
+function editEvent(event) {
+    document.getElementById('form-title').innerText = 'Edit Event: ' + event.title;
+    document.getElementById('event-id').value = event.id;
+    document.getElementById('title').value = event.title;
+    document.getElementById('start_date').value = event.start_date;
+    document.getElementById('end_date').value = event.end_date;
+    document.getElementById('type').value = event.type;
+    document.getElementById('description').value = event.description;
+    document.getElementById('submit-btn').innerText = 'Update Event';
+    window.scrollTo(0, 0);
+}
+
+function resetEventForm() {
+    document.getElementById('event-form').reset();
+    document.getElementById('event-id').value = '0';
+    document.getElementById('form-title').innerText = 'Add New Event';
+    document.getElementById('submit-btn').innerText = 'Add Event';
+}
+</script>

@@ -24,7 +24,8 @@ class AdmissionProcessor {
         $matric_number = self::generate_matric_number( $program, $session );
 
         // 2. Create WordPress User
-        $user_id = self::create_student_user( $application, $matric_number );
+        $password = wp_generate_password();
+        $user_id = self::create_student_user( $application, $matric_number, $password );
 
         if ( is_wp_error( $user_id ) ) {
             return $user_id;
@@ -37,20 +38,7 @@ class AdmissionProcessor {
         Application::update( $application_id, array( 'status' => 'approved' ) );
 
         // 5. Send Welcome Email
-        $subject = "Welcome to Mountain-Top Theological Seminary - Your Admission Details";
-        $message = sprintf(
-            "<p>Dear %s,</p>
-            <p>Congratulations! Your admission to Mountain-Top Theological Seminary has been approved.</p>
-            <p><strong>Your Login Details:</strong><br>
-            Username (Matric Number): %s<br>
-            Temporary Password: student</p>
-            <p>Please login to the <a href='%s'>Student Portal</a> and change your password immediately.</p>",
-            esc_html( $application->applicant_name ),
-            esc_html( $matric_number ),
-            esc_url( home_url( '/portal-login' ) )
-        );
-        
-        \MttsLms\Core\NotificationManager::send_email( $application->email, $subject, $message );
+        \MttsLms\Core\NotificationManager::send_welcome_email( get_userdata( $user_id ), $password );
 
         return true;
     }
@@ -81,9 +69,7 @@ class AdmissionProcessor {
         return $prefix . $sequence;
     }
 
-    private static function create_student_user( $application, $matric_number ) {
-        $password = 'student'; // Default password, should be changed by user
-        
+    private static function create_student_user( $application, $matric_number, $password ) {
         $user_data = array(
             'user_login'    => $matric_number,
             'user_email'    => $application->email,

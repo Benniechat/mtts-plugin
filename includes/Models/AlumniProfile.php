@@ -18,7 +18,20 @@ class AlumniProfile extends Model {
         if ( ! $profile ) {
             // Auto-create profile if not exists
             $wpdb->insert( $table, array( 'user_id' => $user_id ) );
-            return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE user_id = %d", $user_id ) );
+            $profile = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE user_id = %d", $user_id ) );
+        }
+
+        // Safety: Ensure all expected properties exist to avoid warnings if DB migration lagged
+        $defaults = [
+            'headline' => '', 'current_ministry' => '', 'location' => '', 'interests' => '',
+            'gifts_graces' => '', 'ministry_milestones' => '', 'bio' => '', 'skills' => '',
+            'experience' => '', 'profile_picture_url' => '', 'banner_url' => '',
+            'graduation_year' => null, 'occupation' => ''
+        ];
+        foreach ( $defaults as $key => $val ) {
+            if ( ! isset( $profile->$key ) ) {
+                $profile->$key = $val;
+            }
         }
 
         return $profile;

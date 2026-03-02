@@ -25,6 +25,18 @@ class StudentDashboardController {
             wp_redirect( home_url() );
             exit;
         }
+
+        // Force Password Change
+        if ( is_page( 'student-dashboard' ) && is_user_logged_in() ) {
+            $user_id = get_current_user_id();
+            if ( get_user_meta( $user_id, 'mtts_force_password_change', true ) ) {
+                $view = isset( $_GET['view'] ) ? sanitize_key( $_GET['view'] ) : '';
+                if ( 'change-password' !== $view ) {
+                    wp_redirect( add_query_arg( 'view', 'change-password', get_permalink() ) );
+                    exit;
+                }
+            }
+        }
     }
 
     public static function render_dashboard() {
@@ -88,6 +100,9 @@ class StudentDashboardController {
                 break;
             case 'portfolio':
                 echo \MttsLms\Controllers\PortfolioController::render_portfolio_view( $student );
+                break;
+            case 'change-password':
+                self::render_change_password();
                 break;
             default:
                 include MTTS_LMS_PATH . 'includes/Views/Student/overview.php';
@@ -224,5 +239,23 @@ class StudentDashboardController {
                 exit;
             }
         }
+    }
+    public static function render_change_password() {
+        if ( isset( $_POST['mtts_change_password'] ) && wp_verify_nonce( $_POST['_wpnonce'], 'mtts_change_password' ) ) {
+            $pass1 = $_POST['pass1'];
+            $pass2 = $_POST['pass2'];
+            
+            if ( $pass1 === $pass2 && strlen($pass1) >= 8 ) {
+                wp_set_password( $pass1, get_current_user_id() );
+                delete_user_meta( get_current_user_id(), 'mtts_force_password_change' );
+                echo '<div class="mtts-alert mtts-alert-success">Password updated successfully! Redirecting...</div>';
+                echo '<script>setTimeout(() => { window.location.href = "' . get_permalink() . '"; }, 2000);</script>';
+                return;
+            } else {
+                echo '<div class="mtts-alert mtts-alert-danger">Passwords do not match or are too short (min 8 chars).</div>';
+            }
+        }
+
+        include MTTS_LMS_PATH . 'includes/Views/Student/change-password.php';
     }
 }

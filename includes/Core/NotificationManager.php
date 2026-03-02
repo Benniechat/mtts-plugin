@@ -9,6 +9,32 @@ class NotificationManager {
 
     public static function init() {
         add_action( 'mtts_send_email_event', array( __CLASS__, 'process_email_queue' ), 10, 3 );
+        add_action( 'phpmailer_init', array( __CLASS__, 'configure_smtp' ) );
+    }
+
+    /**
+     * Configure PHPMailer with SMTP settings
+     */
+    public static function configure_smtp( $phpmailer ) {
+        $host       = get_option( 'mtts_smtp_host' );
+        $user       = get_option( 'mtts_smtp_user' );
+        $pass       = get_option( 'mtts_smtp_pass' );
+        $port       = get_option( 'mtts_smtp_port' );
+        $encryption = get_option( 'mtts_smtp_encryption' );
+
+        if ( ! $host || ! $user || ! $pass ) {
+            return; // Not configured
+        }
+
+        $phpmailer->isSMTP();
+        $phpmailer->Host       = $host;
+        $phpmailer->SMTPAuth   = true;
+        $phpmailer->Port       = $port ?: 587;
+        $phpmailer->Username   = $user;
+        $phpmailer->Password   = $pass;
+        $phpmailer->SMTPSecure = ( 'none' !== $encryption ) ? $encryption : '';
+        $phpmailer->From       = get_option( 'mtts_smtp_from_email', get_option( 'admin_email' ) );
+        $phpmailer->FromName   = get_option( 'mtts_smtp_from_name', get_option( 'blogname' ) );
     }
 
     /**
@@ -28,8 +54,20 @@ class NotificationManager {
      */
     public static function process_email_queue( $to, $subject, $message ) {
         $headers = array( 'Content-Type: text/html; charset=UTF-8' );
-        $sender = get_option( 'blogname' ) . ' <no-reply@' . $_SERVER['SERVER_NAME'] . '>';
+        
+        $from_email = get_option( 'mtts_smtp_from_email' );
+        $from_name  = get_option( 'mtts_smtp_from_name' );
+
+        if ( $from_email && $from_name ) {
+            $sender = $from_name . ' <' . $from_email . '>';
+        } else {
+            $sender = get_option( 'blogname' ) . ' <no-reply@' . $_SERVER['SERVER_NAME'] . '>';
+        }
         $headers[] = 'From: ' . $sender;
+
+        if ( get_option( 'mtts_enable_ai_notifications' ) ) {
+            $message = \MttsLms\Core\AI\AINotificationGenerator::generate_ai_message( $subject, $message, 'email' );
+        }
 
         // Wrap message in a template
         $full_message = self::get_email_template( $subject, $message );
@@ -79,8 +117,11 @@ class NotificationManager {
              return;
         }
 
+        if ( get_option( 'mtts_enable_ai_notifications' ) ) {
+            $message = \MttsLms\Core\AI\AINotificationGenerator::generate_ai_message( 'SMS Notification', $message, 'sms' );
+        }
+
         // Generic Implementation (Compatible with many providers like EBulkSMS)
-        // Adjust parameters as per specific provider
         $params = array(
             'username' => $username,
             'apikey' => $api_key,
@@ -91,11 +132,54 @@ class NotificationManager {
         );
 
         $url = add_query_arg( $params, $api_url );
-        
-        $response = wp_remote_get( $url );
+        wp_remote_get( $url );
+    }
 
-        if ( is_wp_error( $response ) ) {
-            error_log( 'SMS Send Error: ' . $response->get_error_message() );
+    /**
+     * Send a role-specific welcome email with AI enhancement
+     */
+    public static function send_welcome_email( $user, $password ) {
+        $role = reset( $user->roles );
+        $subject = "Welcome to Mountain-Top Theological Seminary - Your Portal Credentials";
+        
+        $portal_url = home_url( '/portal-login' );
+        $username = $user->user_login;
+
+        $instructions = "";
+        switch ( $role ) {
+            case 'mtts_student':
+                $instructions = "You have been admitted as a student. You can use your Matric Number to login. Please register your courses and check your semester results in the portal.";
+                break;
+            case 'mtts_lecturer':
+                $instructions = "Welcome to the faculty. You can now access your class lists, upload assignments, and submit grades via the Lecturer Dashboard.";
+                break;
+            case 'mtts_accountant':
+                $instructions = "You have been assigned to the financial department. Please use the portal to manage student payments and view financial reports.";
+                break;
+            case 'mtts_registrar':
+                $instructions = "Welcome to the Registry. You can now manage student enrollment and process academic records.";
+                break;
+            default:
+                $instructions = "Your MTTS portal account has been created. Please login to explore your assigned capabilities.";
+                break;
         }
+
+        $base_message = sprintf(
+            "<p>Dear %s,</p>
+            <p>Welcome to the Mountain-Top Theological Seminary digital ecosystem.</p>
+            <p><strong>Your Access Credentials:</strong><br>
+            Username: %s<br>
+            Temporary Password: %s</p>
+            <p>%s</p>
+            <p>Login here: <a href='%s'>MTTS Covenant Portal</a></p>
+            <p><em>Note: For security reasons, please change your password upon your first successful login.</em></p>",
+            esc_html( $user->display_name ),
+            esc_html( $username ),
+            esc_html( $password ),
+            esc_html( $instructions ),
+            esc_url( $portal_url )
+        );
+
+        self::send_email( $user->user_email, $subject, $base_message );
     }
 }

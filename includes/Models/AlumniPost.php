@@ -21,8 +21,12 @@ class AlumniPost extends Model {
     public static function get_feed( $limit = 10, $offset = 0 ) {
         global $wpdb;
         $table = self::get_table_name();
+        $comments_table = $wpdb->prefix . 'mtts_alumni_comments';
+        
         return $wpdb->get_results( $wpdb->prepare(
-            "SELECT p.*, u.display_name FROM {$table} p 
+            "SELECT p.*, u.display_name, 
+             (SELECT COUNT(*) FROM {$comments_table} c WHERE c.post_id = p.id) as comments_count 
+             FROM {$table} p 
              LEFT JOIN {$wpdb->users} u ON p.author_id = u.ID 
              ORDER BY p.created_at DESC LIMIT %d OFFSET %d",
             $limit, $offset
@@ -35,6 +39,21 @@ class AlumniPost extends Model {
         return $wpdb->query( $wpdb->prepare(
             "UPDATE {$table} SET likes_count = likes_count + 1 WHERE id = %d",
             $post_id
+        ) );
+    }
+
+    public static function propagate( $post_id, $user_id ) {
+        global $wpdb;
+        $table = self::get_table_name();
+        $original = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", $post_id ) );
+        
+        if ( ! $original ) return false;
+
+        $content = "Propagated Word: " . $original->content;
+        return self::create( array(
+            'author_id' => $user_id,
+            'content'   => $content,
+            'type'      => 'social'
         ) );
     }
 }

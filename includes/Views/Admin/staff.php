@@ -23,6 +23,11 @@
                         <td><?php echo esc_html( implode( ', ', $user->roles ) ); ?></td>
                         <td>
                             <a href="<?php echo admin_url( 'user-edit.php?user_id=' . $user->ID ); ?>" class="button button-small">Edit</a>
+                            <?php if ( get_current_user_id() !== $user->ID ) : ?>
+                                <a href="<?php echo wp_nonce_url( admin_url( 'admin-post.php?action=mtts_delete_user&id=' . $user->ID ), 'mtts_delete_user_' . $user->ID ); ?>" 
+                                   class="button button-small" style="color:#ef4444;" 
+                                   onclick="return confirm('Strict Warning: This will permanently remove this user and all their ministerial/academic records. Proceed?');">Delete</a>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

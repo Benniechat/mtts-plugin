@@ -57,13 +57,43 @@ class AuthController {
     }
 
     private static function get_redirect_url( $user ) {
-        if ( in_array( 'mtts_student', (array) $user->roles ) ) {
-            return home_url( '/student-dashboard' ); // Adjust as per real page
-        } elseif ( in_array( 'mtts_lecturer', (array) $user->roles ) ) {
+        $roles = (array) $user->roles;
+        $mtts_roles = array( 'mtts_student', 'mtts_lecturer', 'mtts_school_admin', 'mtts_accountant', 'mtts_registrar', 'mtts_campus_coordinator' );
+        $user_mtts_roles = array_intersect( $mtts_roles, $roles );
+
+        // 1. Multiple Roles -> Switcher
+        if ( count( $user_mtts_roles ) > 1 ) {
+            return home_url( '/dashboard-switcher' );
+        }
+
+        // 2. Categorical Redirection
+        if ( in_array( 'mtts_student', $roles ) ) {
+            return home_url( '/student-dashboard' );
+        } 
+        
+        if ( in_array( 'mtts_lecturer', $roles ) ) {
             return home_url( '/lecturer-dashboard' );
-        } elseif ( in_array( 'mtts_school_admin', (array) $user->roles ) || in_array( 'administrator', (array) $user->roles ) ) {
+        } 
+
+        // Administrative Staff — each gets a dedicated frontend dashboard
+        if ( in_array( 'mtts_school_admin', $roles ) ) {
+            return home_url( '/school-admin-dashboard' );
+        }
+        if ( in_array( 'mtts_registrar', $roles ) ) {
+            return home_url( '/registrar-dashboard' );
+        }
+        if ( in_array( 'mtts_accountant', $roles ) ) {
+            return home_url( '/accountant-dashboard' );
+        }
+        if ( in_array( 'mtts_campus_coordinator', $roles ) ) {
+            return home_url( '/campus-dashboard' );
+        }
+        // Only the WordPress super-admin goes to wp-admin
+        if ( in_array( 'administrator', $roles ) ) {
             return admin_url();
         }
-        return home_url();
+
+        // 3. Fallback: Alumni & Community Network
+        return home_url( '/alumni-network' );
     }
 }

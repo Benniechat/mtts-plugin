@@ -18,7 +18,15 @@ abstract class Model {
     public static function all() {
         global $wpdb;
         $table = self::get_table_name();
-        return $wpdb->get_results( "SELECT * FROM {$table} ORDER BY created_at DESC" );
+        
+        // Check if created_at column exists to prevent errors during migrations
+        $column_exists = $wpdb->get_results( $wpdb->prepare( 
+            "SHOW COLUMNS FROM {$table} LIKE %s", 
+            'created_at' 
+        ) );
+
+        $order_by = ! empty( $column_exists ) ? 'created_at' : static::$primary_key;
+        return $wpdb->get_results( "SELECT * FROM {$table} ORDER BY {$order_by} DESC" );
     }
 
     public static function find( $id ) {

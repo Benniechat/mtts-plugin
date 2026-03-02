@@ -15,11 +15,12 @@
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
 
-        <!-- Add New Campus Center -->
+        <!-- Add/Edit Campus Center -->
         <div>
-            <h2>Add New Campus Center</h2>
-            <form method="post" action="<?php echo admin_url( 'admin-post.php' ); ?>">
+            <h2 id="form-title">Add New Campus Center</h2>
+            <form method="post" action="<?php echo admin_url( 'admin-post.php' ); ?>" id="campus-center-form">
                 <input type="hidden" name="action" value="mtts_save_campus_center">
+                <input type="hidden" name="id" id="center-id" value="0">
                 <?php wp_nonce_field( 'mtts_save_campus_center' ); ?>
                 <table class="form-table">
                     <tr>
@@ -42,7 +43,10 @@
                         <td><input type="text" name="state" id="state" class="regular-text" placeholder="e.g. Lagos State"></td>
                     </tr>
                 </table>
-                <?php submit_button( 'Add Campus Center' ); ?>
+                <p class="submit">
+                    <input type="submit" id="submit-btn" class="button button-primary" value="Add Campus Center">
+                    <button type="button" class="button" onclick="resetCenterForm()">Cancel</button>
+                </p>
             </form>
         </div>
 
@@ -56,7 +60,7 @@
                         <th>Code</th>
                         <th>City</th>
                         <th>State</th>
-                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -68,11 +72,7 @@
                                 <td><?php echo esc_html( $center->city ); ?></td>
                                 <td><?php echo esc_html( $center->state ); ?></td>
                                 <td>
-                                    <?php if ( $center->is_active ) : ?>
-                                        <span style="color: green;">&#10003; Active</span>
-                                    <?php else : ?>
-                                        <span style="color: red;">&#10007; Inactive</span>
-                                    <?php endif; ?>
+                                    <a href="#" class="button button-small" onclick="editCenter(<?php echo htmlspecialchars(json_encode($center)); ?>); return false;">Edit</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -91,3 +91,23 @@
 
     </div>
 </div>
+
+<script>
+function editCenter(center) {
+    document.getElementById('form-title').innerText = 'Edit Campus Center: ' + center.name;
+    document.getElementById('center-id').value = center.id;
+    document.getElementById('name').value = center.name;
+    document.getElementById('code').value = center.code;
+    document.getElementById('city').value = center.city;
+    document.getElementById('state').value = center.state;
+    document.getElementById('submit-btn').value = 'Update Campus Center';
+    window.scrollTo(0, 0);
+}
+
+function resetCenterForm() {
+    document.getElementById('campus-center-form').reset();
+    document.getElementById('center-id').value = '0';
+    document.getElementById('form-title').innerText = 'Add New Campus Center';
+    document.getElementById('submit-btn').value = 'Add Campus Center';
+}
+</script>

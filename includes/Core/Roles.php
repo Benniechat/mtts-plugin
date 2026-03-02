@@ -9,6 +9,43 @@ class Roles {
 
     public static function init() {
         add_action( 'init', array( __CLASS__, 'add_roles' ) );
+        add_action( 'admin_init', array( __CLASS__, 'block_non_admin_wp_access' ) );
+    }
+
+    /**
+     * Prevents non-super-admin users from accessing the WordPress backend.
+     * Redirects them to their appropriate frontend dashboard.
+     */
+    public static function block_non_admin_wp_access() {
+        if ( defined('DOING_AJAX') && DOING_AJAX ) return;
+        if ( ! is_user_logged_in() ) return;
+
+        $user  = wp_get_current_user();
+        $roles = (array) $user->roles;
+
+        // Only `administrator` can access wp-admin
+        if ( in_array( 'administrator', $roles ) ) return;
+
+        // Redirect each non-super-admin role to their frontend dashboard
+        $role_redirect_map = array(
+            'mtts_school_admin'       => home_url('/school-admin-dashboard'),
+            'mtts_registrar'          => home_url('/registrar-dashboard'),
+            'mtts_accountant'         => home_url('/accountant-dashboard'),
+            'mtts_campus_coordinator' => home_url('/campus-dashboard'),
+            'mtts_lecturer'           => home_url('/lecturer-dashboard'),
+            'mtts_student'            => home_url('/student-dashboard'),
+        );
+
+        foreach ( $role_redirect_map as $role => $url ) {
+            if ( in_array( $role, $roles ) ) {
+                wp_redirect( $url );
+                exit;
+            }
+        }
+
+        // Generic fallback for any other non-admin role
+        wp_redirect( home_url('/alumni-network') );
+        exit;
     }
 
     public static function add_roles() {

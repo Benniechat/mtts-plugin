@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: MTTS LMS Plugin
- * Plugin URI:  https://mtts.edu.ng
+ * Plugin URI:  https://mttseminary.org
  * Description: A complete University-grade Learning Management System for Mountain-Top Theological Seminary.
- * Version:     1.0.0
- * Author:      MTTS Dev Team
- * Author URI:  https://mtts.edu.ng
+ * Version:     1.2.1
+ * Author:      BennieChat TechWealth Solutions
+ * Author URI:  benniechatsystems@gmail.com
  * Text Domain: mtts-lms
  * Domain Path: /languages
  */
